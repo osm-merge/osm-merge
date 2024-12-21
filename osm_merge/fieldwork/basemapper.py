@@ -32,17 +32,12 @@ from typing import Optional, Tuple, Union
 import geojson
 import mercantile
 from cpuinfo import get_cpu_info
-from pmtiles.tile import Compression as PMTileCompression
-from pmtiles.tile import TileType as PMTileType
-from pmtiles.tile import zxy_to_tileid
-from pmtiles.writer import Writer as PMTileWriter
 from pySmartDL import SmartDL
 from shapely.geometry import shape
 from shapely.ops import unary_union
 
-from osm_fieldwork.sqlite import DataFile, MapTile
-from osm_fieldwork.xlsforms import xlsforms_path
-from osm_fieldwork.yamlfile import YamlFile
+from osm_merge.sqlite import DataFile, MapTile
+from osm_merge.yamlfile import YamlFile
 
 # Instantiate logger
 log = logging.getLogger(__name__)

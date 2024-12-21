@@ -25,9 +25,7 @@ from pathlib import Path
 import flatdict
 import xmltodict
 
-from osm_fieldwork.convert import Convert
-from osm_fieldwork.support import basename
-from osm_fieldwork.xlsforms import xlsforms_path
+from osm_merge.convert import Convert
 
 # Instantiate logger
 log = logging.getLogger(__name__)

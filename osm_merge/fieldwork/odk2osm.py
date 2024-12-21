@@ -22,8 +22,7 @@ import os
 import sys
 from pathlib import Path
 
-from osm_fieldwork.parsers import ODKParsers
-from osm_fieldwork.support import OutSupport
+from osm_merge.parsers import ODKParsers
 
 # Instantiate logger
 log = logging.getLogger(__name__)

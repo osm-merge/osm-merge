@@ -23,11 +23,6 @@ import sys
 import geojson
 import pandas as pd
 from geojson import Feature, FeatureCollection
-from osm_rawdata.config import QueryConfig
-
-# from osm_fieldwork import package_root
-# from osm_fieldwork.data_models import data_models_path
-from osm_fieldwork.xlsforms import xlsforms_path
 
 # Instantiate logger
 log = logging.getLogger(__name__)

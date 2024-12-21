@@ -36,8 +36,11 @@ from pySmartDL import SmartDL
 from shapely.geometry import shape
 from shapely.ops import unary_union
 
-from osm_merge.sqlite import DataFile, MapTile
+from osm_merge.fieldwork.sqlite import DataFile, MapTile
 from osm_merge.yamlfile import YamlFile
+
+import osm_merge as om
+rootdir = om.__path__[0]
 
 # Instantiate logger
 log = logging.getLogger(__name__)
@@ -272,7 +275,7 @@ class BaseMapper(object):
         self.source = source
         self.sources = dict()
 
-        path = xlsforms_path.replace("xlsforms", "imagery.yaml")
+        path = rootdir + "/fieldwork/imagery.yaml"
         self.yaml = YamlFile(path)
 
         for entry in self.yaml.yaml["sources"]:
@@ -428,79 +431,6 @@ def tileid_from_zyx_dir_path(filepath: Union[Path, str]) -> int:
     z, y = map(int, tile_image_path[:-1])
 
     return zxy_to_tileid(z, x, y)
-
-
-def tile_dir_to_pmtiles(
-    outfile: str,
-    tile_dir: str | Path,
-    bbox: tuple,
-    image_format: str,
-    zoom_levels: list[int],
-    attribution: str,
-):
-    """Write PMTiles archive from tiles in the specified directory.
-
-    Args:
-        outfile (str): The output PMTiles archive file path.
-        tile_dir (str | Path): The directory containing the tile images.
-        bbox (tuple): Bounding box in format (min_lon, min_lat, max_lon, max_lat).
-        attribution (str): Attribution string to include in PMTile archive.
-
-    Returns:
-        None
-    """
-    tile_dir = Path(tile_dir)
-
-    # Abort if no files are present
-    first_file = next((file for file in tile_dir.rglob("*.*") if file.is_file()), None)
-    if not first_file:
-        err = "No tile files found in the specified directory. Aborting PMTile creation."
-        log.error(err)
-        raise ValueError(err)
-
-    tile_format = image_format.upper()
-    # NOTE JPEG exception / flexible extension (.jpg, .jpeg)
-    if tile_format == "JPG":
-        tile_format = "JPEG"
-    log.debug(f"PMTile determind internal file format: {tile_format}")
-    possible_tile_formats = [f".{e.name.lower()}" for e in PMTileType]
-    possible_tile_formats.append(".jpg")
-    possible_tile_formats.remove(".unknown")
-
-    with open(outfile, "wb") as pmtile_file:
-        writer = PMTileWriter(pmtile_file)
-
-        for tile_path in tile_dir.rglob("*"):
-            if tile_path.is_file() and tile_path.suffix.lower() in possible_tile_formats:
-                tile_id = tileid_from_zyx_dir_path(tile_path)
-
-                with open(tile_path, "rb") as tile:
-                    writer.write_tile(tile_id, tile.read())
-
-        min_lon, min_lat, max_lon, max_lat = bbox
-        log.debug(
-            f"Writing PMTiles file with min_zoom ({zoom_levels[0]}) "
-            f"max_zoom ({zoom_levels[-1]}) bbox ({bbox}) tile_compression None"
-        )
-
-        # Write PMTile metadata
-        writer.finalize(
-            header={
-                "tile_type": PMTileType[tile_format],
-                "tile_compression": PMTileCompression.NONE,
-                "min_zoom": zoom_levels[0],
-                "max_zoom": zoom_levels[-1],
-                "min_lon_e7": int(min_lon * 10000000),
-                "min_lat_e7": int(min_lat * 10000000),
-                "max_lon_e7": int(max_lon * 10000000),
-                "max_lat_e7": int(max_lat * 10000000),
-                "center_zoom": zoom_levels[0],
-                "center_lon_e7": int(min_lon + ((max_lon - min_lon) / 2)),
-                "center_lat_e7": int(min_lat + ((max_lat - min_lat) / 2)),
-            },
-            metadata={"attribution": f"© {attribution}"},
-        )
-
 
 def create_basemap_file(
     boundary=None,

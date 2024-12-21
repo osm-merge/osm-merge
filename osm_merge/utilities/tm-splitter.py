@@ -85,6 +85,8 @@ def splitBySquare(
     """
     log.debug("Splitting the AOI by squares")
 
+    # We want to use meters, not degrees, so change the projection to do the
+    # calculations.
     project = pyproj.Transformer.from_proj(
         pyproj.Proj(init='epsg:4326'),
         pyproj.Proj(init='epsg:3857')
@@ -124,11 +126,12 @@ def splitBySquare(
 
     tasks = list()
     index = 0
+    # JOSM can't display epsg:3857, so convert back to epsg:4326 before writing
+    # the geometry.
     newproj = pyproj.Transformer.from_proj(
         pyproj.Proj(init='epsg:3857'),
         pyproj.Proj(init='epsg:4326')
     )
-    newpoly = transform(newproj.transform, aoi)
     for poly in polygons:
         if poly.geom_type == 'MultiPolygon':
             # Many national forests have small polygons outside the main forest.
@@ -191,22 +194,17 @@ def make_tasks(data: FeatureCollection,
             outname = f"{template.replace(".geojson", "")}_{index}.geojson"
             if type(geom) == Polygon:
                 fd = open(outname, "w")
-                properties = {"name": f"{name}_Task_{index}", "area": area}
+                properties = {"name": f"{name}_Task_{index}"}
                 feat = Feature(geometry=task, properties=properties)
-                geojson.dump(Feature(geometry=task, properties=properties), fd)
+                geojson.dump(Feature(geometry=geom, properties=properties), fd)
                 log.debug(f"Wrote {outname}")
                 fd.close()
                 index += 1
-            else:
+            else:               # It's a MultiPolygon
                 for poly in geom.geoms:
-                    area = poly.area
-                    # Ignore really small polygons, which are often administrative
-                    # offices not in the forest or park boundary.
-                    if area < 10000.0: # 0.00001:
-                        continue
-                    # log.debug(f"AREA: {area}")
+                    outname = f"{template.replace(".geojson", "")}_{index}.geojson"
                     fd = open(outname, "w")
-                    properties = {"name": f"{name}_Task_{index}", "area": area}
+                    properties = {"name": f"{name}_Task_{index}"}
                     geojson.dump(Feature(geometry=poly, properties=properties), fd)
                     log.debug(f"Wrote {outname}")
                     fd.close()
@@ -244,7 +242,8 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
                         help="Generate the task grid")
     parser.add_argument("-s", "--split", default=False, action="store_true",
                         help="Split Multipolygon")
-    parser.add_argument("-o", "--outfile", required=True, help="Output filename template")
+    parser.add_argument("-o", "--outfile", default="out.geojson",
+                        help="Output filename template")
     parser.add_argument("-m", "--meters", default=50000, type=int,
                         help="Grid size in kilometers")
 

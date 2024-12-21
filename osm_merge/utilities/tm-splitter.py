@@ -124,6 +124,11 @@ def splitBySquare(
 
     tasks = list()
     index = 0
+    newproj = pyproj.Transformer.from_proj(
+        pyproj.Proj(init='epsg:3857'),
+        pyproj.Proj(init='epsg:4326')
+    )
+    newpoly = transform(newproj.transform, aoi)
     for poly in polygons:
         if poly.geom_type == 'MultiPolygon':
             # Many national forests have small polygons outside the main forest.
@@ -134,11 +139,13 @@ def splitBySquare(
             for geom in poly.geoms:
                 if int(geom.area) >= 100000:
                     # log.debug(f"AREA: {foo.area}")
-                    larger.append(geom)
+                    newgeom = transform(newproj.transform, geom)
+                    larger.append(newgeom)
             new = MultiPolygon(larger)
             tasks.append(Feature(geometry=mapping(new), properties={"task": f"Task {index}"}))
         else:
-            tasks.append(Feature(geometry=mapping(poly), properties={"task": f"Task {index}"}))
+            newpoly = transform(newproj.transform, poly)
+            tasks.append(Feature(geometry=mapping(newpoly), properties={"task": f"Task {index}"}))
         index += 1
 
     return FeatureCollection(tasks)

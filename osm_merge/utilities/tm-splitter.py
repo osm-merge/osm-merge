@@ -95,7 +95,7 @@ def splitBySquare(
     xmin, ymin, xmax, ymax = newaoi.bounds
 
     reference_lat = (ymin + ymax) / 2
-    # 5000km square is roughly 0.45 degrees
+    # 5000km square is roughly 0.44 degrees
     length_deg = meters # 0.44
     width_deg = meters # 0.44
 
@@ -115,7 +115,6 @@ def splitBySquare(
             if clipped_polygon.is_empty:
                 continue
 
-            log.debug(f"AREA: {clipped_polygon.area}")
             # Check intersection with extract geometries if available
             if extract_geoms:
                 if any(geom.within(clipped_polygon) for geom in extract_geoms):
@@ -123,10 +122,26 @@ def splitBySquare(
             else:
                 polygons.append(clipped_polygon)
 
-    split_features = FeatureCollection(
-        [Feature(geometry=mapping(poly)) for poly in polygons]
-    )
-    return split_features
+    tasks = list()
+    index = 0
+    for poly in polygons:
+        if poly.geom_type == 'MultiPolygon':
+            # Many national forests have small polygons outside the main forest.
+            # These are often visitor centers, and other buildings that we don't
+            # care about, so filter them out of the final output file as the cause
+            # issues with conflation.
+            larger = list()
+            for geom in poly.geoms:
+                if int(geom.area) >= 100000:
+                    # log.debug(f"AREA: {foo.area}")
+                    larger.append(geom)
+            new = MultiPolygon(larger)
+            tasks.append(Feature(geometry=mapping(new), properties={"task": f"Task {index}"}))
+        else:
+            tasks.append(Feature(geometry=mapping(poly), properties={"task": f"Task {index}"}))
+        index += 1
+
+    return FeatureCollection(tasks)
 
 def make_tasks(data: FeatureCollection,
                template: str,
@@ -180,8 +195,9 @@ def make_tasks(data: FeatureCollection,
                     area = poly.area
                     # Ignore really small polygons, which are often administrative
                     # offices not in the forest or park boundary.
-                    if area < 0.00001:
+                    if area < 10000.0: # 0.00001:
                         continue
+                    # log.debug(f"AREA: {area}")
                     fd = open(outname, "w")
                     properties = {"name": f"{name}_Task_{index}", "area": area}
                     geojson.dump(Feature(geometry=poly, properties=properties), fd)
@@ -264,14 +280,17 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
             outfile = "tasks.geojson"
         else:
             outfile = "./"
-        log.debug(f"Wrote {outfile}")
+
+        if args.outfile.find('/') > 1:
+            outdir = os.path.dirname(args.outfile)
+            if not os.path.exists(outdir):
+                os.mkdir(outdir)
+        else:
+            outdir = "./"
 
         file = open(args.outfile, "w")
         data = geojson.dump(grid, file)
-
-    # if args.extract:
-    #     # Use gdal, as it was actually easier than geopandas or pyclir
-    #     make_extract(args.infile, args.extract, args.complete)
+        log.debug(f"Wrote {outfile}")
 
 if __name__ == "__main__":
     """This is just a hook so this file can be run standlone during development."""

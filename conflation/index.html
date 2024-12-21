@@ -1,0 +1,1364 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Merge features and tags into existing OSM data.">
+      
+      
+      
+        <link rel="canonical" href="https://www.hotosm.org/conflation/">
+      
+      
+        <link rel="prev" href="../dataflow/">
+      
+      
+        <link rel="next" href="../odkconflation/">
+      
+      
+      <link rel="icon" href="../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.42">
+    
+    
+      
+        <title>General - osm-merge</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../css/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#conflating-external-datasets" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
+      
+  <img src="../images/hot_logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            osm-merge
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              General
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hotosm/osm-merge/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hotosm/osm-merge
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
+      
+  <img src="../images/hot_logo.png" alt="logo">
+
+    </a>
+    osm-merge
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hotosm/osm-merge/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hotosm/osm-merge
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Get Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LICENSE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGELOG/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://docs.hotosm.org/code-of-conduct" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://docs.hotosm.org/dev-guide/repo-management/version-control/#creating-releases" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Versioning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dataflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Flow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Conflation Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Conflation Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    General
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    General
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-data-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Data Files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overture-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overture Data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overture Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#duplicate-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Duplicate Buildings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overlapping-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overlapping Buildings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Known Problems
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../odkconflation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ODK
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../highways/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Highways
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calculations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Calculations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validating/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Validating
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Utilities
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Utilities
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../osm-merge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OSM Merge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utilities/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utilities
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tm-splitter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TM Splitter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Data Conversion
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Data Conversion
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../formats/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mvum/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MVUM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trails/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Trails
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../osmhighways/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OSM Highways
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-data-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Data Files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overture-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overture Data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overture Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#duplicate-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Duplicate Buildings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overlapping-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overlapping Buildings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Known Problems
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="conflating-external-datasets">Conflating External Datasets<a class="headerlink" href="#conflating-external-datasets" title="Permanent link">&para;</a></h1>
+<p>This project is the merging of several programs for conflating
+external datasets with OpenStreetMap data developed at
+<a href="https://www.hotosm.org">HOT</a>. These were originally developed for
+large scale building imports using MS Footprints in East Africa, and
+to also work with conflating data collected with OpenDataKit for the
+<a href="https://hotosm.github.io/fmtm/">Field Mapping Tasking Manager</a>
+project.</p>
+<h2 id="the-data-files">The Data Files<a class="headerlink" href="#the-data-files" title="Permanent link">&para;</a></h2>
+<p>While any name can be used for the OSM database, I usually default to
+naming the <a href="http://download.geofabrik.de/index.html">OpenStreetMap</a>
+database the country name as used in the data file. Other datasets
+have their own schema, and can be imported with
+<a href="https://gdal.org/programs/ogr2ogr.html">ogr2ogr</a>, or using python to
+write a custom importer. In that case I name the database after the
+dataset source. Past versions of this program could conflate between
+multiple datasets, so it's good to keep things clear.</p>
+<h2 id="overture-data">Overture Data<a class="headerlink" href="#overture-data" title="Permanent link">&para;</a></h2>
+<p>The Overture Foundation (https://www.overturemaps.org) has been
+recently formed to build a competitor to Google Maps. The plan is to
+use OpenStreetMap (OSM) data as a baselayer, and layer other datasets
+on top. The currently available data (July 2023) has 13 different
+datasets in addition to the OSM data. It is <a href="https://overturemaps.org/download/">available
+here</a>. It also includes a snapshot
+ of OSM data from the same time frame. Other than the OSM data and <a href="https://github.com/microsoft/GlobalMLBuildingFootprints">MS
+Footprints</a>,
+all the current additional data is primarily US specific, and often
+contains multiple copies of the same dataset, but from different
+organization.</p>
+<p>The <a href="https://hotosm.github.io/osm-rawdata/importer">osm-rawdata</a>
+python module has a utility that'll import the Parquet data files into
+the postgress database schema used by multiple projects at HOT. That
+schema is designed for data analysis, unlike the standard OSM database
+schema. There is more detail in these notes I've written about
+importing
+<a href="https://hotosm.github.io/osm-rawdata/overture/">Overture Data</a> into
+postgres.</p>
+<h3 id="duplicate-buildings">Duplicate Buildings<a class="headerlink" href="#duplicate-buildings" title="Permanent link">&para;</a></h3>
+<p>This is the primary conflation task. Because of offsets in the
+satellite imagery used for the original buildings, there is rarely an
+exact duplicate, only similar. The only times when you see an exact
+duplicate, it's because the same source data is in multiple other datasets.
+The orientation may be different even if the same rough size, or it'll
+be roughly in the same position, but differing sizes. Several checks
+are made to determine duplicates. First is to check for any
+intersection of the two polygons. If the two polygons intersection
+it's an overlapping building or possibly duplicate. Any building in
+the footprint data that is found to be a duplicate is removed from the
+output data file.</p>
+<h3 id="overlapping-buildings">Overlapping Buildings<a class="headerlink" href="#overlapping-buildings" title="Permanent link">&para;</a></h3>
+<p>It is entirely possible that a new building in the footprints data may
+overlap with an existing building in OSM. It wouldn't be overlapping
+in the footprints data. Since this requires human intervention to fix,
+these buildings are left in the output data, but flagged with a
+debugging tag of <em>overlapping=yes</em>. There is also many occurances
+where the building being imported has a better building geometry than
+OSM, so the best one should be selected.</p>
+<p>Using the HOT <a href="https://github.com/hotosm/underpass/wiki">Underpass</a>
+project, it is possible to scan the building geometries and either
+delete the bad geometry one, or flag it in the result data files for a
+human to validate the results.</p>
+<h2 id="known-problems">Known Problems<a class="headerlink" href="#known-problems" title="Permanent link">&para;</a></h2>
+<p>There are two main issues with ML/AI derived building footprints,
+Buildings that are very close together, like the business section in
+many areas of the world, do not get marked as separate
+buildings. Instead the entire block of buildings is a single
+polygon. This will eventually get fixed by drone mapping, where there
+can be more of a street view of the buildings that you can't get using
+existing satellite imagery.</p>
+<p>The other problem is that as processing satellite imagery is that
+buildings are recognized by shading differences, so often features are
+flagged as buildings that don't actually exist. For example, big rocks
+in the desert, or haystacks in a field both get marked as a
+building. Any building in the footprints data that has no other
+buildings nearby, nor a highway or path of some kind, is flagged with
+a debugging tag of <em>false=yes</em>. Usually this is easy to determine
+looking at satellite imagery, since these are often remote
+buildings. The tags can be searched for when editing the data to
+visually determine whether it's a real building or not.</p>
+<h1 id="conflating-other-than-buildings">Conflating Other Than Buildings<a class="headerlink" href="#conflating-other-than-buildings" title="Permanent link">&para;</a></h1>
+<h2 id="opendatakit">OpenDataKit<a class="headerlink" href="#opendatakit" title="Permanent link">&para;</a></h2>
+<p>Data collected in the field using ODK Collect is a specific case. If
+using using data extracts from OpenStreetMap, the data extract has
+the OSM ID, so it's much simpler to conflate the new tags with either
+the existing building polygon or POI. For this workflow, any tag in
+the feature from ODK will overwrite any existing values in the
+existing feature. This allows for updating the tags &amp; values when
+ground-truthing. When the OSM XML file is loaded into JOSM, it has the
+<em>modified</em> attribute set, and the version has been incremented. In
+JOSM under the <strong>File</strong> menu, select the <strong>Update Modified</strong> menu
+item. This will sync the modified feature with current OSM. At that
+point all that needs to be done is validate the modified features, and
+upload to OSM.</p>
+<p>When ODK Collect is used but has no data extract, conflation is more
+complicated. For this use case, a more brute force algorythm is
+used. Initially any building polygon or POI within 7 meters is found
+by querying the database. Most smartphone GPS chipsets, even on
+high-end phones, are between 4-9m off from your actual location. That
+value was derived by looking at lots of data, and can be changed when
+invoking the conflation software in this project. Once nearby
+buildings are identified, then the tags are compared to see if there
+is a match.</p>
+<p>For example, if collecting data on a restaurant, it may have a new
+name, but if the nearby building is the only one with an
+<em>amenity=restaurant** (or cafe, pub, etc...) it's considered a
+probable match. If there are multiple restaurants this doesn't work
+very well unless the name hasn't changed. If there are multiple
+possible features, a *fixme=</em> tag is added to the POI, and it has to
+be later validated manually. Every tag in the ODK data has to be
+compares with the nearby buildings. Often it's the <em>name</em> tag that is
+used for many amenities.</p>
+<p>If a satellite imagery basemap is used in Collect, conflation is
+somewhat simpler. If the mapper has selected the center of the
+building using the basemap, conflation starts by checking for the
+building polygon in OSM that contains this location. If no building is
+found, the POI is added to the output file with a <em>fixme=new building</em>
+tag so the buildings can traced by the validator. Any tags from the
+POI are added to the new building polygon.</p>
+<h2 id="points-of-interest-poi">Points Of Interest (POI)<a class="headerlink" href="#points-of-interest-poi" title="Permanent link">&para;</a></h2>
+<p>It is common when collecting datasets from non-OSM sources each
+feature may only be single node. This may be a list of schools,
+businesses, etc... with additional information with each POI that can
+be added to the OSM building polygon (if it exists). Obviously any
+imported data must have a license acceptable for importing into OSM.</p>
+<p>Similar to how conflating ODK data when not using a data extract, the
+tags &amp; values are compared with any nearby building. Since often these
+imports are features already in OSM with limited metadata, this adds
+more details.</p>
+<h2 id="highways">Highways<a class="headerlink" href="#highways" title="Permanent link">&para;</a></h2>
+<p>Highways are more complex because it uses relations. A relation is a
+groups of highway segments into a single entity. Some times the tags
+are on the relation, other times each highway segment. The segments
+change when the highway condition changes, but the name and reference
+number doesn't change. External datasets don't use relations, they are
+OSM specific.</p>
+<h3 id="mvum-highways">MVUM Highways<a class="headerlink" href="#mvum-highways" title="Permanent link">&para;</a></h3>
+<p>The USDA publishes a dataset of <a href="https://www.fs.usda.gov/detail/psicc/maps-pubs/?cid=stelprdb5177824">Motor Vehicle Use Maps
+(MVUM)</a> highways in the National Forest. Some of this data has already been
+imported into OSM, although the metadata may be lacking, but the
+LineString is there. MVUM roads are primarily compacted dirt
+roads. While some can be driven in a passenger vehicle, most are
+varying degrees of bad to horrible to impassable. These highways are
+often used for recreational traffic by off-road vehicles, or for
+emergency access for a wildland fire or backcountry rescue.</p>
+<p>Another key detail of MVUM highways is each one may have 4 names!
+There is of course the primary name, for example "Cedar Lake
+Road". But it may also have a <em>locals</em> name, common in remote
+areas. And then there is the reference number. A MVUM highway may have
+two reference numbers, the country designated one, and the USDA
+one. Luckily OSM supports this. Many of these tags effect both how
+the highway is displayed, as well as routing for navigation. </p>
+<div class="highlight"><pre><span></span><code>&quot;name&quot;: &quot;Platte Lake Road&quot;,
+&quot;alt_name&quot;: &quot;Bar-K Ranch Road&quot;,
+&quot;surface&quot;: &quot;dirt&quot;,
+&quot;smoothness&quot;: &quot;bad&quot;,
+&quot;highway&quot;: &quot;track&quot;,
+&quot;ref&quot;: &quot;CO 112&quot;,
+&quot;ref:usfs&quot;: &quot;FR 521.1A&quot;
+&quot;tracktype&quot;: &quot;grade3&quot;
+</code></pre></div>
+<p>A <em>bad</em> highway is something I'd be comfortable driving in a 4x4
+high-clearance vehicle. Smoothness values can be a bit misleading, as
+often what is in OSM may be years out of date. And most MVUM roads get
+zero maintainance, so get eroded, pot-holed, and or exposed rocks. And
+people's perception of road conditions is subjective based on one's
+experience driving these highways.</p>
+<p>All of this metadata makes conflation interesting. Since existing OSM
+features were added by more than one person, the tagging may not be
+consistent. For example, the existing data may have <em>Forest Service
+Road 123</em>, which should really be <strong>ref:usfs=FR 123</strong>. And the real
+highway name <em>Piney Pass Road</em> is in the MVUM dataset. The goal of
+highway conflation is to merge the new metadata into the existing OSM
+feature where possible. This then needs to be validated by a human
+being. There is still much tedious work to process post conflation
+data before it can be uploaded to OSM.</p>
+<p>But sometimes conflation works well, especially when the LineString
+in OSM was imported from older versions of the MVUM data. But often
+highways in OSM were traced off satellite imagery, and may have wildly
+different geometry.</p>
+<p>If you ignore conflating the tags other than name or ref, the process
+is somewhat less messy. And tags like <em>surface</em> and <em>smoothness</em>
+really should be ground-truthed anyway. So I do ignore those for now
+and stick to validating the name and the two reference numbers which
+are usually lacking in OSM. That and addding consistency to the data
+to make it easier to make data extracts.</p>
+<p>To conflate OSM highways with external data, initially each entry in
+the external dataset does a distance comparison with the existing OSM
+data. There is an optional threshold to set the distance limit. Since
+currently this is focused on conflating files without a database, this
+is computationally intensive, so slow. For data that was imported in
+the past from MVUM datasets, a distance of zero means it's probably
+the same segment. The external dataset needs to have the tagging
+converted to the syntax OSM uses. Tagging can be adjusted using a
+conversion program, but as conversion is usually a one-off task, it
+can also be done using JOSM or QGIS. Usually it's deleting most of the
+tags in the external dataset that aren't appropriate for
+OSM. Primarily the only tags that are needed are the <em>name</em> and any
+reference numbers. Since the MVUM data also classified the types of
+road surface, this can also be converted. Although as mentioned, may
+be drastically out of data, and OSM is more recent and ground-truthed.</p>
+<p>Then there is a comparison of the road names. It's assumed the one from
+the MVUM dataset is the correct one. And since typos and weird
+abbreviations may exist in the datasets, fuzzy string matching is
+performed. This way names like <em>FS 123.1</em> can match <em>FR 123.1A</em>. In
+this case the current name value in OSM becomes <em>alt_name</em>, and the
+MVUM name becomes the official name. This way when validating you can
+make decisions where there is confusion on what is correct. For an
+exact name match no other tags are checked to save a little time.</p>
+<p>Any other processing is going to be MVUM highway specific, so there
+will be an additional step to work through the reference numbers not
+supported by this program.</p>
+<h1 id="output-files">Output Files<a class="headerlink" href="#output-files" title="Permanent link">&para;</a></h1>
+<p>If the data files are huge, it's necessary to conflate with a subset
+of all the data. For projects using the <a href="https://tasks.hotosm.org/">Tasking
+Manager</a> or the Field
+<a href="https://hotosm.github.io/fmtm/">Mapping Tasking Manager</a> you can
+download the project boundary file and use that. For other projects
+you can extract administrative bondaries from OpenStreetMap, or use
+external sources. Usually county administrative boundaries are a good
+size. These can be extracted from OSM itself, or an external data file
+of boundaries.</p>
+<p>After conflation, an output file is created with the new buildings
+that are not duplicates of existing OSM data. This is much smaller
+than the original data, but still too large for anyone having
+bandwidth issues. This output file is in
+<a href="https://geojson.org/">GeoJson</a> format, so can be edited with
+<a href="https://josm.openstreetmap.de">JOSM</a> or
+<a href="https://www.qgis.org/en/site/">QGIS</a></p>
+<p>Since this software is under development, rather than automatically
+deleting features, it adds tags to the features. Then when editing the
+data, it's possible to see the flagged data and validate the
+conflation. It also makes it possible to delete manually the results
+of the conflation from the output file once satisfied about the
+validation of the results.</p>
+<h1 id="validating-the-conflation">Validating The Conflation<a class="headerlink" href="#validating-the-conflation" title="Permanent link">&para;</a></h1>
+<p>The conflated data file can't be uploaded to OSM until it is
+validated. While QGIS can be used for this purpose, JOSM is preferred
+because it does validation checks, and uploads directly to
+OpenStreetMap. I start by loading the conflation data file, and then
+enabling the OpenStreetMap imagery for the basemap. Existing buildings
+in OSM are grey polygons, so it's possible to see existing buildings
+with the conflated new buildings as a layer on top.</p>
+<p>Once the buildings are loaded, you can then download the OSM data for
+that view. Then use the
+<a href="https://github.com/MikeTho16/JOSM-Scripts/blob/master/SelectDuplicateBuilding.js">SelectDuplicateBuilding</a>
+script to find any buildings that have been added since the initial
+data file for conflation was used. Once selected, those can be
+deleted in a single operation.</p>
+<p>The next step is validating what is left that is considered to be a
+new building. This is done using satellite imagery. Most commercial
+satellite imagery available for public use comes from Maxar. But the
+different providers (Bing, ESRI, Google, etc...) have different update
+cycles, so I often double check with ESRI imagery.</p>
+<p>If there is drone imagery available from <a href="https://openaerialmap.org/">Open Aerial
+Map</a>, that's also a good surce of imagery,
+but often doesn't cover a large area.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 21, 2024</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/hotosm/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/hotosm" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.hotosm.org" target="_blank" rel="noopener" title="www.hotosm.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.4c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64h185.3c2.2 20.4 3.3 41.8 3.3 64m28.8-64h123.1c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64m112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6 78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7 10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5 11.6 26 20.9 58.2 27 94.7m-209 0H18.6c30-74.1 93.6-130.9 172-151.6-25.5 34.2-45.3 87.7-55.3 151.6M8.1 192h123.1c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64m186.6 254.6c-11.6-26-20.9-58.2-27-94.6h176.6c-6.1 36.4-15.5 68.6-27 94.6-10.5 23.6-22.2 40.7-33.5 51.5-11.2 10.7-20.5 13.9-27.8 13.9s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6-78.4-20.7-142-77.5-172-151.6zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6 25.5-34.2 45.2-87.7 55.3-151.6h116.7z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>

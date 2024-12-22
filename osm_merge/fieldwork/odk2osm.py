@@ -38,7 +38,8 @@ def main():
     parser.add_argument("-y", "--yaml", help="Alternate YAML file")
     parser.add_argument("-x", "--xlsfile", help="Source XLSFile")
     parser.add_argument("-i", "--infile", required=True, help="The input file")
-    # parser.add_argument("-o","--outfile", default='tmp.csv', help='The output file for JOSM')
+    parser.add_argument("-o","--outfile", default='out.osm',
+                        help='The output file for JOSM')
     args = parser.parse_args()
 
     # if verbose, dump to the terminal
@@ -64,8 +65,8 @@ def main():
             full = os.path.join(dirs, xml[0])
             xmlfiles.append(full)
         for infile in xmlfiles:
-            tmp = odk.XMLparser(infile)
-            entry = odk.createEntry(tmp[0])
+            entry = odk.XMLparser(infile)
+            # entry = odk.createEntry(tmp[0])
             data.append(entry)
     elif toplevel.suffix == ".xml":
         # It's an instance file from ODK Collect
@@ -74,8 +75,7 @@ def main():
         full = os.path.join(toplevel, os.path.basename(toplevel))
         xmlfiles.append(full + ".xml")
         tmp = odk.XMLparser(args.infile)
-        # odki = ODKInstance(filespec=args.infile, yaml=args.yaml)
-        entry = odk.createEntry(tmp)
+        # entry = odk.createEntry(tmp)
         data.append(entry)
     elif toplevel.suffix == ".csv":
         log.debug(f"Parsing csv files {args.infile}")
@@ -87,9 +87,8 @@ def main():
             data.append(odk.createEntry(entry))
 
     # Write the data
-    osm = OsmFile(toplevel.stem)
-    osm.writeOSM(data)
-
+    osm = OsmFile()
+    osm.writeOSM(data, args.outfile)
 
 if __name__ == "__main__":
     """This is just a hook so this file can be run standlone during development."""

@@ -81,9 +81,17 @@ nav:
       - OSM Merge: osm-merge.md
       - Utilities: utilities.md
       - TM Splitter: tm-splitter.md
+      - osm2favorites: osm2favorites.md
   - Data Conversion:
       - Data Formats: formats.md
       - MVUM: mvum.md
       - Trails: trails.md
       - OSM Highways: osmhighways.md
-  - API: api.md
+  - API:
+      - basemapper: api/basemapper.md
+      - convert: api/convert.md
+      - sqlite: api/sqlite.md
+      - osmfile: api/osmfile.md
+      - yamlfile: api/yamlfile.md
+      - filter_data: api/filter_data.md
+      - odk2osm: api/odk2osm.md

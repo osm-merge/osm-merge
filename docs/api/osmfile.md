@@ -1,6 +1,6 @@
 # osmfile.py
 
-::: osm_fieldwork.osmfile.OsmFile
+::: osm_merge.osmfile.OsmFile
 options:
 show_source: false
 heading_level: 3

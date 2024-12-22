@@ -23,6 +23,9 @@ import pandas as pd
 
 from osm_merge.yamlfile import YamlFile
 
+import osm_merge as om
+rootdir = om.__path__[0]
+
 # Instantiate logger
 log = logging.getLogger(__name__)
 
@@ -51,11 +54,10 @@ class Convert(YamlFile):
         self,
         xform: str = None,
     ):
-        path = xlsforms_path.replace("xlsforms", "")
         if xform is not None:
             file = xform
         else:
-            file = f"{path}/xforms.yaml"
+            file = rootdir + "/fieldwork/xforms.yaml"
         self.yaml = YamlFile(file)
         self.filespec = file
         # Parse the file contents into a data structure to make it

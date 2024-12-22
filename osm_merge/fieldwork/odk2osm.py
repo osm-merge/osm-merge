@@ -22,7 +22,8 @@ import os
 import sys
 from pathlib import Path
 
-from osm_merge.parsers import ODKParsers
+from osm_merge.fieldwork.parsers import ODKParsers
+from osm_merge.osmfile import OsmFile
 
 # Instantiate logger
 log = logging.getLogger(__name__)
@@ -52,7 +53,6 @@ def main():
     toplevel = Path(args.infile)
     odk = ODKParsers(args.yaml)
     odk.parseXLS(args.xlsfile)
-    out = OutSupport()
     xmlfiles = list()
     data = list()
     # It's a wildcard, used for XML instance files
@@ -87,7 +87,8 @@ def main():
             data.append(odk.createEntry(entry))
 
     # Write the data
-    out.WriteData(toplevel.stem, data)
+    osm = OsmFile(toplevel.stem)
+    osm.writeOSM(data)
 
 
 if __name__ == "__main__":

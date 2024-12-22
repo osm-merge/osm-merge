@@ -25,11 +25,13 @@ from pathlib import Path
 import flatdict
 import xmltodict
 
-from osm_merge.convert import Convert
+from osm_merge.fieldwork.convert import Convert
 
 # Instantiate logger
 log = logging.getLogger(__name__)
 
+import osm_merge as om
+rootdir = om.__path__[0]
 
 class ODKParsers(Convert):
     """A class to parse the CSV files from ODK Central."""
@@ -44,7 +46,6 @@ class ODKParsers(Convert):
         self.osm = None
         self.json = None
         self.features = list()
-        xlsforms_path.replace("xlsforms", "")
         if yaml:
             pass
         else:
@@ -55,12 +56,38 @@ class ODKParsers(Convert):
         self.entries = dict()
         self.types = dict()
 
+    def basename(
+            self,
+            line: str,
+    ) -> str:
+        """
+        Extract the basename of a path after the last -.
+
+        Args:
+            line (str): The path from the json file entry
+
+        Returns:
+            (str): The last node of the path
+        """
+        if line.find("-") > 0:
+            tmp = line.split("-")
+            if len(tmp) > 0:
+                return tmp[len(tmp) - 1]
+        elif line.find(":") > 0:
+            tmp = line.split(":")
+            if len(tmp) > 0:
+                return tmp[len(tmp) - 1]
+        else:
+            # return tmp[len(tmp) - 1]
+            return line
+
     def CSVparser(
         self,
         filespec: str,
         data: str = None,
     ) -> list:
-        """Parse the CSV file from ODK Central and convert it to a data structure.
+        """
+        Parse the CSV file from ODK Central and convert it to a data structure.
 
         Args:
             filespec (str): The file to parse.
@@ -83,7 +110,7 @@ class ODKParsers(Convert):
                     continue
                 if len(value) == 0:
                     continue
-                base = basename(keyword).lower()
+                base = self.basename(keyword).lower()
                 # There's many extraneous fields in the input file which we don't need.
                 if base is None or base in self.ignore or value is None:
                     continue
@@ -262,8 +289,7 @@ class ODKParsers(Convert):
                 continue
             # Get the last element deliminated by a dash
             # for CSV & JSON, or a colon for ODK XML.
-            base = basename(key)
-            log.debug(f"FLAT: {base} = {value}")
+            base = self.basename(key)
             if base in self.ignore:
                 continue
             if re.search(pat, value):

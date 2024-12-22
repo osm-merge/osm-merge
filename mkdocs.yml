@@ -77,11 +77,14 @@ nav:
       - Highways: highways.md
       - Calculations: calculations.md
       - Validating: validating.md
+      - Boundaries: boundaries.md
   - Utilities:
-      - OSM Merge: osm-merge.md
       - Utilities: utilities.md
+      - OSM Merge: osm-merge.md
       - TM Splitter: tm-splitter.md
-      - osm2favorites: osm2favorites.md
+      - Basemapper: basemapper.md
+      - Odk2osm: odk2osm.md
+      - Osm2favorites: osm2favorites.md
   - Data Conversion:
       - Data Formats: formats.md
       - MVUM: mvum.md
@@ -90,8 +93,10 @@ nav:
   - API:
       - basemapper: api/basemapper.md
       - convert: api/convert.md
+      - conflator: api/conflator.md
       - sqlite: api/sqlite.md
       - osmfile: api/osmfile.md
       - yamlfile: api/yamlfile.md
       - filter_data: api/filter_data.md
       - odk2osm: api/odk2osm.md
+      - parsers: api/parsers.md

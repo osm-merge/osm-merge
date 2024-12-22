@@ -208,6 +208,7 @@ class OsmFile(object):
 
     def writeOSM(self,
                  data: list,
+                 filespec: str,
                  ):
         """
         Write the data to an OSM XML file.
@@ -219,6 +220,8 @@ class OsmFile(object):
         id = -1
         out = str()
         newmvum = list()
+        self.file = open(filespec, "w")
+        self.header()
         for entry in data:
             version = 1
             tags = entry["properties"]
@@ -254,8 +257,7 @@ class OsmFile(object):
                 # referenced nodes should have no tags
                 del item["tags"]
                 # FIXME: determine if we need to write nodes
-                # out = osm.createNode(item, False)
-                continue
+                out = osm.createNode(item, False)
             else:
                 # OSM ways don't have a geometry, just references to node IDs.
                 # The OSM XML file won't have any nodes, so at first won't
@@ -275,7 +277,8 @@ class OsmFile(object):
                     del tags["refs"]
                     out = osm.createWay(item, True)
             if len(out) > 0:
-                osm.write(out)
+                self.file.write(out + "\n")
+        self.footer()
 
     def createWay(
         self,
@@ -531,7 +534,8 @@ if __name__ == "__main__":
     # Command Line options
     parser = argparse.ArgumentParser(description="This program conflates ODK data with existing features from OSM.")
     parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
-    parser.add_argument("-o", "--osmfile", required=True, help="OSM XML file created by Osm-Fieldwork")
+    parser.add_argument("-i", "--infile", required=True, help="OSM XML input file")
+    parser.add_argument("-o", "--outfile", default="out.osm", help="OSM XML output file")
     args = parser.parse_args()
 
     # This program needs options to actually do anything
@@ -549,5 +553,6 @@ if __name__ == "__main__":
         )
 
     osm = OsmFile()
-    osm.loadFile(args.osmfile)
-    osm.dump()
+    data = osm.loadFile(args.infile)
+    # osm.dump()
+    osm.writeOSM(data, args.outfile)

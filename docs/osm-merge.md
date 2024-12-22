@@ -33,7 +33,7 @@ These are the nost commonly used options.
 
 These options are used to dynamically extract a project boundary from
 a Tasking Manager database. A more common usage is to use the
-[splitter.py](splitter.md) program to download the project boundary
+[splitter.py](tm-splitter.md) program to download the project boundary
 from the Tasking Manager itself.
 
     --splittasks     When using the Tasking Manager database, split into tasks

@@ -111,7 +111,7 @@ You need boundaries with a good geometry. These can be extracted from
 OpenStreetMap, they're usually relations. The official boundaries are
 also available from the same site as the datasets as a Multi Polygon.
 
-I use the [TM Splitter](splitter.md) utility included in this project
+I use the [TM Splitter](tm-splitter.md) utility included in this project
 to split the Multi Polygon into separate files, one for each forest or
 park. Each of these files are also a Multi Polygon, often a national
 forest has several areas that aren't connected.

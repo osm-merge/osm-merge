@@ -21,7 +21,7 @@ import logging
 import os
 import re
 from pathlib import Path
-
+from geojson import Point, Feature
 import flatdict
 import xmltodict
 
@@ -267,7 +267,7 @@ class ODKParsers(Convert):
         Returns:
             (list): All the entries in the OSM XML Instance file
         """
-        row = dict()
+        row = list()
         if filespec:
             logging.info("Processing instance file: %s" % filespec)
             file = open(filespec, "rb")
@@ -278,9 +278,10 @@ class ODKParsers(Convert):
         doc = xmltodict.parse(xml)
 
         json.dumps(doc)
-        tags = dict()
+        props = dict()
         data = doc["data"]
         flattened = flatdict.FlatDict(data)
+        geom = None
         # total = list()
         # log.debug(f"FLAT: {flattened}")
         pat = re.compile("[0-9.]* [0-9.-]* [0-9.]* [0-9.]*")
@@ -294,11 +295,13 @@ class ODKParsers(Convert):
                 continue
             if re.search(pat, value):
                 gps = value.split(" ")
-                row["lat"] = gps[0]
-                row["lon"] = gps[1]
+                geom = Point((float(gps[1]), float(gps[0])))
                 continue
 
-            if base in self.types:
+            if len(self.types) == 0:
+                props[key] = value
+
+            elif base in self.types:
                 if self.types[base] == "select_multiple":
                     # log.debug(f"Found key '{self.types[base]}'")
                     vals = self.convertMultiple(value)
@@ -309,14 +312,13 @@ class ODKParsers(Convert):
                     item = self.convertEntry(base, value)
                     if item is None or len(item) == 0:
                         continue
-                    if len(tags) == 0:
+                    if len(props) == 0:
                         tags = item[0]
                     else:
                         if type(item) == list:
                             # log.debug(f"list Item {item}")
-                            tags.update(item[0])
+                            props.update(item[0])
                         elif type(item) == dict:
                             # log.debug(f"dict Item {item}")
-                            tags.update(item)
-        row.update(tags)
-        return [row]
+                            props.update(item)
+        return Feature(geometry=geom, properties=props)

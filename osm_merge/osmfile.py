@@ -257,7 +257,7 @@ class OsmFile(object):
                 # referenced nodes should have no tags
                 del item["tags"]
                 # FIXME: determine if we need to write nodes
-                out = osm.createNode(item, False)
+                out = self.createNode(item, False)
             else:
                 # OSM ways don't have a geometry, just references to node IDs.
                 # The OSM XML file won't have any nodes, so at first won't
@@ -275,7 +275,7 @@ class OsmFile(object):
                     else:
                         item["refs"] = tags["refs"]
                     del tags["refs"]
-                    out = osm.createWay(item, True)
+                    out = self.createWay(item, True)
             if len(out) > 0:
                 self.file.write(out + "\n")
         self.footer()

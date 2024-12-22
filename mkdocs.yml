@@ -1,29 +1,27 @@
 site_name: osm-merge
 site_description: Merge features and tags into existing OSM data.
 # strict: true
-site_url: "https://www.hotosm.org"
+site_url: "https://osmmerge.org"
 
-repo_name: "hotosm/osm-merge"
-repo_url: "https://github.com/hotosm/osm-merge/"
+repo_name: "osm-merge/osm-merge"
+repo_url: "https://github.com/osm-merge/osm-merge"
 edit_uri: "edit/main/docs/"
 
 extra:
   social:
     - icon: "fontawesome/brands/github"
-      link: "https://github.com/hotosm/"
     - icon: "fontawesome/brands/twitter"
-      link: "https://twitter.com/hotosm"
     - icon: "fontawesome/solid/globe"
-      link: "https://www.hotosm.org"
-  copyright: Copyright &copy; 2010 HOTOSM
+      link: "https://openstreetmap.us/"
+  copyright: Copyright &copy; 2024 OSM-US
   generator: false
 
 theme:
   name: material
   palette:
     primary: custom
-  favicon: images/favicon.png
-  logo: images/hot_logo.png
+  favicon: assets/favicon.png
+  logo: assets/osmus-logo.svg
   # custom_dir: docs/overrides
 
 extra_css:

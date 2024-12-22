@@ -368,7 +368,7 @@ class Convert(YamlFile):
             entry (dict): The feature data
 
         Returns:
-            (dict): The OSM data structure for this entry from the json file
+            (dict): The data structure for this entry from the json file
         """
         # print(line)
         feature = dict()

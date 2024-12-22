@@ -21,7 +21,9 @@ import os
 import sys
 from datetime import datetime
 from sys import argv
-
+import html
+from geojson import Point, Feature, FeatureCollection, dump, Polygon, load, LineString
+import geojson
 import xmltodict
 
 # Instantiate logger
@@ -74,19 +76,6 @@ class OsmFile(object):
         self.start = -1
         # path = xlsforms_path.replace("xlsforms", "")
         self.data = list()
-
-    def escape(value: str) -> str:
-        """Escape characters like embedded quotes in text fields.
-
-        Args:
-            value (str):The string to modify
-
-        Returns:
-            (str): The escaped string
-        """
-        # tmp = value.replace(" ", "_")
-        tmp = value.replace("&", " and ")
-        return tmp.replace("'", "&apos;")
 
     def __del__(self):
         """Close the OSM XML file automatically."""
@@ -175,7 +164,7 @@ class OsmFile(object):
             # coordinates, but we don't need them in GeoJson format.
             nodes[properties["id"]] = geom
             if len(properties) > 2:
-                alldata.append(Feature(geometry=geom, properties=properties))
+                self.data.append(Feature(geometry=geom, properties=properties))
 
         for way in data["way"]:
             attrs = dict()
@@ -213,9 +202,9 @@ class OsmFile(object):
             if geom is None:
                 breakpoint()
             # log.debug(f"WAY: {properties}")
-            alldata.append(Feature(geometry=geom, properties=properties))
+            self.data.append(Feature(geometry=geom, properties=properties))
 
-        return alldata
+        return self.data
 
     def writeOSM(self,
                  data: list,
@@ -375,8 +364,8 @@ class OsmFile(object):
                 if key == "track":
                     continue
                 if key not in attrs:
-                    newkey = escape(key)
-                    newval = escape(str(value))
+                    newkey = html.escape(key)
+                    newval = html.escape(str(value))
                     osm += f"\n    <tag k='{newkey}' v='{newval}'/>"
             if modified:
                 osm += '\n    <tag k="note" v="Do not upload this without validation!"/>'
@@ -464,8 +453,8 @@ class OsmFile(object):
                 if not value:
                     continue
                 if key not in attrs:
-                    newkey = escape(key)
-                    newval = escape(str(value))
+                    newkey = html.escape(key)
+                    newval = html.escape(str(value))
                     osm += f"\n    <tag k='{newkey}' v='{newval}'/>"
             osm += "\n  </node>\n"
         else:
@@ -504,11 +493,13 @@ class OsmFile(object):
 
     def dump(self):
         """Dump internal data structures, for debugging purposes only."""
-        for _id, item in self.data.items():
-            for k, v in item["attrs"].items():
-                print(f"{k} = {v}")
-            for k, v in item["tags"].items():
-                print(f"\t{k} = {v}")
+        for entry in self.data:
+            if entry["geometry"]["type"] == 'Point':
+                print("Node")
+            else:
+                print("Way")
+            for key, value in entry["properties"].items():
+                print(f"\t{key} = {value}")
 
     def getFeature(
         self,

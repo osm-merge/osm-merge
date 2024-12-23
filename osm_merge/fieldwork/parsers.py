@@ -204,7 +204,7 @@ class ODKParsers(Convert):
             else:
                 pass  # A JOSM file from ODK Central
 
-            # flatten all the groups into a sodk2geojson.pyingle data structure
+            # flatten all the groups into a single data structure
             flattened = flatdict.FlatDict(row)
             # log.debug(f"FLAT: {flattened}\n")
             for k, v in flattened.items():
@@ -217,9 +217,7 @@ class ODKParsers(Convert):
                 # log.debug(f"Processing tag {key} = {v}")
                 if key == "coordinates":
                     if isinstance(v, list):
-                        tags["lat"] = v[1]
-                        tags["lon"] = v[0]
-                        # poi = Point(float(lon), float(lat))
+                        geom = Point((float(v[0]), float(v[1])))
                         # tags["geometry"] = poi
                     continue
 
@@ -246,8 +244,7 @@ class ODKParsers(Convert):
                     tags.update(items)
             # log.debug(f"TAGS: {tags}")
             if len(tags) > 0:
-                total.append(tags)
-
+                total.append(Feature(geometry=geom, properties=tags))
         # log.debug(f"Finished parsing JSON file {filespec}")
         return total
 
@@ -306,14 +303,14 @@ class ODKParsers(Convert):
                     # log.debug(f"Found key '{self.types[base]}'")
                     vals = self.convertMultiple(value)
                     if len(vals) > 0:
-                        tags.update(vals)
+                        props.update(vals)
                     continue
                 else:
                     item = self.convertEntry(base, value)
                     if item is None or len(item) == 0:
                         continue
                     if len(props) == 0:
-                        tags = item[0]
+                        props = item[0]
                     else:
                         if type(item) == list:
                             # log.debug(f"list Item {item}")

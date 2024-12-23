@@ -80,15 +80,16 @@ def main():
     elif toplevel.suffix == ".csv":
         log.debug(f"Parsing csv files {args.infile}")
         for entry in odk.CSVparser(args.infile):
-            data.append(odk.createEntry(entry))
+            data.append(entry)
     elif toplevel.suffix == ".json":
         log.debug(f"Parsing json files {args.infile}")
         for entry in odk.JSONparser(args.infile):
-            data.append(odk.createEntry(entry))
+            data.append(entry)
 
     # Write the data
     osm = OsmFile()
     osm.writeOSM(data, args.outfile)
+    log.info(f"Wrote {args.outfile}")
 
 if __name__ == "__main__":
     """This is just a hook so this file can be run standlone during development."""

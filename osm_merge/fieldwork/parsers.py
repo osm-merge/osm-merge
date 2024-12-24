@@ -98,22 +98,6 @@ class ODKParsers(Convert):
             (list): The list of features with tags
         """
         props = list()
-        # Ignore some keywords in the CVS file that aren't useful
-        # for OSM XML.
-        # ignore = ["deviceid",
-        #           "today",
-        #           "start",
-        #           "AttachmentsPresent",
-        #           "AttachmentsExpected",
-        #           "ReviewState",
-        #           "meta-instanceID",
-        #           "FormVersion",
-        #           "KEY",
-        #           "DeviceID",
-        #           "Edits",
-        #           "warmup-Accuracy",
-        #           "warmup-Altitude",
-        #           ]
         if not data:
             f = open(filespec, newline="")
             reader = csv.DictReader(f, delimiter=",")
@@ -124,6 +108,7 @@ class ODKParsers(Convert):
             tags = {"properties": dict()}
             lat = str()
             lon = str()
+            conv = Convert()
             # log.debug(f"ROW: {row}")
             for keyword, value in row.items():
                 if keyword is None or value is None or keyword in self.ignore:
@@ -168,8 +153,14 @@ class ODKParsers(Convert):
                             tags[base] = value
                     else:
                         # if keyword != "SubmissionDate":  # DEBUG!
-                        tags[base] = value
-                        # tags["properties"].update({base: html.unescape(value)})
+                        new = conv.convertEntry(base, value)
+                        if type(new) == dict:
+                            tags.update(new)
+                        elif type(new) == list:
+                            for item in new:
+                                [[k, v]] = item.items()
+                                tags[k] = v
+                    # tags["properties"].update({base: html.unescape(value)})
                     # items = self.convertEntry(base, value)
                     # # log.info(f"ROW: {base} {value}")
                     # if len(items) > 0:

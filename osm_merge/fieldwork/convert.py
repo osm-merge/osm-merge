@@ -30,7 +30,8 @@ rootdir = om.__path__[0]
 log = logging.getLogger(__name__)
 
 def escape(value: str) -> str:
-    """Escape characters like embedded quotes in text fields.
+    """
+    Escape characters like embedded quotes in text fields.
 
     Args:
         value (str):The string to modify
@@ -44,7 +45,8 @@ def escape(value: str) -> str:
 
 
 class Convert(YamlFile):
-    """A class to apply a YAML config file and convert ODK to OSM.
+    """
+    A class to apply a YAML config file and convert ODK to OSM.
 
     Returns:
         (Convert): An instance of this object
@@ -96,7 +98,8 @@ class Convert(YamlFile):
         self,
         keyword: str,
     ) -> bool:
-        """Search the private data category for a keyword.
+        """
+        Search the private data category for a keyword.
 
         Args:
             keyword (str): The keyword to search for
@@ -110,7 +113,8 @@ class Convert(YamlFile):
         self,
         keyword: str,
     ) -> bool:
-        """Search the convert data category for a keyword.
+        """
+        Search the convert data category for a keyword.
 
         Args:
             keyword (str): The keyword to search for
@@ -124,7 +128,8 @@ class Convert(YamlFile):
         self,
         keyword: str,
     ) -> bool:
-        """Search the convert data category for a ketyword.
+        """
+        Search the convert data category for a ketyword.
 
         Args:
             keyword (str): The keyword to search for
@@ -138,7 +143,8 @@ class Convert(YamlFile):
         self,
         value: str,
     ) -> str:
-        """Get the keyword for a value from the yaml file.
+        """
+        Get the keyword for a value from the yaml file.
 
         Args:
             value (str): The value to find the keyword for
@@ -157,7 +163,8 @@ class Convert(YamlFile):
         self,
         keyword: str = None,
     ) -> str:
-        """Get the values for a primary key.
+        """
+        Get the values for a primary key.
 
         Args:
             keyword (str): The keyword to get the value of
@@ -176,7 +183,8 @@ class Convert(YamlFile):
         tag: str,
         value: str,
     ) -> list:
-        """Convert a tag and value from the ODK represention to an OSM one.
+        """
+        Convert a tag and value from the ODK represention to an OSM one.
 
         Args:
             tag (str): The tag from the ODK XML file
@@ -228,7 +236,8 @@ class Convert(YamlFile):
         tag: str,
         value: str,
     ) -> list:
-        """Convert a single tag value.
+        """
+        Convert a single tag value.
 
         Args:
             tag (str): The tag from the ODK XML file
@@ -271,7 +280,8 @@ class Convert(YamlFile):
         self,
         tag: str,
     ) -> str:
-        """Convert a single tag.
+        """
+        Convert a single tag.
 
         Args:
             tag (str): The tag from the ODK XML file
@@ -303,7 +313,8 @@ class Convert(YamlFile):
         self,
         value: str,
     ) -> list:
-        """Convert a multiple tags from a select_multiple question..
+        """
+        Convert a multiple tags from a select_multiple question..
 
         Args:
             value (str): The tags from the ODK XML file
@@ -331,7 +342,9 @@ class Convert(YamlFile):
         self,
         xlsfile: str,
     ):
-        """Parse the source XLSFile if available to look for details we need."""
+        """
+        Parse the source XLSFile if available to look for details we need.
+        """
         if xlsfile is not None and len(xlsfile) > 0:
             self.entries = pd.read_excel(xlsfile, sheet_name=[0])[0]
             # There will only be a single sheet
@@ -358,96 +371,97 @@ class Convert(YamlFile):
                 i += 1
         return True
 
-    def createEntry(
-        self,
-        entry: dict,
-    ) -> dict:
-        """Create the feature data structure.
+    # def createEntry(
+    #     self,
+    #     entry: dict,
+    # ) -> dict:
+    #     """Create the feature data structure.
 
-        Args:
-            entry (dict): The feature data
+    #     Args:
+    #         entry (dict): The feature data
 
-        Returns:
-            (dict): The data structure for this entry from the json file
-        """
-        # print(line)
-        feature = dict()
-        attrs = dict()
-        tags = dict()
-        priv = dict()
-        refs = list()
+    #     Returns:
+    #         (dict): The data structure for this entry from the json file
+    #     """
+    #     # print(line)
+    #     feature = dict()
+    #     attrs = dict()
+    #     tags = dict()
+    #     priv = dict()
+    #     refs = list()
 
-        # log.debug("Creating entry")
-        # First convert the tag to the approved OSM equivalent
-        if "lat" in entry and "lon" in entry:
-            attrs["lat"] = entry["lat"]
-            attrs["lon"] = entry["lon"]
-        for key, value in entry.items():
-            attributes = (
-                "id",
-                "timestamp",
-                "lat",
-                "lon",
-                "uid",
-                "user",
-                "version",
-                "action",
-            )
+    #     log.debug(f"Creating entry for {entry}")
+    #     # First convert the tag to the approved OSM equivalent
+    #     if "lat" in entry and "lon" in entry:
+    #         attrs["lat"] = entry["lat"]
+    #         attrs["lon"] = entry["lon"]
+    #     for key, value in entry.items():
+    #         attributes = (
+    #             "id",
+    #             "timestamp",
+    #             "lat",
+    #             "lon",
+    #             "uid",
+    #             "user",
+    #             "version",
+    #             "action",
+    #         )
 
-            if key in self.ignore:
-                continue
-            # When using existing OSM data, there's a special geometry field.
-            # Otherwise use the GPS coordinates where you are.
-            if key == "geometry" and len(value) > 0:
-                geometry = value.split(" ")
-                if len(geometry) == 4:
-                    attrs["lat"] = geometry[0]
-                    attrs["lon"] = geometry[1]
-                continue
+    #         if key in self.ignore:
+    #             continue
+    #         # When using existing OSM data, there's a special geometry field.
+    #         # Otherwise use the GPS coordinates where you are.
+    #         if key == "geometry" and len(value) > 0:
+    #             geometry = value["coordinates"]
+    #             # if len(geometry) == 4:
+    #             attrs["lat"] = geometry[0]
+    #             attrs["lon"] = geometry[1]
+    #             continue
+    #         if key == "properties" and len(value) > 0:
+    #             tags = value
+    #         # if 'lat' in attrs and len(attrs["lat"]) == 0:
+    #         #    continue
 
-            # if 'lat' in attrs and len(attrs["lat"]) == 0:
-            #    continue
+    #         if key is not None and len(key) > 0 and key in attributes:
+    #             attrs[key] = value
+    #             # log.debug("Adding attribute %s with value %s" % (key, value))
+    #             continue
+    #         if value is not None and value != "no" and value != "unknown":
+    #             if key == "username":
+    #                 tags["user"] = value
+    #                 continue
+    #             items = self.convertEntry(key, value)
+    #             if key in self.types:
+    #                 if self.types[key] == "select_multiple":
+    #                     vals = self.convertMultiple(value)
+    #                     if len(vals) > 0:
+    #                         for tag in vals:
+    #                             tags.update(tag)
+    #                     continue
+    #             if key == "track" or key == "geoline":
+    #                 # refs.append(tags)
+    #                 # log.debug("Adding reference %s" % tags)
+    #                 refs = value.split(";")
+    #             elif type(value) != str:
+    #                 if self.privateData(key):
+    #                     priv[key] = str(value)
+    #                 else:
+    #                     tags[key] = str(value)
+    #             elif len(value) > 0:
+    #                 if self.privateData(key):
+    #                     priv[key] = value
+    #                 else:
+    #                     tags[key] = value
+    #         feature["attrs"] = attrs
+    #         if len(tags) > 0:
+    #             # logging.debug(f"TAGS: {tags}")
+    #             feature["tags"] = tags
+    #         if len(refs) > 1:
+    #             feature["refs"] = refs
+    #         if len(priv) > 0:
+    #             feature["private"] = priv
 
-            if key is not None and len(key) > 0 and key in attributes:
-                attrs[key] = value
-                # log.debug("Adding attribute %s with value %s" % (key, value))
-                continue
-            if value is not None and value != "no" and value != "unknown":
-                if key == "username":
-                    tags["user"] = value
-                    continue
-                items = self.convertEntry(key, value)
-                if key in self.types:
-                    if self.types[key] == "select_multiple":
-                        vals = self.convertMultiple(value)
-                        if len(vals) > 0:
-                            for tag in vals:
-                                tags.update(tag)
-                        continue
-                if key == "track" or key == "geoline":
-                    # refs.append(tags)
-                    # log.debug("Adding reference %s" % tags)
-                    refs = value.split(";")
-                elif type(value) != str:
-                    if self.privateData(key):
-                        priv[key] = str(value)
-                    else:
-                        tags[key] = str(value)
-                elif len(value) > 0:
-                    if self.privateData(key):
-                        priv[key] = value
-                    else:
-                        tags[key] = value
-            feature["attrs"] = attrs
-            if len(tags) > 0:
-                # logging.debug(f"TAGS: {tags}")
-                feature["tags"] = tags
-            if len(refs) > 1:
-                feature["refs"] = refs
-            if len(priv) > 0:
-                feature["private"] = priv
-
-        return feature
+    #     return feature
 
     def dump(self):
         """Dump internal data structures, for debugging purposes only."""

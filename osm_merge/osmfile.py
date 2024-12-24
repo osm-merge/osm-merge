@@ -255,7 +255,7 @@ class OsmFile(object):
                     item["attrs"]["timestamp"] = item["tags"]["timestamp"]
                     del item["tags"]["timestamp"]
                 # referenced nodes should have no tags
-                del item["tags"]
+                # del item["tags"]
                 # FIXME: determine if we need to write nodes
                 out = self.createNode(item, False)
             else:

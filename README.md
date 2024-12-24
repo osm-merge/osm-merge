@@ -40,7 +40,7 @@ be used to convert the ODK data files into
 XML](https://wiki.openstreetmap.org/wiki/OSM_XML). This
 project then supports conflating that field collected data with
 current OpenStreetMap. Otherwise this is a time-consuming process to
-do manually. This can be used with the [Field Mapping Tasking Manager (FMTM)](fmtm.hotosm.org) to process the collected data for validation
+do manually. This can be used with the [Field Mapping Tasking Manager (FMTM)](https://fmtm.hotosm.org) to process the collected data for validation
 and uploading to OpenStreetMap.
 
 ![Women field mapping](https://github.com/osm-merge/osm-merge/blob/main/docs/assets/small-zanzibar.jpg)

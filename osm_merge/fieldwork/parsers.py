@@ -150,7 +150,13 @@ class ODKParsers(Convert):
                                 tags.update(vals)
                             continue
                         else:
-                            tags[base] = value
+                            new = conv.convertEntry(base, value)
+                            if type(new) == dict:
+                                tags.update(new)
+                            elif type(new) == list:
+                                for item in new:
+                                    [[k, v]] = item.items()
+                                    tags[k] = v
                     else:
                         # if keyword != "SubmissionDate":  # DEBUG!
                         new = conv.convertEntry(base, value)

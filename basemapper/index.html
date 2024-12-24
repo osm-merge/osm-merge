@@ -10,26 +10,28 @@
       
       
       
-        <link rel="canonical" href="https://osmmerge.org/">
+        <link rel="canonical" href="https://osmmerge.org/basemapper/">
       
       
+        <link rel="prev" href="../tm-splitter/">
       
-        <link rel="next" href="about/">
+      
+        <link rel="next" href="../odk2osm/">
       
       
-      <link rel="icon" href="assets/favicon.png">
+      <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>osm-merge</title>
+        <title>Basemapper - osm-merge</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,11 +50,11 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="css/extra.css">
+      <link rel="stylesheet" href="../css/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#osm-merge-a-community-project-of-openstreetmap-us" class="md-skip">
+        <a href="#basemapperpy" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +94,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
+    <a href=".." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
       
-  <img src="assets/osmus-logo.svg" alt="logo">
+  <img src="../assets/osmus-logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Basemapper
             
           </span>
         </div>
@@ -198,9 +200,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
+    <a href=".." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
       
-  <img src="assets/osmus-logo.svg" alt="logo">
+  <img src="../assets/osmus-logo.svg" alt="logo">
 
     </a>
     osm-merge
@@ -224,30 +226,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Home
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -256,121 +238,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="Page contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Page contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#background" class="md-nav__link">
-    <span class="md-ellipsis">
-      Background
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#external-datasets" class="md-nav__link">
-    <span class="md-ellipsis">
-      External Datasets
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="External Datasets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#us-forest-service-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      US Forest Service data
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#us-park-service-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      US Park Service data
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-openstreetmap" class="md-nav__link">
-    <span class="md-ellipsis">
-      For OpenStreetMap
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#programs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Programs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Programs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#utilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Utilities
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#conflator-program" class="md-nav__link">
-    <span class="md-ellipsis">
-      Conflator Program
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -417,7 +284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="about/" class="md-nav__link">
+      <a href="../about/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -438,7 +305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="LICENSE/" class="md-nav__link">
+      <a href="../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -459,7 +326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="CHANGELOG/" class="md-nav__link">
+      <a href="../CHANGELOG/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -529,7 +396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="dataflow/" class="md-nav__link">
+      <a href="../dataflow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -584,7 +451,7 @@
   
   
     <li class="md-nav__item">
-      <a href="conflation/" class="md-nav__link">
+      <a href="../conflation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -605,7 +472,7 @@
   
   
     <li class="md-nav__item">
-      <a href="odkconflation/" class="md-nav__link">
+      <a href="../odkconflation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -626,7 +493,7 @@
   
   
     <li class="md-nav__item">
-      <a href="highways/" class="md-nav__link">
+      <a href="../highways/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -647,7 +514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="calculations/" class="md-nav__link">
+      <a href="../calculations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -668,7 +535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="validating/" class="md-nav__link">
+      <a href="../validating/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -689,7 +556,7 @@
   
   
     <li class="md-nav__item">
-      <a href="boundaries/" class="md-nav__link">
+      <a href="../boundaries/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -714,17 +581,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -738,7 +607,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Utilities
@@ -752,7 +621,7 @@
   
   
     <li class="md-nav__item">
-      <a href="utilities/" class="md-nav__link">
+      <a href="../utilities/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -773,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osm-merge/" class="md-nav__link">
+      <a href="../osm-merge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -794,7 +663,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tm-splitter/" class="md-nav__link">
+      <a href="../tm-splitter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -812,10 +681,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="basemapper/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Basemapper
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -824,6 +713,61 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#database-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Database Schemas
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database Schemas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mbtiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      mbtiles
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlitedb" class="md-nav__link">
+    <span class="md-ellipsis">
+      sqlitedb
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -836,7 +780,7 @@
   
   
     <li class="md-nav__item">
-      <a href="odk2osm/" class="md-nav__link">
+      <a href="../odk2osm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -857,7 +801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osm2favorites/" class="md-nav__link">
+      <a href="../osm2favorites/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -920,7 +864,7 @@
   
   
     <li class="md-nav__item">
-      <a href="formats/" class="md-nav__link">
+      <a href="../formats/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -941,7 +885,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mvum/" class="md-nav__link">
+      <a href="../mvum/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -962,7 +906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="trails/" class="md-nav__link">
+      <a href="../trails/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -983,7 +927,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osmhighways/" class="md-nav__link">
+      <a href="../osmhighways/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1046,7 +990,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/basemapper/" class="md-nav__link">
+      <a href="../api/basemapper/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1067,7 +1011,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/convert/" class="md-nav__link">
+      <a href="../api/convert/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1088,7 +1032,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/conflator/" class="md-nav__link">
+      <a href="../api/conflator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1109,7 +1053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/sqlite/" class="md-nav__link">
+      <a href="../api/sqlite/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1130,7 +1074,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/osmfile/" class="md-nav__link">
+      <a href="../api/osmfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1151,7 +1095,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/yamlfile/" class="md-nav__link">
+      <a href="../api/yamlfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1172,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/filter_data/" class="md-nav__link">
+      <a href="../api/filter_data/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1193,7 +1137,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/odk2osm/" class="md-nav__link">
+      <a href="../api/odk2osm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1214,7 +1158,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/parsers/" class="md-nav__link">
+      <a href="../api/parsers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1264,46 +1208,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#background" class="md-nav__link">
+  <a href="#database-schemas" class="md-nav__link">
     <span class="md-ellipsis">
-      Background
+      Database Schemas
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#external-datasets" class="md-nav__link">
-    <span class="md-ellipsis">
-      External Datasets
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="External Datasets">
+    <nav class="md-nav" aria-label="Database Schemas">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#us-forest-service-data" class="md-nav__link">
+  <a href="#mbtiles" class="md-nav__link">
     <span class="md-ellipsis">
-      US Forest Service data
+      mbtiles
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#us-park-service-data" class="md-nav__link">
+  <a href="#sqlitedb" class="md-nav__link">
     <span class="md-ellipsis">
-      US Park Service data
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-openstreetmap" class="md-nav__link">
-    <span class="md-ellipsis">
-      For OpenStreetMap
+      sqlitedb
     </span>
   </a>
   
@@ -1311,48 +1237,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#programs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Programs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Programs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#utilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Utilities
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#conflator-program" class="md-nav__link">
-    <span class="md-ellipsis">
-      Conflator Program
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
-    </span>
-  </a>
   
 </li>
       
@@ -1374,135 +1258,118 @@
   
 
 
-<h1 id="osm-merge-a-community-project-of-openstreetmap-us">OSM Merge, a Community Project of OpenStreetMap US<a class="headerlink" href="#osm-merge-a-community-project-of-openstreetmap-us" title="Permanent link">&para;</a></h1>
-<p>📖 <strong>Documentation</strong>: <a href="https://osm-merge.github.io/osm-merge/" target="_blank">https://osm-merge.github.io/osm-merge/</a></p>
-<p>🖥️ <strong>Source Code</strong>: <a href="https://github.com/osm-merge/osm-merge" target="_blank">https://github.com/osm-merge/osm-merge</a></p>
-<hr />
-<h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h2>
-<p>This is a project for conflating external map datasets with
-OpenStreetMap with the ultimate goal of importing it into
-<a href="https://www.openstreetmap.org">OpenStreetMap</a>. It
-is oriented towards processing non OSM external datasets and supports
-conflation of field data collection using
-<a href="https://opendatakit.org/software/">OpenDataKit</a>, as well as other
-external datasets.</p>
-<p>The goal of this project is focused on improving remote highway and
-trail metadata to assist with emergency and recreational access in
-remote areas. This project uses several data sources to improve the
-existing highway features in OpenStreetMap. The current data in
-OpenStreetMap was often imported complete with bugs in the 
-original dataset, or the only details are <em>highway=track</em>. All of
-these have a US forest service reference number and name. Adding those
-makes it much easier to identify where you are and to communicate a
-location over a radio or phone.</p>
-<p>There is also access information in the datasets that is useful. This
-includes access for vehicle types, horses, public/private, etc... that
-is useful for OpenStreetMap.</p>
-<p><img alt="Way up Rollins Pass" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/small-rollinspass.png" /></p>
-<p>The other goal of this project is to support field data collection
-using OpenDataKit. The
-<a href="https://hotosm.github.io/osm-fieldwork/">osm-fieldwork</a> project can
-be used to convert the ODK data files into
-<a href="https://geojson.org/">GeoJson</a> and <a href="https://wiki.openstreetmap.org/wiki/OSM_XML">OSM
-XML</a>. This
-project then supports conflating that field collected data with
-current OpenStreetMap. Otherwise this is a time-consuming process to
-do manually. This can be used with the <a href="fmtm.hotosm.org">Field Mapping Tasking Manager (FMTM)</a> to process the collected data for validation
-and uploading to OpenStreetMap.</p>
-<p><img alt="Women field mapping" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/small-zanzibar.jpg" /></p>
-<h2 id="external-datasets">External Datasets<a class="headerlink" href="#external-datasets" title="Permanent link">&para;</a></h2>
-<p>I'm working on a website for all the converted and processed data
-files that covers every national park or forest for the entire US.
-From the US forest service there are several datasets with a good
-license for OpenStreetMap. Warning, these are large files, so hard to
-work with at first. This project uses a huge amount of data (and disk
-space) if you start from the original nation wide datasets, which are
-too large to edit. There is a contrib script in the git sources I use
-to start breaking down the huge files into managable pieces.</p>
-<p>The MVUM data hasn't changed in years, so splitting everything up is a
-one-time task. For OpenStreetMap extracts all the data extracts of
-highways can be regenerated in a few hours, so it's possible to stay
-closely in sync with upstream. The original files are available from
-these sources.</p>
-<h3 id="us-forest-service-data">US Forest Service data<a class="headerlink" href="#us-forest-service-data" title="Permanent link">&para;</a></h3>
+<h1 id="basemapperpy">Basemapper.py<a class="headerlink" href="#basemapperpy" title="Permanent link">&para;</a></h1>
+<p>Basemapper is a program that creates basemaps for mobile apps in the
+mbtiles and sqlitedb formats. These formats are commonly used by
+mobile mapping applications like <a href="https://osmand.net/">Osmand</a> and
+<a href="https://docs.getodk.org/collect-intro/">ODK Collect</a>. There are two
+primary formats:</p>
 <ul>
-<li>Motor Vehicle Use Maps <a href="https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.Road_MVUM.zip">(MVUM)</a></li>
-<li><a href="https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.TrailNFS_Publish.zip">USFS Trail maps</a></li>
+<li>mbtiles, supported by many apps.</li>
+<li>sqlitedb, supported only by Osmand</li>
 </ul>
-<h3 id="us-park-service-data">US Park Service data<a class="headerlink" href="#us-park-service-data" title="Permanent link">&para;</a></h3>
+<p>Both of these use formats use underlying
+<a href="https://www.sqlite.org/index.html">sqlite3</a>, with similar database
+schemas. The schema are a simple XYZ that stores a png or jpeg
+image. When the entire planet is chopped into squares, there is a
+relation between which map tile contains the GPS coordinates you
+want. Small zoom levels cover a large area, higher zoom levels a
+smaller area.</p>
+<p>Basemapper does not store anything in memory, all processing
+is done as a stream so large areas can be downloaded. Time to go buy a
+really large hard drive. You can also use this map tile cache for
+any program that supports a TMS data source like
+<a href="https://josm.openstreetmap.de/">JOSM</a>. Luckily once downloaded,
+you don't have to update the map tile cache very often, but it's also
+easy to do so when you need to. When I expect to be working offline, I
+commonly download a larger area, and then in the field produce the
+smaller files.</p>
+<p>Basemapper. downloads map tiles to a cache and uses them to generate the
+output files. It does not perform data conversion. The resulting
+output can be used for visualizing geographic data and analyzing
+survey responses in a spatial context. The script provides various
+command-line options for customizing the output, such as setting the
+zoom levels, boundary, tile cache, output file name, and more.</p>
+<h2 id="database-schemas">Database Schemas<a class="headerlink" href="#database-schemas" title="Permanent link">&para;</a></h2>
+<p>Mbtiles are used by multiple mobile apps, but our usage is primarly
+for ODK Collect. Imagery basemaps are very useful for two
+reasons. One, the map data may be lacking, so the imagery helps one to
+naviagte. For ODK Collect the other advantage is you can select the
+location based on where the building is, instead of were you are
+standing. Mbtiles are pretty straight forward.</p>
+<p>The sqlitedb schema used by Osmand looks the same at first, but has
+one big difference. In this schema it tops out at zoom level 16, so
+instead of incrementing, it decrements the zoom level. This obscure
+detail took me a while to figure out, it isn't documented anywhere.</p>
+<h3 id="mbtiles">mbtiles<a class="headerlink" href="#mbtiles" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>CREATE TABLE tiles (zoom_level integer, tile_column integer, tile_row integer, tile_data blob);
+CREATE INDEX tiles_idx on tiles (zoom_level, tile_column, tile_row);
+CREATE TABLE metadata (name text, value text);
+CREATE UNIQUE INDEX metadata_idx  ON metadata (name);
+</code></pre></div>
+<h3 id="sqlitedb">sqlitedb<a class="headerlink" href="#sqlitedb" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>CREATE TABLE tiles (x int, y int, z int, s int, image blob, PRIMARY KEY (x,y,z,s));
+CREATE INDEX IND on tiles (x,y,z,s);
+CREATE TABLE info (maxzoom Int, minzoom Int);
+CREATE TABLE android_metadata (en_US);
+</code></pre></div>
+<h1 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h1>
+<p>The <strong>basemapper.py</strong> script is run from the command line when
+running standalone, or the class can be imported into python
+programs. The <a href="https://github.com/hotosm/fmtm/wiki">Field Mapping Tasking
+Manager</a> uses this as part of a
+(FastAPI])<a href="https://fastapi.tiangolo.com/">https://fastapi.tiangolo.com/</a>) backend for the website.</p>
+<p>The first time you run basemapper.py, it'll start downloading map
+tiles, which may take a long time. Often the upstream source is
+slow. It is not unusual for downloading tiles, especially at higher
+zoom levels may tak an entire day. Once tiles are download, producing
+the outout tiles is quick as then it's just packaging. In areas where
+I work frequentely, I usually download a large area even if it takes a
+week or more so it's available when I need it. On my laptop I actually
+have a map tile cache for the entire state of Colorado, as well as
+many large areas of Nepal, Turkey, Kenya, Uganda, and Tanzania.</p>
+<h1 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h1>
+<p>The basic syntax is as follows:</p>
 <ul>
-<li><a href="https://public-nps.opendata.arcgis.com/search?collection=Dataset&amp;q=trail">NPS Trails</a></li>
+<li>-h, --help show this help message and exit</li>
+<li>-v, --verbose verbose output</li>
+<li>-b BOUNDARY, --boundary BOUNDARY - The boundary for the area you want, as BBOX string or geojson file.</li>
+<li>-z ZOOMS, --zooms ZOOMS - The Zoom levels</li>
+<li>-o OUTFILE, --outfile - OUTFILE Output file name</li>
+<li>-d OUTDIR, --outdir OUTDIR -Output directory name for tile cache</li>
+<li>-s {ersi,bing,topo,google,oam}, --source {ersi,bing,topo,google,oam} - Imagery source</li>
 </ul>
-<h3 id="for-openstreetmap">For OpenStreetMap<a class="headerlink" href="#for-openstreetmap" title="Permanent link">&para;</a></h3>
+<p>The suffix of the output file is either <strong>mbtiles</strong> or <strong>sqlitedb</strong>, which is
+used to select the output format. The boundary file, if specified, must be in
+<a href="https://geojson.org/">GeoJson</a> format.
+If in BBOX string format, it must be comma separated:
+"minX,minY,maxX,maxY".</p>
+<h2 id="imagery-sources">Imagery Sources<a class="headerlink" href="#imagery-sources" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="http://download.geofabrik.de/north-america.html">Geofabrik</a></li>
+<li>ESRI - Environmental Systems Research Institute</li>
+<li>Bing - Microsoft Bing imagery</li>
+<li>Topo - USGS topographical maps (US only)</li>
+<li>OAM - OpenAerialMap</li>
 </ul>
-<p>Much of the process of conflation is splitting huge datasets into
-managable sized files for data processing. I have that process <a href="https://github.com/hotosm/osm-merge/tree/main/contrib">mostly
-automated</a> so I
-can easily regenerate data extracts any time I make improvements to the
-conversion process. Currently there isn't any conflated data yet, just the
-convered data files chopped into manageable sized files. The processed
-map data is available <a href="http://5.78.72.214/osm-merge/">from
-here</a>. Please note the website is work
-in progress. Feedback on the data conversion to OpenStreetMap tagging
-is appreciated.</p>
-<p><img alt="Skipped highway segments" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/skippedsegments.png" /></p>
-<h2 id="programs">Programs<a class="headerlink" href="#programs" title="Permanent link">&para;</a></h2>
-<p>This project comprises of a main program, and multiple utilities. The
-utilities are used to prepare the datasets for conflating by fixing
-known bugs. It is very difficult to conflate datasets with wildly
-different data schemas, so making all the data use a consistent schema
-is important so tags can be compared.</p>
-<h3 id="utilities">Utilities<a class="headerlink" href="#utilities" title="Permanent link">&para;</a></h3>
-<p>The utility programs are used for all data cleaning and other tasks
-needed to conflate the data files. Known bugs in the datasets are
-fixed where possible, for example, expanding abbreviations so <em>Rd</em>
-becomes <em>Road</em>, etc... and also drops all the extraneous fields that
-aren't for OpenStreetMap. The fields we are most interested in are the
-name, the official reference number, and the access values.</p>
-<ul>
-<li>tm-splitter.py<ul>
-<li>Generate task grids for the Tasking Manager</li>
-</ul>
-</li>
-<li>mvum.py<ul>
-<li>Convert forest service MVUM datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>trails.py<ul>
-<li>Convert forest service datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>usgs.py<ul>
-<li>Convert USGS topographical datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>osmhighways.py<ul>
-<li>Data janitor for OpenStreetMap, delete <em>tiger:</em>, etc...</li>
-</ul>
-</li>
-</ul>
-<h3 id="conflator-program">Conflator Program<a class="headerlink" href="#conflator-program" title="Permanent link">&para;</a></h3>
-<p>This program doesn't require a database, unlike the other conflation
-programs in this project, although adding database support is on the
-TODO list. It is focused on conflating <a href="highways/">rural highways</a>
-and <a href="trails/">hiking trails</a>. It can also <a href="odkconflation/">conflate
-OpenDataKit</a> with OpenStreetMap.</p>
-<p>It supports conflating any two datasets in either GeoJson or OSM
-format. While this is currently under heavy development and
-debugging. I've been processing large amounts of data to track down
-all the obscure bugs in the original datasets, or the conflation
-process.</p>
-<p><img alt="MVUM Signs" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/20210913_113539.jpg" /></p>
-<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<p>Anyone motivated is welcome to contribute to both the software, or
-just using these tools and the data for your own map
-improvements. This is a huge amount of data, as the original
-source files are nationwide. I'm just focused on my part of the
-western US. Help improving OpenStreetMap accuracy in remote areas
-of your own state is a good idea, and can save lives in an
-emergency. Be a data janitor!</p>
+<p>The default output directory is <strong>/var/www/html</strong>. The actual
+subdirectory is the source name with <strong>tiles</strong> appended, so for
+example <strong>/var/www/html/oamtiles</strong>. Putting the map tiles into webroot
+lets JOSM or QGIS use them when working offline.</p>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1"><strong>Example 1:</strong><a class="headerlink" href="#example-1" title="Permanent link">&para;</a></h3>
+<p>Generate a basemap for Osmand using
+<a href="https://www.esri.com/en-us/home">ERSI</a> imagery, for an area
+specified by a geojson bounding box, and supporting zoom levels 12
+through 19.</p>
+<div class="highlight"><pre><span></span><code>[path]/basemapper.py -z 12-19 -b test.geojson -o test.sqlitedb -s esri
+</code></pre></div>
+<h3 id="example-2"><strong>Example 2:</strong><a class="headerlink" href="#example-2" title="Permanent link">&para;</a></h3>
+<p>As above, but mbtiles format, and Bing imagery source. The <code>-v</code> option
+enables verbose output, which will show more details about the
+download and processing progress. Also only download a single zoon
+level.</p>
+<div class="highlight"><pre><span></span><code>[path]/basemapper.py -v -z 16 -b test.geojson -o test.mbtiles -s bing
+</code></pre></div>
 
 
 
@@ -1523,7 +1390,7 @@ emergency. Be a data janitor!</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 28, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 21, 2024</span>
   </span>
 
     
@@ -1596,10 +1463,10 @@ emergency. Be a data janitor!</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>

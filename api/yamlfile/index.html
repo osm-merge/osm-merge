@@ -10,26 +10,28 @@
       
       
       
-        <link rel="canonical" href="https://osmmerge.org/">
+        <link rel="canonical" href="https://osmmerge.org/api/yamlfile/">
       
       
+        <link rel="prev" href="../osmfile/">
       
-        <link rel="next" href="about/">
+      
+        <link rel="next" href="../filter_data/">
       
       
-      <link rel="icon" href="assets/favicon.png">
+      <link rel="icon" href="../../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>osm-merge</title>
+        <title>yamlfile - osm-merge</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,11 +50,11 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="css/extra.css">
+      <link rel="stylesheet" href="../../css/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#osm-merge-a-community-project-of-openstreetmap-us" class="md-skip">
+        <a href="#yamlfile" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +94,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
+    <a href="../.." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
       
-  <img src="assets/osmus-logo.svg" alt="logo">
+  <img src="../../assets/osmus-logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              yamlfile
             
           </span>
         </div>
@@ -198,9 +200,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
+    <a href="../.." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
       
-  <img src="assets/osmus-logo.svg" alt="logo">
+  <img src="../../assets/osmus-logo.svg" alt="logo">
 
     </a>
     osm-merge
@@ -224,30 +226,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Home
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -256,121 +238,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="Page contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Page contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#background" class="md-nav__link">
-    <span class="md-ellipsis">
-      Background
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#external-datasets" class="md-nav__link">
-    <span class="md-ellipsis">
-      External Datasets
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="External Datasets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#us-forest-service-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      US Forest Service data
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#us-park-service-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      US Park Service data
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-openstreetmap" class="md-nav__link">
-    <span class="md-ellipsis">
-      For OpenStreetMap
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#programs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Programs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Programs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#utilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Utilities
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#conflator-program" class="md-nav__link">
-    <span class="md-ellipsis">
-      Conflator Program
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -417,7 +284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="about/" class="md-nav__link">
+      <a href="../../about/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -438,7 +305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="LICENSE/" class="md-nav__link">
+      <a href="../../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -459,7 +326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="CHANGELOG/" class="md-nav__link">
+      <a href="../../CHANGELOG/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -529,7 +396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="dataflow/" class="md-nav__link">
+      <a href="../../dataflow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -584,7 +451,7 @@
   
   
     <li class="md-nav__item">
-      <a href="conflation/" class="md-nav__link">
+      <a href="../../conflation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -605,7 +472,7 @@
   
   
     <li class="md-nav__item">
-      <a href="odkconflation/" class="md-nav__link">
+      <a href="../../odkconflation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -626,7 +493,7 @@
   
   
     <li class="md-nav__item">
-      <a href="highways/" class="md-nav__link">
+      <a href="../../highways/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -647,7 +514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="calculations/" class="md-nav__link">
+      <a href="../../calculations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -668,7 +535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="validating/" class="md-nav__link">
+      <a href="../../validating/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -689,7 +556,7 @@
   
   
     <li class="md-nav__item">
-      <a href="boundaries/" class="md-nav__link">
+      <a href="../../boundaries/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -752,7 +619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="utilities/" class="md-nav__link">
+      <a href="../../utilities/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -773,7 +640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osm-merge/" class="md-nav__link">
+      <a href="../../osm-merge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -794,7 +661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tm-splitter/" class="md-nav__link">
+      <a href="../../tm-splitter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -815,7 +682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="basemapper/" class="md-nav__link">
+      <a href="../../basemapper/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -836,7 +703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="odk2osm/" class="md-nav__link">
+      <a href="../../odk2osm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -857,7 +724,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osm2favorites/" class="md-nav__link">
+      <a href="../../osm2favorites/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -920,7 +787,7 @@
   
   
     <li class="md-nav__item">
-      <a href="formats/" class="md-nav__link">
+      <a href="../../formats/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -941,7 +808,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mvum/" class="md-nav__link">
+      <a href="../../mvum/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -962,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="trails/" class="md-nav__link">
+      <a href="../../trails/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -983,7 +850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osmhighways/" class="md-nav__link">
+      <a href="../../osmhighways/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1008,17 +875,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -1032,7 +901,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             API
@@ -1046,7 +915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/basemapper/" class="md-nav__link">
+      <a href="../basemapper/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1067,7 +936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/convert/" class="md-nav__link">
+      <a href="../convert/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1088,7 +957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/conflator/" class="md-nav__link">
+      <a href="../conflator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1109,7 +978,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/sqlite/" class="md-nav__link">
+      <a href="../sqlite/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1130,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/osmfile/" class="md-nav__link">
+      <a href="../osmfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1148,10 +1017,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="api/yamlfile/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    yamlfile
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1160,6 +1049,79 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.yamlfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      yamlfile
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.yamlfile.YamlFile" class="md-nav__link">
+    <span class="md-ellipsis">
+      YamlFile
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="YamlFile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.yamlfile.YamlFile.get" class="md-nav__link">
+    <span class="md-ellipsis">
+      get
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.yamlfile.YamlFile.getEntries" class="md-nav__link">
+    <span class="md-ellipsis">
+      getEntries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.yamlfile.YamlFile.dump" class="md-nav__link">
+    <span class="md-ellipsis">
+      dump
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1172,7 +1134,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/filter_data/" class="md-nav__link">
+      <a href="../filter_data/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1193,7 +1155,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/odk2osm/" class="md-nav__link">
+      <a href="../odk2osm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1214,7 +1176,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/parsers/" class="md-nav__link">
+      <a href="../parsers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1264,46 +1226,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#background" class="md-nav__link">
+  <a href="#osm_merge.yamlfile" class="md-nav__link">
     <span class="md-ellipsis">
-      Background
+      yamlfile
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#external-datasets" class="md-nav__link">
+  <a href="#osm_merge.yamlfile.YamlFile" class="md-nav__link">
     <span class="md-ellipsis">
-      External Datasets
+      YamlFile
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="External Datasets">
+    <nav class="md-nav" aria-label="YamlFile">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#us-forest-service-data" class="md-nav__link">
+  <a href="#osm_merge.yamlfile.YamlFile.get" class="md-nav__link">
     <span class="md-ellipsis">
-      US Forest Service data
+      get
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#us-park-service-data" class="md-nav__link">
+  <a href="#osm_merge.yamlfile.YamlFile.getEntries" class="md-nav__link">
     <span class="md-ellipsis">
-      US Park Service data
+      getEntries
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-openstreetmap" class="md-nav__link">
+  <a href="#osm_merge.yamlfile.YamlFile.dump" class="md-nav__link">
     <span class="md-ellipsis">
-      For OpenStreetMap
+      dump
     </span>
   </a>
   
@@ -1311,48 +1273,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#programs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Programs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Programs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#utilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Utilities
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#conflator-program" class="md-nav__link">
-    <span class="md-ellipsis">
-      Conflator Program
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
-    </span>
-  </a>
   
 </li>
       
@@ -1374,135 +1294,392 @@
   
 
 
-<h1 id="osm-merge-a-community-project-of-openstreetmap-us">OSM Merge, a Community Project of OpenStreetMap US<a class="headerlink" href="#osm-merge-a-community-project-of-openstreetmap-us" title="Permanent link">&para;</a></h1>
-<p>📖 <strong>Documentation</strong>: <a href="https://osm-merge.github.io/osm-merge/" target="_blank">https://osm-merge.github.io/osm-merge/</a></p>
-<p>🖥️ <strong>Source Code</strong>: <a href="https://github.com/osm-merge/osm-merge" target="_blank">https://github.com/osm-merge/osm-merge</a></p>
-<hr />
-<h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h2>
-<p>This is a project for conflating external map datasets with
-OpenStreetMap with the ultimate goal of importing it into
-<a href="https://www.openstreetmap.org">OpenStreetMap</a>. It
-is oriented towards processing non OSM external datasets and supports
-conflation of field data collection using
-<a href="https://opendatakit.org/software/">OpenDataKit</a>, as well as other
-external datasets.</p>
-<p>The goal of this project is focused on improving remote highway and
-trail metadata to assist with emergency and recreational access in
-remote areas. This project uses several data sources to improve the
-existing highway features in OpenStreetMap. The current data in
-OpenStreetMap was often imported complete with bugs in the 
-original dataset, or the only details are <em>highway=track</em>. All of
-these have a US forest service reference number and name. Adding those
-makes it much easier to identify where you are and to communicate a
-location over a radio or phone.</p>
-<p>There is also access information in the datasets that is useful. This
-includes access for vehicle types, horses, public/private, etc... that
-is useful for OpenStreetMap.</p>
-<p><img alt="Way up Rollins Pass" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/small-rollinspass.png" /></p>
-<p>The other goal of this project is to support field data collection
-using OpenDataKit. The
-<a href="https://hotosm.github.io/osm-fieldwork/">osm-fieldwork</a> project can
-be used to convert the ODK data files into
-<a href="https://geojson.org/">GeoJson</a> and <a href="https://wiki.openstreetmap.org/wiki/OSM_XML">OSM
-XML</a>. This
-project then supports conflating that field collected data with
-current OpenStreetMap. Otherwise this is a time-consuming process to
-do manually. This can be used with the <a href="fmtm.hotosm.org">Field Mapping Tasking Manager (FMTM)</a> to process the collected data for validation
-and uploading to OpenStreetMap.</p>
-<p><img alt="Women field mapping" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/small-zanzibar.jpg" /></p>
-<h2 id="external-datasets">External Datasets<a class="headerlink" href="#external-datasets" title="Permanent link">&para;</a></h2>
-<p>I'm working on a website for all the converted and processed data
-files that covers every national park or forest for the entire US.
-From the US forest service there are several datasets with a good
-license for OpenStreetMap. Warning, these are large files, so hard to
-work with at first. This project uses a huge amount of data (and disk
-space) if you start from the original nation wide datasets, which are
-too large to edit. There is a contrib script in the git sources I use
-to start breaking down the huge files into managable pieces.</p>
-<p>The MVUM data hasn't changed in years, so splitting everything up is a
-one-time task. For OpenStreetMap extracts all the data extracts of
-highways can be regenerated in a few hours, so it's possible to stay
-closely in sync with upstream. The original files are available from
-these sources.</p>
-<h3 id="us-forest-service-data">US Forest Service data<a class="headerlink" href="#us-forest-service-data" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Motor Vehicle Use Maps <a href="https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.Road_MVUM.zip">(MVUM)</a></li>
-<li><a href="https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.TrailNFS_Publish.zip">USFS Trail maps</a></li>
-</ul>
-<h3 id="us-park-service-data">US Park Service data<a class="headerlink" href="#us-park-service-data" title="Permanent link">&para;</a></h3>
-<ul>
-<li><a href="https://public-nps.opendata.arcgis.com/search?collection=Dataset&amp;q=trail">NPS Trails</a></li>
-</ul>
-<h3 id="for-openstreetmap">For OpenStreetMap<a class="headerlink" href="#for-openstreetmap" title="Permanent link">&para;</a></h3>
-<ul>
-<li><a href="http://download.geofabrik.de/north-america.html">Geofabrik</a></li>
-</ul>
-<p>Much of the process of conflation is splitting huge datasets into
-managable sized files for data processing. I have that process <a href="https://github.com/hotosm/osm-merge/tree/main/contrib">mostly
-automated</a> so I
-can easily regenerate data extracts any time I make improvements to the
-conversion process. Currently there isn't any conflated data yet, just the
-convered data files chopped into manageable sized files. The processed
-map data is available <a href="http://5.78.72.214/osm-merge/">from
-here</a>. Please note the website is work
-in progress. Feedback on the data conversion to OpenStreetMap tagging
-is appreciated.</p>
-<p><img alt="Skipped highway segments" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/skippedsegments.png" /></p>
-<h2 id="programs">Programs<a class="headerlink" href="#programs" title="Permanent link">&para;</a></h2>
-<p>This project comprises of a main program, and multiple utilities. The
-utilities are used to prepare the datasets for conflating by fixing
-known bugs. It is very difficult to conflate datasets with wildly
-different data schemas, so making all the data use a consistent schema
-is important so tags can be compared.</p>
-<h3 id="utilities">Utilities<a class="headerlink" href="#utilities" title="Permanent link">&para;</a></h3>
-<p>The utility programs are used for all data cleaning and other tasks
-needed to conflate the data files. Known bugs in the datasets are
-fixed where possible, for example, expanding abbreviations so <em>Rd</em>
-becomes <em>Road</em>, etc... and also drops all the extraneous fields that
-aren't for OpenStreetMap. The fields we are most interested in are the
-name, the official reference number, and the access values.</p>
-<ul>
-<li>tm-splitter.py<ul>
-<li>Generate task grids for the Tasking Manager</li>
-</ul>
-</li>
-<li>mvum.py<ul>
-<li>Convert forest service MVUM datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>trails.py<ul>
-<li>Convert forest service datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>usgs.py<ul>
-<li>Convert USGS topographical datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>osmhighways.py<ul>
-<li>Data janitor for OpenStreetMap, delete <em>tiger:</em>, etc...</li>
-</ul>
-</li>
-</ul>
-<h3 id="conflator-program">Conflator Program<a class="headerlink" href="#conflator-program" title="Permanent link">&para;</a></h3>
-<p>This program doesn't require a database, unlike the other conflation
-programs in this project, although adding database support is on the
-TODO list. It is focused on conflating <a href="highways/">rural highways</a>
-and <a href="trails/">hiking trails</a>. It can also <a href="odkconflation/">conflate
-OpenDataKit</a> with OpenStreetMap.</p>
-<p>It supports conflating any two datasets in either GeoJson or OSM
-format. While this is currently under heavy development and
-debugging. I've been processing large amounts of data to track down
-all the obscure bugs in the original datasets, or the conflation
-process.</p>
-<p><img alt="MVUM Signs" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/20210913_113539.jpg" /></p>
-<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<p>Anyone motivated is welcome to contribute to both the software, or
-just using these tools and the data for your own map
-improvements. This is a huge amount of data, as the original
-source files are nationwide. I'm just focused on my part of the
-western US. Help improving OpenStreetMap accuracy in remote areas
-of your own state is a good idea, and can save lives in an
-emergency. Be a data janitor!</p>
+<h1 id="yamlfile">YamlFile<a class="headerlink" href="#yamlfile" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="osm_merge.yamlfile"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="osm_merge.yamlfile.YamlFile" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">YamlFile</span>
+
+
+<a href="#osm_merge.yamlfile.YamlFile" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">YamlFile</span><span class="p">(</span><span class="n">filespec</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>object</code></p>
+
+
+        <p>Config file in YAML format.</p>
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>filespec</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The filespec of the YAML file to read</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="osm_merge.yamlfile.YamlFile" href="#osm_merge.yamlfile.YamlFile">YamlFile</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An instance of this object</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>osm_merge/yamlfile.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">filespec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This parses a yaml file into a dictionary for easy access.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filespec (str): The filespec of the YAML file to read</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (YamlFile): An instance of this object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">filespec</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># if data == str:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">filespec</span> <span class="o">=</span> <span class="n">filespec</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filespec</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="osm_merge.yamlfile.YamlFile.get" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get</span>
+
+
+<a href="#osm_merge.yamlfile.YamlFile.get" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Get the values for a top level keyword
+Args:
+    keyword (str): The top level keyword to get the values for
+    tag (str): The category for the tag/values</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The values for the top level keyword</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/yamlfile.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the values for a top level keyword\</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        keyword (str): The top level keyword to get the values for</span>
+<span class="sd">        tag (str): The category for the tag/values</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (dict): The values for the top level keyword</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span><span class="p">[</span><span class="n">keyword</span><span class="p">][</span><span class="n">tag</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="osm_merge.yamlfile.YamlFile.getEntries" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">getEntries</span>
+
+
+<a href="#osm_merge.yamlfile.YamlFile.getEntries" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">getEntries</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert the list from the YAML file into a searchable data structure</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The parsed config file</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/yamlfile.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getEntries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert the list from the YAML file into a searchable data structure</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (dict): The parsed config file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="c1"># values is a list of dicts which are tag/value pairs</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                <span class="p">[[</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">]]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>                        
+                    <span class="k">for</span> <span class="n">convert</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">convert</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not suported.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="osm_merge.yamlfile.YamlFile.dump" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">dump</span>
+
+
+<a href="#osm_merge.yamlfile.YamlFile.dump" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">dump</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Dump internal data structures, for debugging purposes only.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/yamlfile.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dump internal data structures, for debugging purposes only.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filespec</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;YAML file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">filespec</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key is: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;------------------&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><p>options:
+show_source: false
+heading_level: 3</p>
 
 
 
@@ -1523,7 +1700,7 @@ emergency. Be a data janitor!</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 28, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 22, 2024</span>
   </span>
 
     
@@ -1596,10 +1773,10 @@ emergency. Be a data janitor!</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>

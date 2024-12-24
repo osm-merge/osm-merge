@@ -1,91 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://www.hotosm.org/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/CHANGELOG/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/CHANGELOG/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/LICENSE/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/LICENSE/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/about/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/about/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/api/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/basemapper/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/boundaries/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/boundaries/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/calculations/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/calculations/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/conflation/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/conflation/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/dataflow/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/dataflow/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/formats/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/formats/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/highways/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/highways/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/mvum/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/mvum/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/odkconflation/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/odk2osm/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/osm-merge/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/odkconflation/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/osmhighways/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/osm-merge/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/tm-splitter/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/osm2favorites/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/trails/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/osmhighways/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/usgs/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/tm-splitter/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/utilities/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/trails/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/validating/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/usgs/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/wiki_redirect/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/utilities/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
     <url>
-         <loc>https://www.hotosm.org/zion/</loc>
-         <lastmod>2024-12-21</lastmod>
+         <loc>https://osmmerge.org/validating/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/wiki_redirect/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/zion/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/basemapper/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/conflator/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/convert/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/filter_data/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/odk2osm/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/osmfile/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/parsers/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/sqlite/</loc>
+         <lastmod>2024-12-24</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/api/yamlfile/</loc>
+         <lastmod>2024-12-24</lastmod>
     </url>
 </urlset>

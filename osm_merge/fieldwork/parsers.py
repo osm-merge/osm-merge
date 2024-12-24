@@ -20,6 +20,7 @@ import json
 import logging
 import os
 import re
+import html
 from pathlib import Path
 from geojson import Point, Feature
 import flatdict
@@ -96,17 +97,36 @@ class ODKParsers(Convert):
         Returns:
             (list): The list of features with tags
         """
-        all_tags = list()
+        props = list()
+        # Ignore some keywords in the CVS file that aren't useful
+        # for OSM XML.
+        # ignore = ["deviceid",
+        #           "today",
+        #           "start",
+        #           "AttachmentsPresent",
+        #           "AttachmentsExpected",
+        #           "ReviewState",
+        #           "meta-instanceID",
+        #           "FormVersion",
+        #           "KEY",
+        #           "DeviceID",
+        #           "Edits",
+        #           "warmup-Accuracy",
+        #           "warmup-Altitude",
+        #           ]
         if not data:
             f = open(filespec, newline="")
             reader = csv.DictReader(f, delimiter=",")
         else:
             reader = csv.DictReader(data, delimiter=",")
         for row in reader:
-            tags = dict()
-            # log.info(f"ROW: {row}")
+            geom = None
+            tags = {"properties": dict()}
+            lat = str()
+            lon = str()
+            # log.debug(f"ROW: {row}")
             for keyword, value in row.items():
-                if keyword is None or value is None:
+                if keyword is None or value is None or keyword in self.ignore:
                     continue
                 if len(value) == 0:
                     continue
@@ -115,46 +135,63 @@ class ODKParsers(Convert):
                 if base is None or base in self.ignore or value is None:
                     continue
                 else:
-                    # log.info(f"ITEM: {keyword} = {value}")
+                    # location, there is not always a value if the accuracy is way
+                    # off. In this case use the warmup value, which is where we are
+                    # hopefully standing anyway.
+                    if base == "latitude" and len(lat) == 0:
+                        if len(value) > 0:
+                            lat = value
+                        continue
+                    if base == "warmup-latitude" and len(lat) == 0:
+                        if len(value) == 0:
+                            lat = value
+                        continue
+
+                    if base == "longitude" and len(lon) == 0:
+                        if len(value) > 0:
+                            lon = value
+                        continue
+                    if base == "warmup-longitude" and len(lon) == 0:
+                        if len(value) == 0:
+                            lon = value
+                        continue
+                    if len(lat) > 0 and len(lon) > 0:
+                        geom = Point((float(lon), float(lat)))
+
                     if base in self.types:
                         if self.types[base] == "select_multiple":
                             vals = self.convertMultiple(value)
                             if len(vals) > 0:
                                 tags.update(vals)
                             continue
-                    # When using geopoint warmup, once the display changes to the map
-
-                    # location, there is not always a value if the accuracy is way
-                    # off. In this case use the warmup value, which is where we are
-                    # hopefully standing anyway.
-                    if base == "latitude" and len(value) == 0:
-                        if "warmup-Latitude" in row:
-                            value = row["warmup-Latitude"]
-                            if base == "longitude" and len(value) == 0:
-                                value = row["warmup-Longitude"]
-                    items = self.convertEntry(base, value)
-                    # log.info(f"ROW: {base} {value}")
-                    if len(items) > 0:
-                        if base in self.saved:
-                            if str(value) == "nan" or len(value) == 0:
-                                # log.debug(f"FIXME: {base} {value}")
-                                val = self.saved[base]
-                                if val and len(value) == 0:
-                                    log.warning(f'Using last saved value for "{base}"! Now "{val}"')
-                                    value = val
-                            else:
-                                self.saved[base] = value
-                                log.debug(f'Updating last saved value for "{base}" with "{value}"')
-                        # Handle nested dict in list
-                        if isinstance(items, list):
-                            items = items[0]
-                        for k, v in items.items():
-                            tags[k] = v
+                        else:
+                            tags[base] = value
                     else:
+                        # if keyword != "SubmissionDate":  # DEBUG!
                         tags[base] = value
-            # log.debug(f"\tFIXME1: {tags}")
-            all_tags.append(tags)
-        return all_tags
+                        # tags["properties"].update({base: html.unescape(value)})
+                    # items = self.convertEntry(base, value)
+                    # # log.info(f"ROW: {base} {value}")
+                    # if len(items) > 0:
+                    #     if base in self.saved:
+                    #         if str(value) == "nan" or len(value) == 0:
+                    #             # log.debug(f"FIXME: {base} {value}")
+                    #             val = self.saved[base]
+                    #             if val and len(value) == 0:
+                    #                 log.warning(f'Using last saved value for "{base}"! Now "{val}"')
+                    #                 value = val
+                    #         else:
+                    #             self.saved[base] = value
+                    #             log.debug(f'Updating last saved value for "{base}" with "{value}"')
+                    #     # Handle nested dict in list
+                    #     if isinstance(items, list):
+                    #         items = items[0]
+                    #     for k, v in items.items():
+                    #         tags[k] = v
+                    # else:
+                    #     tags[base] = value
+            props.append(Feature(geometry=geom, properties=tags))
+        return props
 
     def JSONparser(
         self,

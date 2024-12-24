@@ -1,29 +1,27 @@
 site_name: osm-merge
 site_description: Merge features and tags into existing OSM data.
 # strict: true
-site_url: "https://www.hotosm.org"
+site_url: "https://osmmerge.org"
 
-repo_name: "hotosm/osm-merge"
-repo_url: "https://github.com/hotosm/osm-merge/"
+repo_name: "osm-merge/osm-merge"
+repo_url: "https://github.com/osm-merge/osm-merge"
 edit_uri: "edit/main/docs/"
 
 extra:
   social:
     - icon: "fontawesome/brands/github"
-      link: "https://github.com/hotosm/"
     - icon: "fontawesome/brands/twitter"
-      link: "https://twitter.com/hotosm"
     - icon: "fontawesome/solid/globe"
-      link: "https://www.hotosm.org"
-  copyright: Copyright &copy; 2010 HOTOSM
+      link: "https://openstreetmap.us/"
+  copyright: Copyright &copy; 2024 OSM-US
   generator: false
 
 theme:
   name: material
   palette:
     primary: custom
-  favicon: images/favicon.png
-  logo: images/hot_logo.png
+  favicon: assets/favicon.png
+  logo: assets/osmus-logo.svg
   # custom_dir: docs/overrides
 
 extra_css:
@@ -77,13 +75,26 @@ nav:
       - Highways: highways.md
       - Calculations: calculations.md
       - Validating: validating.md
+      - Boundaries: boundaries.md
   - Utilities:
-      - OSM Merge: osm-merge.md
       - Utilities: utilities.md
+      - OSM Merge: osm-merge.md
       - TM Splitter: tm-splitter.md
+      - Basemapper: basemapper.md
+      - Odk2osm: odk2osm.md
+      - Osm2favorites: osm2favorites.md
   - Data Conversion:
       - Data Formats: formats.md
       - MVUM: mvum.md
       - Trails: trails.md
       - OSM Highways: osmhighways.md
-  - API: api.md
+  - API:
+      - basemapper: api/basemapper.md
+      - convert: api/convert.md
+      - conflator: api/conflator.md
+      - sqlite: api/sqlite.md
+      - osmfile: api/osmfile.md
+      - yamlfile: api/yamlfile.md
+      - filter_data: api/filter_data.md
+      - odk2osm: api/odk2osm.md
+      - parsers: api/parsers.md

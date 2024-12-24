@@ -191,7 +191,7 @@ def make_tasks(data: FeatureCollection,
         name = os.path.basename(template)
         for task in data["features"]:
             geom = shape(task["geometry"])
-            outname = f"{template.replace(".geojson", "")}_{index}.geojson"
+            outname = f"{template.replace('.geojson', '')}_{index}.geojson"
             if type(geom) == Polygon:
                 fd = open(outname, "w")
                 properties = {"name": f"{name}_Task_{index}"}
@@ -202,7 +202,7 @@ def make_tasks(data: FeatureCollection,
                 index += 1
             else:               # It's a MultiPolygon
                 for poly in geom.geoms:
-                    outname = f"{template.replace(".geojson", "")}_{index}.geojson"
+                    outname = f"{template.replace('.geojson', '')}_{index}.geojson"
                     fd = open(outname, "w")
                     properties = {"name": f"{name}_Task_{index}"}
                     geojson.dump(Feature(geometry=poly, properties=properties), fd)
@@ -285,7 +285,7 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
         if not args.outfile:
             outfile = "tasks.geojson"
         else:
-            outfile = "./"
+            outfile = "./" + args.outfile
 
         if args.outfile.find('/') > 1:
             outdir = os.path.dirname(args.outfile)

@@ -610,6 +610,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#highway-segments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Highway Segments
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#debug-tags" class="md-nav__link">
     <span class="md-ellipsis">
       Debug Tags
@@ -629,21 +638,6 @@
       Issues
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Issues">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#clipping" class="md-nav__link">
-    <span class="md-ellipsis">
-      Clipping
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -857,6 +851,27 @@
   
   <span class="md-ellipsis">
     Osm2favorites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dbextract/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dbextract
   </span>
   
 
@@ -1223,6 +1238,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/dbextract/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dbextract
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1305,6 +1341,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#highway-segments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Highway Segments
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#debug-tags" class="md-nav__link">
     <span class="md-ellipsis">
       Debug Tags
@@ -1324,21 +1369,6 @@
       Issues
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Issues">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#clipping" class="md-nav__link">
-    <span class="md-ellipsis">
-      Clipping
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1376,7 +1406,7 @@ calculations are between OSM data and that segment of the external
 data. Since this may product multiple values, those need to be
 evaluated and the most likely one returned.</p>
 <p>It gets more fun as sometimes the MVUM dataset is missing entire
-segments. Course sometimes OSM is too. conflation sucessfully merges
+segments. Course sometimes OSM is too. conflation successfully merges
 the MVUM dataset tags for the segments if they match onto the single
 OSM way.</p>
 <p>![Screenshot\ from\ 2024-10-19\ 14-06-00.png])</p>
@@ -1399,7 +1429,7 @@ highway, and the spur road that splits off from that.</p>
 <p>If the highway is a GeometryCollection or MultiLineString, then it's
 split into segments, and each one is checked for the angle. The
 closest one is what is returned.</p>
-<p>Sometimes the geometry of the feaure in OSM was imported from the same
+<p>Sometimes the geometry of the feature in OSM was imported from the same
 external dataset. At that point it's an exact match, so the distance,
 the slope, and the angle will all be 0.0.</p>
 <h2 id="tag-checking">Tag Checking<a class="headerlink" href="#tag-checking" title="Permanent link">&para;</a></h2>
@@ -1440,6 +1470,24 @@ feature lacking those tags, they get added.</p>
 <p>Optionally the various access tags for <em>private</em>, <em>atv</em>, <em>horse</em>,
 <em>motorcycle</em>, etc... are set in the post conflation dataset if they
 have a value in the external dataset. </p>
+<h3 id="highway-segments">Highway Segments<a class="headerlink" href="#highway-segments" title="Permanent link">&para;</a></h3>
+<p>This turns out to be the challenging part of highway conflation. In
+any highway dataset a longer highway may be broken into
+segments. These changing segments may be due to the surface changing,
+speed limit changing. etc... and may be organized into a group of
+some kind.</p>
+<p>The fun starts when the segments used for the OSM highway aren't the
+same as the segments in the external dataset's geometry. Often
+in the external dataset there are no segments at all, just a long
+LineString. In OSM the same highway may be broken into multiple
+segments.</p>
+<p>The algorithm for the geometry calculations tries to compare each
+segment from the primary dataset (if there are any), with any highway
+segment in the secondary dataset (probably OSM). Later when processing
+all the possible segments of any highway close to the primary segment,
+the name and reference numbers are checked, and if they match, the new
+tags from the external dataset are applied to all the matching
+segments in the secondary.</p>
 <h3 id="debug-tags">Debug Tags<a class="headerlink" href="#debug-tags" title="Permanent link">&para;</a></h3>
 <p>Currently a few tags are added to each feature to aid in validating
 and debugging the conflation process. These should obviously be
@@ -1458,10 +1506,6 @@ um... "flexibility" of the datasets. Minor tweaks to the steering
 parameters for the distance, angle, and fuzzy string matching can
 produce slightly different results. I often run the same datasets with
 different parameters looking for the best results.</p>
-<h3 id="clipping">Clipping<a class="headerlink" href="#clipping" title="Permanent link">&para;</a></h3>
-<p>Where a feature crosses the task boundary, the calculations have to
-deal with incomplete features, which is messy. This is particularly a
-problem when conflating small datasets.</p>
 
 
 
@@ -1482,7 +1526,7 @@ problem when conflating small datasets.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 20, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 25, 2024</span>
   </span>
 
     

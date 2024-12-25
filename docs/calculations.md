@@ -18,7 +18,7 @@ data. Since this may product multiple values, those need to be
 evaluated and the most likely one returned.
 
 It gets more fun as sometimes the MVUM dataset is missing entire
-segments. Course sometimes OSM is too. conflation sucessfully merges
+segments. Course sometimes OSM is too. conflation successfully merges
 the MVUM dataset tags for the segments if they match onto the single
 OSM way.
 
@@ -49,7 +49,7 @@ If the highway is a GeometryCollection or MultiLineString, then it's
 split into segments, and each one is checked for the angle. The
 closest one is what is returned.
 
-Sometimes the geometry of the feaure in OSM was imported from the same
+Sometimes the geometry of the feature in OSM was imported from the same
 external dataset. At that point it's an exact match, so the distance,
 the slope, and the angle will all be 0.0.
 
@@ -100,6 +100,35 @@ Optionally the various access tags for *private*, *atv*, *horse*,
 *motorcycle*, etc... are set in the post conflation dataset if they
 have a value in the external dataset. 
 
+### Highway Segments
+
+This turns out to be the challenging part of highway conflation. In
+any highway dataset a longer highway may be broken into
+segments. These changing segments may be due to the surface changing,
+speed limit changing. etc... and may be organized into a group of
+some kind.
+
+In OSM, a highway is a relation, and contains the OSM IDs instead of a
+spatial geometry. This of course is not well setup for spatial
+analysis. When loading an OSM XML file, the ID references are
+converted to actual coordinates in additional to preserving the refs
+which are used later when generating an OSM XML output file.
+
+In the external datasets, a MultiLineString is used. Similar to an OSM
+relations, but actually includes coordinates. The fun starts when the
+segments used for the OSM highway aren't these same as the segments in
+the external datasets MultiLineString. Often in the external dataset
+there are no segments at all, just a long LineString. In OSM the same
+highway may be broken into multiple segments.
+
+The algorithm for the geometry calculations tries to compare each
+segment from the primary dataset (if there are any), with any highway
+segment in the secondary dataset (probably OSM). Later when processing
+all the possible segments of any highway close to the primary segment,
+the name and reference numbers are checked, and if they match, the new
+tags from the external dataset are applied to all the matching
+segments in the secondary.
+
 ### Debug Tags
 
 Currently a few tags are added to each feature to aid in validating
@@ -121,8 +150,3 @@ parameters for the distance, angle, and fuzzy string matching can
 produce slightly different results. I often run the same datasets with
 different parameters looking for the best results.
 
-### Clipping
-
-Where a feature crosses the task boundary, the calculations have to
-deal with incomplete features, which is messy. This is particularly a
-problem when conflating small datasets.

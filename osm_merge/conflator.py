@@ -21,6 +21,7 @@ import sys
 import os
 import re
 from sys import argv
+# from osm_merge.osmfile import OsmFile
 from osm_fieldwork.osmfile import OsmFile
 from geojson import Point, Feature, FeatureCollection, dump, Polygon, load
 import geojson
@@ -30,8 +31,8 @@ from shapely.ops import transform, nearest_points, linemerge
 from shapely import wkt
 from progress.bar import Bar, PixelBar
 from progress.spinner import PixelSpinner
-from osm_fieldwork.convert import escape
-from osm_fieldwork.parsers import ODKParsers
+# from osm_fieldwork.convert import escape
+# from osm_fieldwork.parsers import ODKParsers
 import pyproj
 import asyncio
 from codetiming import Timer
@@ -44,7 +45,7 @@ from pathlib import Path
 from osm_fieldwork.parsers import ODKParsers
 from pathlib import Path
 # from spellchecker import SpellChecker
-from osm_rawdata.pgasync import PostgresClient
+# from osm_rawdata.pgasync import PostgresClient
 from tqdm import tqdm
 import tqdm.asyncio
 import xmltodict
@@ -139,6 +140,7 @@ def conflateThread(primary: list,
         maybe = list()
         # If an OSM file is the primary, ignore the nodes that comprise the
         # LineString.
+        # log.debug(f"ENTRY: {entry["properties"]}")
         if entry["geometry"]["type"] == "Point":
             continue
 
@@ -147,11 +149,10 @@ def conflateThread(primary: list,
             osmtags = dict()
             feature = dict()
             newtags = dict()
-            # log.debug(f"ENTRY: {entry["properties"]}")
             # log.debug(f"EXISTING: {existing["properties"]}")
             if existing["geometry"] is not None:
                 if existing["geometry"]["type"] == "Point":
-                    data.append(existing)
+                    # data.append(existing)
                     continue
             geom = None
             # We could probably do this using GeoPandas or gdal, but that's
@@ -185,7 +186,9 @@ def conflateThread(primary: list,
 
             # log.debug(f"ENTRY: {dist}: {entry["properties"]}")
             # log.debug(f"EXISTING: {existing["properties"]}")
-            if dist <= threshold:
+            if dist >= threshold:
+                continue
+            else:
                 if "id" not in existing["properties"]:
                     existing["properties"]["id"] = -1
                 angle = 0.0
@@ -197,12 +200,15 @@ def conflateThread(primary: list,
                     log.error(f"EXISTING: {existing["properties"]}")
                     # breakpoint()
                     # slope, angle = cutils.getSlope(entry, existing)
-                    break
+                    continue
                 # log.debug(f"DIST: {dist}, ANGLE: {angle}, SLOPE: {slope}")
                 # log.debug(f"PRIMARY: {entry["properties"]}")
                 # log.debug(f"SECONDARY: {existing["properties"]}")
                 hits, tags = cutils.checkTags(entry, existing)
-                # log.debug(f"HITS2: {hits}")
+                tags["hits"] = str(hits)
+                tags["dist"] = str(dist)
+                tags["slope"] = str(slope)
+                tags["angle"] = str(angle)
                 angle_threshold = 20.0
                 slope_threshold = 4.0
                 name1 = None
@@ -211,47 +217,52 @@ def conflateThread(primary: list,
                     name2 = existing["properties"]["name"]
                 if "name" in entry["properties"]:
                     name1 = entry["properties"]["name"]
-                # log.debug(f"DIST: {dist}, SLOPE: {slope:.3f}, Angle: {angle:.3f} - {name1} == {name2}")
-                if hits == 0 and (abs(angle) > angle_threshold or abs(slope) > slope_threshold):
+                if (abs(angle) > angle_threshold or abs(slope) > slope_threshold):
                     continue
-                if hits == 1 and abs(angle) < 15 and abs(slope) < 1:
+                log.debug(f"HITS: {hits}, DIST: {dist}, SLOPE: {slope:.3f}, Angle: {angle:.3f} - {name1} == {name2}")
+                if hits == 1 and abs(angle) < angle_threshold and abs(slope) < slope_threshold:
                     log.debug(f"Name matched, not geom")
                     log.error(f"ENTRY: {entry["properties"]}")
                     log.error(f"EXISTING: {existing["properties"]["id"]}")
-                    # FIXME parallel roads
-                    break
-                if hits == 2 and abs(angle) < angle_threshold and abs(slope) < slope_threshold:
+                    hits += 1
+                elif dist <= 2.0 and abs(angle) < angle_threshold and abs(slope) < slope_threshold:
+                    log.debug(f"Close geometry match")
+                    log.error(f"ENTRY: {entry["properties"]}")
+                    log.error(f"EXISTING: {existing["properties"]["id"]}")
+                    hits += 1
+                elif hits == 2 and abs(angle) < angle_threshold and abs(slope) < slope_threshold:
                     if tags["ratio"] == 100:
                         log.debug(f"Name matched and ref matched")
                         log.error(f"ENTRY: {entry["properties"]}")
                         log.error(f"EXISTING: {existing["properties"]["id"]}")
-                        break
-                if hits == 0 and angle == 0.0 and slope == 0.0 and dist == 0.0:
+                    hits += 1
+                elif hits == 0 and angle == 0.0 and slope == 0.0 and dist == 0.0:
+                    print(f"Geometry matched, no name in OSM")
+                    log.error(f"ENTRY: {entry["properties"]}")
+                    log.error(f"EXISTING: {existing["properties"]["id"]}")
+                    hits += 1
+                elif angle == 0.0 and slope == 0.0 and dist == 0.0:
                     print(f"Geometry matched, not name")
                     log.error(f"ENTRY: {entry["properties"]}")
                     log.error(f"EXISTING: {existing["properties"]["id"]}")
                     hits += 1
-                    break
 
-                if hits == 3:
+                elif hits == 3 or (slope == 0.0 and angle == 0.0):
                     if entry['properties'] != existing['properties']:
                         # Only add the feature to the output if there are
                         # differences in the tags. If they are identical,
                         # ignore it as no changes need to be made.
-                        data.append(Feature(geometry=geom, properties=entry["properties"]))
+                        log.debug(f"Almost Perfect match!")
                         log.error(f"ENTRY: {entry["properties"]}")
                         log.error(f"EXISTING: {existing["properties"]["id"]}")
-                        break
                     else:
                         log.debug(f"Perfect match! {entry['properties']}")
-                        break
+                    hits += 1
 
-                maybe.append({"hits": hits, "dist": dist, "angle": angle, "slope": slope, "odk": entry, "osm": existing})
-                tags["hits"] = str(hits)
-                tags["dist"] = str(dist)
-                tags["slope"] = str(slope)
-                tags["angle"] = str(angle)
-                data.append(Feature(geometry=geom, properties=tags))
+                if hits > 0:
+                    maybe.append({"hits": hits, "dist": dist, "angle": angle, "slope": slope, "ratio": tags["ratio"], "osm": existing})
+                    # data.append(Feature(geometry=geom, properties=tags))
+
                 # cache all OSM features within our threshold distance
                 # These are needed by ODK, but duplicates of other fields,
                 # so they aren't needed and just add more clutter.
@@ -259,20 +270,15 @@ def conflateThread(primary: list,
                 # maybe.append({"hits": hits, "dist": dist, "slope": slope, "angle": angle, "hits": hits, "odk": entry, "osm": existing})
                 # don't keep checking every highway, although testing seems
                 # to show 99% only have one distance match within range.
-                if len(maybe) >= 5:
+                if len(maybe) >= 7:
                     # FIXME: it turns out sometimes the other nearby highways are
                     # segments of the same highway, but the tags only get added
                     # to the closest segment.
                     log.debug(f"Have enough matches.")
                     break
 
-        hits = 0
-        threshold = 2
+        log.debug(f"MAYBE: {len(maybe)}")
         if len(maybe) > 0:
-            # FIXME: Sometimes all the maybes are segment of the same
-            # highways. Right now only one gets the tags merged, this
-            # should be fixed so all nearby segmernts get tagged.
-
             # cache the refs to use in the OSM XML output file
             refs = list()
             odk = dict()
@@ -283,37 +289,61 @@ def conflateThread(primary: list,
             # match. If we have at least 2 hits, it's very likely a
             # good match, 3 is a perfect match.
             best = None
+            maybe.sort(key=distSort)
             maybe.sort(key=hitsSort)
-            hits = maybe[len(maybe) - 1]["hits"]
-            if hits >= threshold:
-                best = maybe[len(maybe) - 1]
-                odk = best["odk"]["properties"]
-                osm = best["osm"]["properties"]
-            else:
-                # If no hits, the OSM data is probably limited to
-                # highway=track. so then get the closest one.
-                maybe.sort(key=distSort)
-                best = maybe[0]
-                odk = best["odk"]["properties"]
-                osm = best["osm"]["properties"]
-            # log.debug(f"HITS1: {hits}")
-            # tags['fixme'] = "Don't upload this to OSM without validation!"
-            if "refs" in osm:
-                tags["refs"] = osm["refs"]
-            geom = best["odk"]["geometry"]
-            if "osm_id" in  osm:
-                tags["id"] =  osm["osm_id"]
-            elif "id" in  osm:
-                tags["id"] =  osm["id"]
-            if "version" in osm:
-                tags["version"] = osm["version"]
-            else:
-                tags["version"] = 1
-            tags["hits"] = hits
-            tags["dist"] = str(best["dist"])
-            tags["slope"] = str(best["slope"])
-            tags["angle"] = str(best["angle"])
-            data.append(Feature(geometry=geom, properties=tags))
+
+            # if "refs" in osm:
+            #     tags["refs"] = osm["refs"]
+            # if "osm_id" in  osm:
+            #     tags["id"] =  osm["osm_id"]
+            # elif "id" in  osm:
+            #     tags["id"] =  osm["id"]
+            # if "version" in osm:
+            #     tags["version"] = osm["version"]
+            # else:
+            #     tags["version"] = 1
+            # tags["hits"] = hits
+            # tags["dist"] = str(best["dist"])
+            # tags["slope"] = str(best["slope"])
+            # tags["angle"] = str(best["angle"])
+            # geom = best["osm"]["geometry"]
+            # FIXME: Sometimes all the maybes are segment of the same
+            # highways. Right now only one gets the tags merged, this
+            # should be fixed so all nearby segmernts get tagged.
+            for segment in maybe:
+                props = segment["osm"]["properties"]
+                tags = entry["properties"]
+                if "refs" in props:
+                    tags["refs"] = props["refs"]
+                if "osm_id" in props:
+                    tags["id"] = props["osm_id"]
+                elif "id" in props:
+                    tags["id"] =  props["id"]
+                if "version" in props:
+                    tags["version"] = props["version"]
+                else:
+                    tags["version"] = 1
+                if "ration" in props:
+                    tags["ratio"] = props["ratio"]
+                tags["hits"] = hits
+                tags["dist"] = str(segment["dist"])
+                tags["slope"] = str(segment["slope"])
+                tags["angle"] = str(segment["angle"])
+                geom = shape(segment["osm"]["geometry"])
+                pname = str()
+                if "name" in entry["properties"]:
+                    pname = entry["properties"]["name"]
+                sname = str()
+                if "name" in props:
+                    sname = props["name"]
+                print(f"NAMES: {pname} == {sname} {segment["dist"]}, {segment["ratio"]}, {segment["hits"]}")
+                if hits >= 2 or int(segment["ratio"]) > int(80) or int(segment["ratio"]) == 0:
+                    data.append(Feature(geometry=geom, properties=tags))
+                    print(f"ADDING: {tags}")
+                # else:
+                #     data.append(Feature(geometry=segment["geometry"], properties=tags))
+
+            # data.append(Feature(geometry=geom, properties=tags))
             # If no hits, it's new data. ODK data is always just a POI for now
         else:
             entry["properties"]["version"] = 1
@@ -326,6 +356,7 @@ def conflateThread(primary: list,
 
         # timer.stop()
 
+    log.debug(f"OLD: {len(data)}")
     log.debug(f"NEW: {len(newdata)}")
     return [data, newdata]
 
@@ -389,7 +420,6 @@ class Conflator(object):
             points = shapely.get_num_points(segment)
             if points == 0:
                 return -0.1, -0.1
-            # log.debug(f"POINTS: {shapely.get_num_points(segment)} vs {shapely.get_num_points(oldline)}")
             offset = 2
             # Get slope of the new line
             start = shapely.get_point(segment, offset)
@@ -402,7 +432,7 @@ class Conflator(object):
             y2 = end.y
             if start == end:
                 log.debug(f"The geometries are identical!")
-                return 0.0, 0.0
+                # return 0.0, 0.0
             slope1 = (y2 - y1) / (x2 - x1)
 
             # Get slope of the old line
@@ -417,7 +447,7 @@ class Conflator(object):
             y2 = end.y
             if start == end:
                 log.debug(f"The geometries are identical!")
-                return 0.0, 0.0
+                # return 0.0, 0.0
 
             if (x2 - x1) == 0.0:
                 return 0.0, 0.0
@@ -539,7 +569,7 @@ class Conflator(object):
 
         Args:
             extfeat (Feature): The feature from the external dataset
-            osm (Feature): The result of the SQL query
+            osm (Feature): The result
 
         Returns:
             (int): The number of tag matches
@@ -552,7 +582,8 @@ class Conflator(object):
         id = 0
         version = 0
         props = extfeat['properties'] | osm['properties']
-        # ODK Collect adds these two tags we don't need.
+        props["ratio"] = 0
+        # ODK Collect adds these two tags we don't need
         if "title" in props:
             del props["title"]
         if "label" in props:
@@ -595,9 +626,9 @@ class Conflator(object):
                 # a similar length.
                 length = len(extfeat["properties"][key]) - len(osm["properties"][key])
                 ratio = fuzz.ratio(extfeat["properties"][key].lower(), osm["properties"][key].lower())
+                props["ratio"] = ratio
                 if ratio > match_threshold and length <= 3:
                     hits += 1
-                    props["ratio"] = ratio
                     props[key] = extfeat["properties"][key]
                     if ratio != 100:
                         # Often the only difference is using FR or FS as the
@@ -610,7 +641,7 @@ class Conflator(object):
                             extref = tmp[1].upper()
                             tmp = osm["properties"]["ref:usfs"].split(' ')
                             newref = tmp[1].upper()
-                            # log.debug(f"REFS: {extref} vs {newref}: {extref == newref}")
+                            log.debug(f"REFS: {extref} vs {newref}: {extref == newref}")
                             if extref == newref:
                                 hits += 1
                                 # Many minor changes of FS to FR don't require
@@ -773,7 +804,8 @@ class Conflator(object):
         log.info(f"The secondary dataset has {len(secondarydata)} entries")
 
         # Make threading optional for easier debugging
-        single = False
+        single = True
+        # single = False
 
         if single:
             alldata = conflateThread(primarydata, secondarydata)
@@ -1114,6 +1146,7 @@ osm-rawdata project on pypi.org or https://github.com/hotosm/osm-rawdata.
 
     data = conflate.conflateData(args.primary, args.secondary, float(args.threshold), args.informal)
 
+    # breakpoint()
     # path = Path(args.outfile)
     osmout  = args.outfile.replace(".geojson", "-out.osm")
 

@@ -108,18 +108,11 @@ segments. These changing segments may be due to the surface changing,
 speed limit changing. etc... and may be organized into a group of
 some kind.
 
-In OSM, a highway is a relation, and contains the OSM IDs instead of a
-spatial geometry. This of course is not well setup for spatial
-analysis. When loading an OSM XML file, the ID references are
-converted to actual coordinates in additional to preserving the refs
-which are used later when generating an OSM XML output file.
-
-In the external datasets, a MultiLineString is used. Similar to an OSM
-relations, but actually includes coordinates. The fun starts when the
-segments used for the OSM highway aren't these same as the segments in
-the external datasets MultiLineString. Often in the external dataset
-there are no segments at all, just a long LineString. In OSM the same
-highway may be broken into multiple segments.
+The fun starts when the segments used for the OSM highway aren't the
+same as the segments in the external dataset's geometry. Often
+in the external dataset there are no segments at all, just a long
+LineString. In OSM the same highway may be broken into multiple
+segments.
 
 The algorithm for the geometry calculations tries to compare each
 segment from the primary dataset (if there are any), with any highway

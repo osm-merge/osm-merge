@@ -21,8 +21,6 @@ import sys
 import os
 import re
 from sys import argv
-# from osm_merge.osmfile import OsmFile
-from osm_fieldwork.osmfile import OsmFile
 from geojson import Point, Feature, FeatureCollection, dump, Polygon, load
 import geojson
 from shapely.geometry import shape, LineString, MultiLineString, Polygon, mapping
@@ -42,7 +40,8 @@ from time import sleep
 from haversine import haversine, Unit
 from thefuzz import fuzz, process
 from pathlib import Path
-from osm_fieldwork.parsers import ODKParsers
+from osm_merge.fieldwork.parsers import ODKParsers
+from osm_merge.osmfile import OsmFile
 from pathlib import Path
 # from spellchecker import SpellChecker
 # from osm_rawdata.pgasync import PostgresClient
@@ -124,6 +123,7 @@ def conflateThread(primary: list,
     osmid = 0
     nodes = dict()
     version = 0
+
     cutils = Conflator()
     i = 0
 
@@ -659,105 +659,6 @@ class Conflator(object):
         # print(props)
         return hits, props
 
-    def loadFile(
-        self,
-        osmfile: str,
-    ) -> list:
-        """
-        Read a OSM XML file and convert it to GeoJson for consistency.
-
-        Args:
-            osmfile (str): The OSM XML file to load
-
-        Returns:
-            (list): The entries in the OSM XML file
-        """
-        alldata = list()
-        size = os.path.getsize(osmfile)
-        with open(osmfile, "r") as file:
-            xml = file.read(size)
-            doc = xmltodict.parse(xml)
-            if "osm" not in doc:
-                logging.warning("No data in this instance")
-                return False
-            data = doc["osm"]
-            if "node" not in data:
-                logging.warning("No nodes in this instance")
-                return False
-
-        nodes = dict()
-        for node in data["node"]:
-            properties = {
-                "id": int(node["@id"]),
-            }
-            if "@version" not in node:
-                properties["version"] = 1
-            else:
-                properties["version"] = node["@version"]
-
-            if "@timestamp" in node:
-                properties["timestamp"] = node["@timestamp"]
-
-            if "tag" in node:
-                for tag in node["tag"]:
-                    if type(tag) == dict:
-                        # Drop all the TIGER tags based on
-                        # https://wiki.openstreetmap.org/wiki/TIGER_fixup
-                        if tag["@k"] in properties:
-                            if properties[tag["@k"]][:7] == "tiger:":
-                                continue
-                        properties[tag["@k"]] = tag["@v"].strip()
-                        # continue
-                    else:
-                        properties[node["tag"]["@k"]] = node["tag"]["@v"].strip()
-                    # continue
-            geom = Point((float(node["@lon"]), float(node["@lat"])))
-            # cache the nodes so we can dereference the refs into
-            # coordinates, but we don't need them in GeoJson format.
-            nodes[properties["id"]] = geom
-            if len(properties) > 2:
-                alldata.append(Feature(geometry=geom, properties=properties))
-
-        for way in data["way"]:
-            attrs = dict()
-            properties = {
-                "id": int(way["@id"]),
-            }
-            refs = list()
-            if "nd" in way:
-                if len(way["nd"]) > 0:
-                    for ref in way["nd"]:
-                        refs.append(int(ref["@ref"]))
-                properties["refs"] = refs
-
-            if "@version" not in node:
-                properties["version"] = 1
-            else:
-                properties["version"] = node["@version"]
-
-            if "@timestamp" in node:
-                attrs["timestamp"] = node["@timestamp"]
-
-            if "tag" in way:
-                for tag in way["tag"]:
-                    if type(tag) == dict:
-                        properties[tag["@k"]] = tag["@v"].strip()
-                        # continue
-                    else:
-                        properties[way["tag"]["@k"]] = way["tag"]["@v"].strip()
-                    # continue
-            # geom =
-            tmp = list()
-            for ref in refs:
-                tmp.append(nodes[ref]['coordinates'])
-            geom = LineString(tmp)
-            if geom is None:
-                breakpoint()
-            # log.debug(f"WAY: {properties}")
-            alldata.append(Feature(geometry=geom, properties=properties))
-
-        return alldata
-
     def conflateData(self,
                     primaryspec: str,
                     secondaryspec: str,
@@ -863,8 +764,8 @@ class Conflator(object):
             data = features['features']
         elif path.suffix == '.osm':
             log.debug(f"Parsing OSM XML files {path}")
-            # osmfile = OsmFile()
-            data = self.loadFile(path)
+            osmfile = OsmFile()
+            data = osmfile.loadFile(path)
         elif path.suffix == ".csv":
             log.debug(f"Parsing csv files {path}")
             odk = ODKParsers()
@@ -947,80 +848,6 @@ class Conflator(object):
         timer.stop()
         return newdata
         # return alldata
-
-    def writeOSM(self,
-                 data: list,
-                 filespec: str,
-                 ):
-        """
-        Write the data to an OSM XML file.
-
-        Args:
-            data (list): The list of GeoJson features
-            filespec (str): The output file name
-        """
-        osm = OsmFile(filespec)
-        negid = -100
-        id = -1
-        out = str()
-        newmvum = list()
-        for entry in data:
-            version = 1
-            tags = entry["properties"]
-            if "osm_id" in tags:
-                id = tags["osm_id"]
-            elif "id" in tags:
-                id = tags["id"]
-            elif "id" not in tags:
-                # There is no id or version for non OSM features
-                id -= 1
-            if "version" in entry["properties"]:
-                version = int(entry["properties"]["version"])
-                version += 1
-            # if id == 814085818:
-            #    breakpoint()
-            attrs = {"id": id, "version": version}
-            # These are OSM attributes, not tags
-            if "id" in tags:
-                del tags["id"]
-            if "version" in tags:
-                del tags["version"]
-            item = {"attrs": attrs, "tags": tags}
-            # if entry["geometry"]["type"] == "LineString" or entry["geometry"]["type"] == "Polygon":
-            # print(entry)
-            out = str()
-            if entry["geometry"] is not None and entry["geometry"]["type"] == "Point":
-                # It's a node referenced by a way
-                item["attrs"]["lon"] = entry["geometry"]["coordinates"][0]
-                item["attrs"]["lat"] = entry["geometry"]["coordinates"][1]
-                if "timestamp" in item["tags"]:
-                    item["attrs"]["timestamp"] = item["tags"]["timestamp"]
-                    del item["tags"]["timestamp"]
-                # referenced nodes should have no tags
-                del item["tags"]
-                # FIXME: determine if we need to write nodes
-                # out = osm.createNode(item, False)
-                continue
-            else:
-                # OSM ways don't have a geometry, just references to node IDs.
-                # The OSM XML file won't have any nodes, so at first won't
-                # display in JOSM until you do a File->"Update modified",
-                if "refs" not in tags:
-                    # log.debug(f"No Refs, so new MVUM road not in OSM {tags}")
-                    # tags["fixme"] = "New road from MVUM, don't add!"
-                    # FIXME: for now we don't do anything with new roads from
-                    # an external dataset, because that would be an import.
-                    newmvum.append(entry)
-                    continue
-                if len(tags['refs']) > 0:
-                    if type(tags["refs"]) != list:
-                        item["refs"] = eval(tags["refs"])
-                    else:
-                        item["refs"] = tags["refs"]
-                    del tags["refs"]
-                    out = osm.createWay(item, True)
-            if len(out) > 0:
-                osm.write(out)
 
     def writeGeoJson(self,
                  data: dict,
@@ -1149,8 +976,8 @@ osm-rawdata project on pypi.org or https://github.com/hotosm/osm-rawdata.
     # breakpoint()
     # path = Path(args.outfile)
     osmout  = args.outfile.replace(".geojson", "-out.osm")
-
-    conflate.writeOSM(data[0], osmout)
+    osm = OsmFile()
+    osm.writeOSM(data[0], osmout)
     log.info(f"Wrote {osmout}")
 
     jsonout = args.outfile.replace(".geojson", "-out.geojson")

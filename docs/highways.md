@@ -96,23 +96,24 @@ we want for conflation into the OSM equivalent tag/value. For
 conflation to work really well, all the datasets must use the same
 schema for the tags and values.
 
-Since the MVUM dataset covers the entire country, I build a directory
-tree in which the deeper you go, the smaller the datasets are. I have
-the National Forest Service Administrative boundaries unpacked into a
-top level directory. From there I chop the national dataset into just
-the data for a forest. This is still a large file, but manageable to
-edit. Sometimes with rural highway mapping, a large area works
-better. If there are plans to use the [Tasking
+Since the MVUM and RoadCore datasets covers the entire country, I
+build a directory tree in which the deeper you go, the smaller the
+datasets are. I have the National Forest Service Administrative
+boundaries unpacked into a top level directory. From there I chop the
+national dataset into just the data for a forest. This is still a
+large file, but manageable to edit. Sometimes with rural highway
+mapping, a large area works better. If there are plans to use the [Tasking
 Manager](https://tasks.openstreetmap.us/), The files are still too
 large, as TM has a 5000sq km limit.
 
 Next is generating the task boundaries for each national forest
-that'll be under the 5000km limit. I used the tm-splitter.py program
-in this project to use the national forest boundary and break it into
-squares, and clipped properly at the boundary. These task boundary
-polygons can then be used to create the project in the Tasking
-Manager, which will further split that into the size you want for
-mapping.
+that'll be under the 5000km limit. I used the
+[tm-splitter.py](https://osm-merge.github.io/osm-merge/tm-splitter/)
+program in this project to use the national forest boundary and break
+it into squares, and clipped properly at the boundary. These task
+boundary polygons can then be used to create the project in the
+Tasking Manager, which will further split that into the size you want
+for mapping.
 
 Something to be conscious of is these external datasets are also full
 of obscure bugs. Some of the data I think hasn't been updated since
@@ -155,7 +156,7 @@ The next step is to delete everything but highways from the OSM XML
 file. When conflating highways, we don't care about amenities or
 waterways.
 
-The prefered data extraction program for conflation is the
+The preferred data extraction program for conflation is the
 [osmhighways.py](https://github.com/hotosm/osm-merge/blob/main/utilities/osmhighways.py) program, which has much more fine-grained control,
 and also replaces the older fixname.py program and fixes the issues
 when the *name* field is actually a reference. It also deletes the
@@ -292,14 +293,15 @@ is overwritten by the primary data source, the current value becomes
 *old_*, ie... *name* becomes *old_name*, and then name is updated to
 the current value. Sometimes when editing the difference in the names
 is due to abbreviations being used, spelling mistakes, etc... so the
-*old_name* can be deleted.
+*old_name* can be deleted. This way the final validation is done by
+the mapper.
 
-When conflating multiple datasets, those need to
-be conflated against each other before conflating with OSM. Since the
-topographical dataset is what matches a paper map, or GeoPDF, I
-consider that the primary dataset. The MVUM and trail data are
-particularly full of mistakes. Sometimes one dataset has a name, and
-the other doesn't, so conflation here produces that value.
+When conflating multiple datasets, those need to be conflated against
+each other before conflating with OSM. Since the topographical dataset
+is what matches a paper map, or GeoPDF, I consider that the primary
+dataset. The MVUM and trail data are particularly full of
+mistakes. Sometimes one dataset has a name, and the other doesn't, so
+conflation here produces that value.
 
 There are also many, many highways in these areas that in OSM only
 have **highway=something**. These are easy to conflate as you are only
@@ -324,6 +326,27 @@ find all other highways within a short distance, and then check the
 slope to eliminate a side road that may be touching. At the lower
 level, there is a lot of support for dealing with the bugs in the
 external datasets.
+
+### Highway Segments
+
+In all highway datasets a longer highway may be broken into
+segments. These changing segments may be due to the surface changing,
+speed limit changing. etc... and may be organized into a group of
+some kind.
+
+The fun starts when the segments used for the OSM highway aren't the
+same as the segments in the external datasets MultiLineString. Often
+in the external dataset there are no segments at all, just a long
+LineString. In OSM the same highway may be broken into multiple
+segments since often the data is more detailed.
+
+The algorithm for the geometry calculations tries to compare each
+segment from the primary dataset (if there are any), with any highway
+segment in the secondary dataset (probably OSM). Later when processing
+all the possible segments of any highway close to the primary segment,
+the name and reference numbers are checked, and if they match, the new
+tags from the external dataset are applied to all the matching
+segments in the secondary.
 
 ### Editing in JOSM
 
@@ -405,7 +428,9 @@ and then create a new OSM layer. I select all the highways in the
 task, and load them into the TODO plugin. Sometimes there are so few
 highways, I don't use the TODO plugin. I then cut the tags and values
 for a feature from the GeoJson file, then switch to the OSM layer, and
-paste the tags into the feature.
+paste the tags into the feature. This is often the way this data has
+been updated in OSM in the past. Fine for smaller datasets, tedious for
+large datasets.
 
 ## Validating
 

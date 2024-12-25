@@ -83,6 +83,7 @@ nav:
       - Basemapper: basemapper.md
       - Odk2osm: odk2osm.md
       - Osm2favorites: osm2favorites.md
+      - dbextract: dbextract.md
   - Data Conversion:
       - Data Formats: formats.md
       - MVUM: mvum.md
@@ -98,3 +99,4 @@ nav:
       - filter_data: api/filter_data.md
       - odk2osm: api/odk2osm.md
       - parsers: api/parsers.md
+      - dbextract: api/dbextract.md

@@ -705,15 +705,17 @@ class Conflator(object):
         log.info(f"The secondary dataset has {len(secondarydata)} entries")
 
         # Make threading optional for easier debugging
-        single = True
-        # single = False
+        # single = True
+        single = False
 
         if single:
             alldata = conflateThread(primarydata, secondarydata)
         else:
             futures = list()
+            newdata = list()
             with concurrent.futures.ProcessPoolExecutor(max_workers=cores) as executor:
                 for block in range(0, entries, chunk):
+                    data = list()
                     future = executor.submit(conflateThread,
                             primarydata[block:block + chunk - 1],
                             secondarydata,
@@ -722,8 +724,12 @@ class Conflator(object):
                     futures.append(future)
                 #for thread in concurrent.futures.wait(futures, return_when='ALL_COMPLETED'):
                 for future in concurrent.futures.as_completed(futures):
-                    log.debug(f"Waiting for thread to complete..")
-                    alldata += future.result()
+                    res = future.result()
+                    log.debug(f"Waiting for thread to complete.., {len(res[0])}")
+                    # alldata += future.result()
+                    data.extend(res[0])
+                    newdata.extend(res[1])
+                    alldata = [data, newdata]
 
             executor.shutdown()
 

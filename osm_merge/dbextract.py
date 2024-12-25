@@ -26,11 +26,12 @@ import argparse
 from pathlib import Path
 import geojson
 from geojson import Feature, FeatureCollection, LineString
-from geojson import Point, Feature, FeatureCollection, LineString
+# from geojson import Point, Feature, FeatureCollection, LineString
 from shapely.geometry import LineString, shape
 import shapely
 import psycopg2
 from osm_merge.osmfile import OsmFile
+from datetime import datetime
 
 
 # Instantiate logger
@@ -44,7 +45,7 @@ def main():
     """
     This program queries a postgres database as maintained by Underpass.
     """
-    parser = argparse.ArgumentParser(description="Convert ODK XML instance file to OSM XML format")
+    parser = argparse.ArgumentParser(description="Query a DB and output to OSM XML format")
     parser.add_argument("-v", "--verbose", nargs="?", const="0", help="verbose output")
     parser.add_argument("-b","--boundary", help='Optional boundary to clip the data')
     parser.add_argument("-o","--outfile", default='out.geojson', help='The output file')
@@ -92,7 +93,7 @@ def main():
     for row in result:
         osm_id = row[0]
         version = row[1]
-        # timestamp = row[2]
+        timestamp = row[2]
         refs = row[3]
         tags = row[4]
         geom = shapely.from_wkt(row[5])
@@ -109,7 +110,7 @@ def main():
         file.close()
     elif path.suffix == '.osm':
         osm = OsmFile()
-        osm.writeOSM(features, "foo.osm")
+        osm.writeOSM(features, args.outfile)
 
     log.info(f"Wrote {args.outfile}")
 

@@ -30,6 +30,8 @@ from geojson import Point, Feature, FeatureCollection, LineString
 from shapely.geometry import LineString, shape
 import shapely
 import psycopg2
+from osm_merge.osmfile import OsmFile
+
 
 # Instantiate logger
 log = logging.getLogger(__name__)
@@ -39,8 +41,8 @@ rootdir = om.__path__[0]
 
 
 def main():
-    """This is a program that reads in the ODK Instance file, which is in XML,
-    and converts it to an OSM XML file so it can be viewed in an editor.
+    """
+    This program queries a postgres database as maintained by Underpass.
     """
     parser = argparse.ArgumentParser(description="Convert ODK XML instance file to OSM XML format")
     parser.add_argument("-v", "--verbose", nargs="?", const="0", help="verbose output")
@@ -99,12 +101,18 @@ def main():
         # print(data)
         features.append(Feature(geometry=geom, properties=data))
 
-    file = open(args.outfile, "w")
-    geojson.dump(FeatureCollection(features), file)
-    file.close()
+    path = Path(args.outfile)
+
+    if path.suffix == '.geojson':
+        file = open(args.outfile, "w")
+        geojson.dump(FeatureCollection(features), file)
+        file.close()
+    elif path.suffix == '.osm':
+        osm = OsmFile()
+        osm.writeOSM(features, "foo.osm")
 
     log.info(f"Wrote {args.outfile}")
-    
+
 if __name__ == "__main__":
     """This is just a hook so this file can be run standalone during development."""
     main()

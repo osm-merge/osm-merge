@@ -7,25 +7,64 @@ efficient as possible. Conflating large datasets can be very time
 consuming, so working with smaller files generates results quicker for
 the area you are focused on mapping.
 
+It is also possible to use the pre or post conflation data files in
+JOSM without the Tasking Manager if the density of the data per task
+isn't too large. 100 Highways or less seems to be the most efficient
+density per task. Included in this project is a utility,
+[TM Splitter](https://osm-merge.github.io/osm-merge/tm-splitter/) that
+can be used to generated a grid of tasks that are smaller if you have
+the project boundary (AOI).
+
+## Tasking Manager
+
 The other goal is to prepare the data for [Tasking
 Manager (TM)](https://wiki.openstreetmap.org/wiki/Tasking_Manager). TM
-has a project size limit of 5000km sq, and since we'll be using the
-Tasking Manager, each national forest or park needs to be split into
-project sized areas of interest. Each of these is used when creating
-the TM project.
+has a project size limit of 5000km sq, which is also a good size when
+not using the TM. Each national forest or park needs to be split into
+a grid of TM sized tasks. Each of these is used when creating the
+TM project.
 
 When you select a task in the TM project, it'll download an OSM
 extract and satellite imagery for that task. We don't really need
 those, as we're dealing with disk files, not remote mapping. While
-it's entirely possible to use the project sized data extracts, I also
-create a custom task boundaries files for TM, and make small task
+it's entirely possible to use the TM project sized data extracts, I
+also create a custom task boundaries files for TM, and make small task
 sized extracts that are relatively quick to conflate and validate.
 
-# Download the Datasets
+# Getting The Data
+
+To make any progress. obviously data is needed. Often getting the data
+and processing it can be the hard part for a mapper wanting to improve
+the metadata in OSM for remote highways and trails in one area. While
+the nationwide data sets are available. it can be tedious and time
+consuming to manage all the data.
+
+## Data Extracts
+
+This project hosts data extracts broken down by national forest, park,
+or wilderness areas on the [OSM Merge](https://osmmerge.org/]) project
+website. These are the output files of the conversion and data
+cleaning process for MVUM, RoadCore. or Trails data. The conversion
+utilities are [documented
+here](https://osm-merge.github.io/osm-merge/utilities/). This process
+does several things. For external datasets, it drops unnecessary data
+fields from the original data schemas, and converts the data fields
+suitable for OpenStreetMap into an OSM schema for conflation. For OSM
+data extracts, it also correct multiple data quality issues, like
+expanding abbreviations, more USFS reference numbers from the *name*
+field into the appropriate *ref:usfs** for OSM.
+
+There are other projects for converting the original datasets to OSM
+syntax, that do a similar function. Those are
+[usfs-to-osm](https://github.com/jake-low/usfs-to-osm) and
+[nps-to-osm](https://github.com/jake-low/nps-to-osm), and generate
+files that can also be used for conflation.
+
+## Original Sources
 
 All the datasets are of course publicly available. The primary
-source of the Motor Vehicle Use Map (MVUM) is available from the 
-[FSGeodata
+source of the Motor Vehicle Use Map (MVUM) and RoadCore data is
+available from the [FSGeodata
 Clearinghouse](https://data.fs.usda.gov/geodata/edw/datasets.php?dsetCategory=transportation),
 which is maintained by the [USDA](https://www.usda.gov/). The
 Topographical map vector tiles are [available from
@@ -34,93 +73,66 @@ which is maintained by the National Forest Service. OpenStreetMap data
 for a country can be downloaded from
 [Geofabrik](http://download.geofabrik.de/north-america.html). National
 Park trail data is available from the
-[NPS Publish](https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.TrailNFS_Publish.zip)
+[NFS Publish](https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.TrailNFS_Publish.zip)
 site.
 
 # Initial Setup
 
-As we split up the initial datasets this will generate a lot of files
-if you plan to work with multiple national forests or parks. I use a
-tree structure. At the top is the directory with all the source
-files. You also need a directory with the national forest or park
-boundaries which get used for data clipping.
+## Small Scale
 
-Once I have the source files ready, I start the splitting up process
-to make data extracts for each forest or park. If you are only working
-on one forest or park, you can do this manually. Since I'm working
-with data for multiple states, I wrote a shell script to automate the
-process.
+Many mappers are focused on a few (potentially large) areas that
+interest them. They are often out ground-truthing the map data (or
+lack thereof) in OSM. For the mappers that may want to add metadata
+for their favorite areas, this project makes the smaller datasets
+available so they can focus on mapping, instead of data manipulation.
 
-## update.sh
+These data extracts are available from the project website, and as
+legacy datasets, the MVUM, RoadCore, and Trails dataset extracts only
+get updated when there are improvements made to the conversion
+utilities.
 
-Most of the process is executing other external programs like
-[osmium](https://osmcode.org/osmium-tool/) or
-[ogr2ogr](https://gdal.org/programs/ogr2ogr.html), so I wrote a bourne
-shell script to handle all the repetitious tasks. This also lets me
-easily regenerate all the files if I make a change to any of the
-utilities or the process. This uses a modern shell syntax with
-functions and data structures to reduce cut & paste.
+* [National Forests](https://osmmerge.org/SourceData/Forests)
+* [National Parks](https://osmmerge.org/SourceData/Parks)
+* [National Wilderness](https://osmmerge.org/SourceData/Wilderness)
 
-The command line options this program supports are:
+There are also extracts from OpenStreetMap for each area, as
+well. Note that these can be out of date since OSM is constantly
+changing. These extracts have been converted as well, so the
+guidelines on [automated
+edits](https://wiki.openstreetmap.org/wiki/Automated_Edits_code_of_conduct)
+apply. Each feature must be validated manually, the goal is to make
+this validation process as efficient as possible.
 
-	--tasks (-t): Split tasks boundaries into files for ogr2ogr
-	--forests (-f): Build only the National Forests
-	--datasets (-d): Build only this dataset for all boundaries
-	--split (-s): Split the AOI into tasks, also very slow
-	--extract (-e): Make a data extract from OSM
-	--only (-o): Only process one state
-	--dryrun (-n): Don't actually write any datafiles
-	--clean (-c): Remove generated task files
-	--base (-b): build all base datasets, which is slow
-	
-The locations of the files is configurable, so it can easily be
-extended for other forests or parks. This script is in the utilities
-directory of this project.
+The conversion does two primary tasks. One is it drops all the ancient
+__tiger:__ tags that the community has decided are meaningless to
+OSM. Also non OSM tags from old partial imports like __SOURCEID__ are
+also deleted. It also looks for a possible forest service reference
+number in the *name* or *ref* field, and moves it to the proper
+*ref:usfs*, with a *"FR"* prefix. This saves much cut & paste later
+when validating the results.
 
-This also assumes you want to build a tree of output directories.
+For more detail on validating the converted and/or conflated files,
+there is a detailed document on [validating with
+JOSM](validating.md). Since reviewing and updating all the remote
+trails and highways for the entire US is a huge task, this project is
+very focused on supporting that dataflow for other mappers so they can
+concentrate on validating and mapping their favorite areas.
 
-For example I use this layout:
+## Large Scale
 
-	SourceData
-		-> Tasks
-			-> Colorado
-				-> Medicine_Bow_Routt_National_Forest_Tasks
-					-> Medicine_Bow_Routt_Task_[task number]
-				-> Rocky_Mountain_National_Park_Task
-					-> Rocky_Mountain_National_Park_Task_[task number]
-	        -> Utah
-				-> Bryce_Canyon_National_Park_Tasks
-			etc...
-			
-All my source datasets are in __SourceData__.   In the __Tasks__
-directory I have all the Multi Polygon files for each forest or park. I
-create these files by running *update.sh --split*. These are the large
-files that have the AOI split into 5000-km sq polygons.
-
-Since I'm working with multiple states, that's the next level, and
-only contains the sub directories for all the forests or parks in that
-state. Currently I have all the data for all the public lands in
-Colorado, Utah, and Wyoming. Under each sub directory are the
-individual task polygons for that area. If small TM task sized data
-extracts are desired, all of the small tasks is under the last
-directory. Those task files are roughly 10km sq.
-
-## Boundaries
-
-You need boundaries with a good geometry. These can be extracted from
-OpenStreetMap, they're usually relations. The official boundaries are
-also available from the same site as the datasets as a Multi Polygon.
-
-I use the [TM Splitter](tm-splitter.md) utility included in this project
-to split the Multi Polygon into separate files, one for each forest or
-park. Each of these files are also a Multi Polygon, often a national
-forest has several areas that aren't connected.
+Maintaining data extracts for multiple areas requires more manual work
+than just mapping. For one thing, it'll consume a lot of disk space
+and cpu cycles. Setting up a [large scale](setup.md) data extract is
+covered in detail in that document.
 
 ## Processing The Data
 
 To support conflation, all the datasets need to be filtered to fix
 known issues, and to standardize the data. The OpenStreetMap tagging
-schema is used for all data.
+schema is used for all data. You can skip this section if using data
+extracts from the [OSM Merge](https://osmmerge.org) as the conversion
+is already done. Or if you are interested in the details of the
+conversion process between data formats.
 
 Each of the external datasets has it's own conversion process, which
 is documented in detail here:
@@ -141,20 +153,27 @@ directory.
 
 # Conflation
 
-Once all the files and infrastructure is ready, then I can conflate
-the external datasets with OpenStreetMap. Here is a detailed
+Once all the files and infrastructure is ready, then conflating
+the external datasets with OpenStreetMap can start. Here is a detailed
 description of [conflating highways](highways.md). Conflating with 
 [OpenDataKit](odkconflation.md) is also documented. The final result
-of conflation is an OSM XML file for JOSM. The size of this file is
-determined by task boundaries you've created.
+of conflation is an OSM XML file for JOSM, and a GeoJson for other
+editors. The size of this file is determined by task boundaries you've
+created.
 
 If you want to use TM, then create the project with the 5000km sq task
 boundary, and fill in all the information required. Then select your
 task from the TM project and get started with validation.
 
+Conflation uses primary and secondary datasets. Any data in the
+primary is considered to be the *official name* or reference
+number. Where there is an existing name in OSM, it's changed to an
+*alt_name* so it can be manually validated. No data is lost, just
+renamed, leaving it up to the mapper to decide.
+
 ## Validation
 
-Now the real fun starts after all this prep work. The goal is to make
+The real fun starts after all this prep work. The goal is to make
 this part of the process, validating the data and improving OSM as
 efficient as possible. If it's not efficient, manual conflation is
 incredibly time-consuming, tedious, and boring. Which is probably why

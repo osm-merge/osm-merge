@@ -1,13 +1,16 @@
 # Validating The Conflation
 
 Every feature must be validated before it can be uploaded to
-OpenStreetMap. OSM discourages machine editing without human
-intervention. This software doesn't make any geometry changes, just
-tags. At it's core, conflation is just merging tags between datasets
-to avoid tedious cut & paste. But this still needs to be validated as
-bugs and inconsistencies in the datasets can sneak in.
+OpenStreetMap. OSM [discourages automated
+edits](https://wiki.openstreetmap.org/wiki/Automated_Edits_code_of_conduct) 
+without human intervention. This software doesn't make any geometry
+changes, just tags, but still needs to be reviewed carefully.
+<a href=https://osmmerge.org/images/qgishighways.png><img
+src="https://osmmerge.org/images/qgishighways.png" align=right alt="drawing" width="400"/></a>
 
-[![Highways in QGIS](assets/validation/small-qgishighways.png){width=300 height=200}](http://5.78.72.214/fieldmapper/images/qgishighways.png)
+At it's core, conflation is just merging tags between datasets to
+avoid tedious cut & paste. But this still needs to be validated as
+bugs and inconsistencies in the datasets can sneak in.
 
 ## My Process
 
@@ -49,13 +52,15 @@ validating conflation results.
 
 Sometimes you see an external trail or highway that is not in the
 conflated data. This is because that highway is not currently in OSM,
-so we ignore it since we're focused on existing features. When you
-have the external dataset and OSM loaded in JOSM as layers, this
+so we ignore it since we're focused on existing features.
+
+<a href=https://osmmerge.org/images/mvum-osm.png><img
+src="https://osmmerge.org/images/small-mvum-osm.png" align=left alt="drawing" width="500"/></a>
+
+When youhave the external dataset and OSM loaded in JOSM as layers, this
 screenshot shows the other layers under the conflated data and show as
 black lines. It's easy to see which layer it came from by toggling the
 layers on and off.
-
-[![Missed highways screenshot](assets/validation/small-mvum-osm.png){width=300 height=200}](http://5.78.72.214/fieldmapper/images/mvum-osm.png)
 
 The conflation software can also produce a data file of highways in
 the MVUM dataset that aren't in OSM. Importing those is a different
@@ -68,10 +73,15 @@ official sources.
 Sometimes the external datset has missing segments, where OSM has the
 entire highway. You can see in this screenshot of an MVUM highway
 on top of an OSM basemap. The MVUM highway is missing the middle
-segment. The conflation software sucessfully merges the tags from the
-external dataset to the complete OSM highway feature.
+segment.
 
-[![Missing segments screenshot](assets/validation/small-missingsegments.png){width=300 height=200}](http://5.78.72.214/fieldmapper/images/missingsegments.png)
+<a href=https://osmmerge.org/images/missingsegments.png><img
+src="https://osmmerge.org/images/small-missingsegments.png"
+align=right alt="drawing" width="500"/></a>
+
+
+The conflation software sucessfully merges the tags from the
+external dataset to the complete OSM highway feature.
 
 Currently any features that are an exact match between the external
 dataset and OSM are not in the conflated output to reduce the data
@@ -85,7 +95,8 @@ it for the official reference number. Often the reference numbers in
 the basemap are truncated, so you may think there is a problem. The
 reference number in the MVUM dataset is the correct one.
 
-[![Bad Topo reference numbers](assets/validation/badtopo2.png){width=300 height=200}](http://5.78.72.214/fieldmapper/images/badtopo2.png)
+<a href=https://osmmerge.org/images/badtopo2.png><img
+src="https://osmmerge.org/images/badtopo2.png" align=left alt="drawing" width="400"/></a>
 
 The other issue with reference numbers is also related to them being
 truncated. Older versions of the external datasets are often missing
@@ -129,6 +140,9 @@ imported from the same external dataset I'm conflating, so identical
 other than lacking metadata. These an easy to validate since we have
 high confidence the external feature matches the OSM feature.
 
+<a href=https://osmmerge.org/images/wayoff.png><img
+src="https://osmmerge.org/images/small-wayoff.png" align=right alt="drawing" width="500"/></a>
+
 Sometimes though you get a similar geometry, but they are
 parallel. This happens for highways that were traced off of satelloite
 imagery as the offsets vary. You can see in this screenshot that the
@@ -137,15 +151,14 @@ tags into the OSM feature, which currently is only *highway=track*. At
 some point it'd be good to go back through and fix the geometry, but
 for now we're just focused on improving the tags.
 
-[![Way off highways that matched](assets/validation/small-wayoff.png){width=300 height=200}](http://5.78.72.214/fieldmapper/images/wayoff.png)
-
 When highways are traced from satellite imagery, sometimes they don't
 match the geometry in the external dataset. While too much differences
 in geometry can lead to false positives, we don't want to only
 identify an exact match. There are steering paramaters on how much
 difference is acceptable.
 
-[![Poor geometry matched](assets/validation/small-geommatch.png){width=300 height=200}](http://5.78.72.214/fieldmapper/images/geommatch.png)
+<a href=https://osmmerge.org/images/geommatch.png><img
+src="https://osmmerge.org/images/small-geommatch.png" align=left alt="drawing" width="500"/></a>
 
 ## Splitting Forks
 
@@ -158,7 +171,8 @@ the highway continues on the wrong branch of the fork. This obviously
 gets flagged by the conflation process, but needs to be fixed
 manually.
 
-[![Split highway at fork](assets/validation/small-splitfork.png){width=300 height=200}](http://5.78.72.214/fieldmapper/images/splitfork.png)
+<a href=https://osmmerge.org/images/splitfork.png><img
+src="https://osmmerge.org/images/small-splitfork.png" align=right alt="drawing" width="500"/></a>
 
 I try to fix these as I come across them as I'm validating the
 conflation results. Since conflation is not fast, I have time between

@@ -10,26 +10,28 @@
       
       
       
-        <link rel="canonical" href="https://osmmerge.org/api/dbextract/">
+        <link rel="canonical" href="https://osmmerge.org/setup/">
       
       
-        <link rel="prev" href="../parsers/">
+        <link rel="prev" href="../dataflow/">
       
       
+        <link rel="next" href="../conflation/">
       
-      <link rel="icon" href="../../assets/favicon.png">
+      
+      <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>dbextract - osm-merge</title>
+        <title>Setup Infrastructure - osm-merge</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,11 +50,11 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../css/extra.css">
+      <link rel="stylesheet" href="../css/extra.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#db-extract" class="md-skip">
+        <a href="#boundaries" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +94,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
+    <a href=".." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
       
-  <img src="../../assets/osmus-logo.svg" alt="logo">
+  <img src="../assets/osmus-logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              dbextract
+              Setup Infrastructure
             
           </span>
         </div>
@@ -198,9 +200,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
+    <a href=".." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
       
-  <img src="../../assets/osmus-logo.svg" alt="logo">
+  <img src="../assets/osmus-logo.svg" alt="logo">
 
     </a>
     osm-merge
@@ -227,7 +229,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -282,7 +284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/" class="md-nav__link">
+      <a href="../about/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -303,7 +305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../LICENSE/" class="md-nav__link">
+      <a href="../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -324,7 +326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CHANGELOG/" class="md-nav__link">
+      <a href="../CHANGELOG/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -394,7 +396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dataflow/" class="md-nav__link">
+      <a href="../dataflow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -411,10 +413,28 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../setup/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Setup Infrastructure
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -423,6 +443,44 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Boundaries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#updatesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      update.sh
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -469,7 +527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../conflation/" class="md-nav__link">
+      <a href="../conflation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -490,7 +548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../odkconflation/" class="md-nav__link">
+      <a href="../odkconflation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -511,7 +569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../highways/" class="md-nav__link">
+      <a href="../highways/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -532,7 +590,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculations/" class="md-nav__link">
+      <a href="../calculations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -553,7 +611,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../validating/" class="md-nav__link">
+      <a href="../validating/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -574,7 +632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../boundaries/" class="md-nav__link">
+      <a href="../boundaries/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -637,7 +695,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utilities/" class="md-nav__link">
+      <a href="../utilities/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -658,7 +716,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../osm-merge/" class="md-nav__link">
+      <a href="../osm-merge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -679,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tm-splitter/" class="md-nav__link">
+      <a href="../tm-splitter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -700,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../basemapper/" class="md-nav__link">
+      <a href="../basemapper/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -721,7 +779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../odk2osm/" class="md-nav__link">
+      <a href="../odk2osm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -742,7 +800,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../osm2favorites/" class="md-nav__link">
+      <a href="../osm2favorites/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -763,7 +821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dbextract/" class="md-nav__link">
+      <a href="../dbextract/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -826,7 +884,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../formats/" class="md-nav__link">
+      <a href="../formats/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -847,7 +905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mvum/" class="md-nav__link">
+      <a href="../mvum/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -868,7 +926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../trails/" class="md-nav__link">
+      <a href="../trails/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -889,7 +947,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../osmhighways/" class="md-nav__link">
+      <a href="../osmhighways/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -914,19 +972,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -940,7 +996,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             API
@@ -954,7 +1010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../basemapper/" class="md-nav__link">
+      <a href="../api/basemapper/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -975,7 +1031,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../convert/" class="md-nav__link">
+      <a href="../api/convert/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -996,7 +1052,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../conflator/" class="md-nav__link">
+      <a href="../api/conflator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1017,7 +1073,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sqlite/" class="md-nav__link">
+      <a href="../api/sqlite/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1038,7 +1094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../osmfile/" class="md-nav__link">
+      <a href="../api/osmfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1059,7 +1115,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../yamlfile/" class="md-nav__link">
+      <a href="../api/yamlfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1080,7 +1136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../filter_data/" class="md-nav__link">
+      <a href="../api/filter_data/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1101,7 +1157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../odk2osm/" class="md-nav__link">
+      <a href="../api/odk2osm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1122,7 +1178,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../parsers/" class="md-nav__link">
+      <a href="../api/parsers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1140,30 +1196,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    dbextract
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../api/dbextract/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1172,46 +1208,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="Page contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Page contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#osm_merge.dbextract" class="md-nav__link">
-    <span class="md-ellipsis">
-      dbextract
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#osm_merge.dbextract.main" class="md-nav__link">
-    <span class="md-ellipsis">
-      main
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1243,8 +1239,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1253,18 +1247,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#osm_merge.dbextract" class="md-nav__link">
+  <a href="#boundaries" class="md-nav__link">
     <span class="md-ellipsis">
-      dbextract
+      Boundaries
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#osm_merge.dbextract.main" class="md-nav__link">
+  <a href="#updatesh" class="md-nav__link">
     <span class="md-ellipsis">
-      main
+      update.sh
     </span>
   </a>
   
@@ -1288,208 +1282,91 @@
   
 
 
-<h1 id="db-extract">DB Extract<a class="headerlink" href="#db-extract" title="Permanent link">&para;</a></h1>
+  <h1>Setup Infrastructure</h1>
 
-
-<div class="doc doc-object doc-module">
-
-
-
-<a id="osm_merge.dbextract"></a>
-    <div class="doc doc-contents first">
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="osm_merge.dbextract.main" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">main</span>
-
-
-<a href="#osm_merge.dbextract.main" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">main</span><span class="p">()</span>
+<p>This is more focused on the backend of the website that makes all the
+processed data available. Or other crazy people who have a need to
+work on much larger areas. The output datasets this will generate a
+lot of files if you plan to work with multiple national forests or
+parks. I use a tree structure. At the top is the directory with all
+the source files. You also need a directory with the national forest
+or park boundaries which get used for data clipping.</p>
+<p>Once I have the source files ready, I start the splitting up process
+to make data extracts for each forest or park. If you are only working
+on one forest or park, you can do this manually. Since I'm working
+with data for multiple states, I wrote a shell script to automate the
+process. For OSM, you need to either merge multiple state level data
+into a single file, or use the very large US dataset.</p>
+<p>Since this project is focused on remote highways and trails, for the
+source OSM dataset I use a subset of the entire US, a data extract of
+only highways. This will get clipped by the boundary of each area when
+updating source datasets.</p>
+<h2 id="boundaries">Boundaries<a class="headerlink" href="#boundaries" title="Permanent link">&para;</a></h2>
+<p>You need boundaries with a good geometry. These can be extracted from
+OpenStreetMap, they're usually relations. The official boundaries are
+also available from the same site as the datasets as a
+MultiPolygon. This file contains boundaries for the entire US, so to
+use other tools like <a href="https://gdal.org/programs/ogr2ogr.html">ogr2ogr</a>
+or <a href="https://osmcode.org/osmium-tool/">osmium</a>, it needs to be split
+into separate files.</p>
+<p>I use the <a href="../tm-splitter/">TM Splitter</a> utility included in this project
+to split the MultiPolygon into these separate files, one for each
+public land area. Each of these files are also a MultiPolygon, since
+often a national forest or park has several areas that aren't
+connected.</p>
+<h2 id="updatesh">update.sh<a class="headerlink" href="#updatesh" title="Permanent link">&para;</a></h2>
+<p>Most of the process is executing other external programs like
+<a href="https://osmcode.org/osmium-tool/">osmium</a> or
+<a href="https://gdal.org/programs/ogr2ogr.html">ogr2ogr</a>, so I wrote a bourne
+shell script to handle all the repetitious tasks. This also lets me
+easily regenerate all the files if I make a change to any of the
+utilities or the process. This uses a modern shell syntax with
+functions and data structures to reduce cut &amp; paste.</p>
+<p>The command line options this program supports are:</p>
+<div class="highlight"><pre><span></span><code>--tasks (-t): Split tasks boundaries into files for ogr2ogr
+--datasets (-d): Build only this dataset for all boundaries
+--split (-s): Split the AOI into tasks, also very slow
+--extract (-e): Make a data extract from OSM
+--only (-o): Only process one state
+--dry run (-n): Don&#39;t actually write any datafiles
+--base (-b): build all base datasets, which is slow
 </code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>This program queries a postgres database as maintained by Underpass.</p>
-
-            <details class="quote">
-              <summary>Source code in <code>osm_merge/dbextract.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This program queries a postgres database as maintained by Underpass.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Query a DB and output to OSM XML format&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;verbose output&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-b&quot;</span><span class="p">,</span><span class="s2">&quot;--boundary&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Optional boundary to clip the data&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span><span class="s2">&quot;--outfile&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;out.geojson&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The output file&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;--uri&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;localhost/underpass&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Database URI&quot;</span><span class="p">)</span>
-
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-
-    <span class="c1"># if verbose, dump to the terminal</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
-            <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
-            <span class="nb">format</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(threadName)10s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">),</span>
-            <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span>
-            <span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;dbname=underpass&quot;</span>
-        <span class="n">pg</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-        <span class="n">curs</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t connect to database: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-
-    <span class="c1"># Make a temporary view to reduce the data size</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">boundary</span><span class="p">:</span>
-        <span class="c1"># optionally clip by a boundary</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">boundary</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">geojson</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="n">aoi</span> <span class="o">=</span> <span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags-&gt;&gt;&#39;highway&#39; IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT(&#39;SRID=4326;</span><span class="si">{</span><span class="n">aoi</span><span class="o">.</span><span class="n">wkt</span><span class="si">}</span><span class="s2">&#39;), geom)&quot;</span>
-        <span class="c1"># print(sql)</span>
-        <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># By default, get all the highways</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags-&gt;&gt;&#39;highway&#39; IS NOT NULL&quot;</span>
-        <span class="c1"># print(sql)</span>
-        <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-
-    <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT osm_id,version,timestamp,refs,tags,ST_AsTEXT(geom) FROM highway_view WHERE tags-&gt;&gt;&#39;highway&#39; IS NOT NULL;&quot;</span>
-    <span class="c1"># print(sql)</span>
-    <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">curs</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-    <span class="n">features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-        <span class="n">osm_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">refs</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
-        <span class="n">geom</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;osm_id&quot;</span><span class="p">:</span> <span class="n">osm_id</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span> <span class="s2">&quot;refs&quot;</span><span class="p">:</span> <span class="n">refs</span><span class="p">,</span> <span class="s2">&quot;geom&quot;</span><span class="p">:</span> <span class="n">geom</span><span class="p">}</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
-        <span class="c1"># print(data)</span>
-        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Feature</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geom</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">data</span><span class="p">))</span>
-
-    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outfile</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.geojson&#39;</span><span class="p">:</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
-        <span class="n">geojson</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">FeatureCollection</span><span class="p">(</span><span class="n">features</span><span class="p">),</span> <span class="n">file</span><span class="p">)</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.osm&#39;</span><span class="p">:</span>
-        <span class="n">osm</span> <span class="o">=</span> <span class="n">OsmFile</span><span class="p">()</span>
-        <span class="n">osm</span><span class="o">.</span><span class="n">writeOSM</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">outfile</span><span class="p">)</span>
-
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">outfile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-</div><p>options:
-show_source: false
-heading_level: 3</p>
+<p>The locations of the files is configurable, so it can easily be
+extended for other forests or parks. This script is in the
+<a href="https://github.com/osm-merge/osm-merge/blob/main/contrib/update.sh">cont rib</a>
+directory of this project.</p>
+<p>This also assumes you want to build a tree of output directories.</p>
+<p>For example I use this layout:</p>
+<div class="highlight"><pre><span></span><code>SourceData
+    -&gt; Tasks
+        -&gt; Colorado
+            -&gt; Medicine_Bow_Rout_National_Forest_Tasks
+                -&gt; Medicine_Bow_Rout_Task_[task number]
+            -&gt; Rocky_Mountain_National_Park_Task
+                -&gt; Rocky_Mountain_National_Park_Task_[task number]
+        -&gt; Utah
+            -&gt; Bryce_Canyon_National_Park_Tasks
+        etc...
+</code></pre></div>
+<p>All my source datasets are in <strong>SourceData</strong>.   In the <strong>Tasks</strong>
+directory I have all the Multi Polygon files for each forest or park. I
+create these files by running <em>update.sh --split</em>. These are the large
+files that have the AOI split into 5000km sq polygons.</p>
+<p>Since I'm working with multiple states, that's the next level, and
+only contains the sub directories for all the forests or parks in that
+state. Note that some national forests cross state boundaries. This
+does not effect task splitting, as that's done using the boundary of
+the entire forest. It does effect making the OSM data extract if you
+are using data downloaded from GeoFabrik, since they are usually done
+on a per state basis. The source data extract needs to cover
+multiple states, or the entire US. Multiple state data files
+can be merged using
+<a href="https://gdal.org/en/latest/programs/ogrmerge.html">ogrmerge</a>.</p>
+<p>While there is support for all the states, right now it's focused on
+Colorado, Utah, and Wyoming. I use these for debugging the data
+splitting and conversion processes, and to prepare the data extracts
+for conflation. The other states can be reactivated by uncommenting
+them in the shell script.</p>
 
 
 
@@ -1510,7 +1387,7 @@ heading_level: 3</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 25, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 27, 2024</span>
   </span>
 
     
@@ -1583,10 +1460,10 @@ heading_level: 3</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>

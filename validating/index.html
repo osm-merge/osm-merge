@@ -1442,13 +1442,15 @@
 
 <h1 id="validating-the-conflation">Validating The Conflation<a class="headerlink" href="#validating-the-conflation" title="Permanent link">&para;</a></h1>
 <p>Every feature must be validated before it can be uploaded to
-OpenStreetMap. OSM discourages machine editing without human
-intervention. This software doesn't make any geometry changes, just
-tags. At it's core, conflation is just merging tags between datasets
-to avoid tedious cut &amp; paste. But this still needs to be validated as
+OpenStreetMap. OSM <a href="https://wiki.openstreetmap.org/wiki/Automated_Edits_code_of_conduct">discourages automated
+edits</a> 
+without human intervention. This software doesn't make any geometry
+changes, just tags, but still needs to be reviewed carefully.
+<a href=https://osmmerge.org/images/qgishighways.png><img
+src="https://osmmerge.org/images/qgishighways.png" align=right alt="drawing" width="400"/></a></p>
+<p>At it's core, conflation is just merging tags between datasets to
+avoid tedious cut &amp; paste. But this still needs to be validated as
 bugs and inconsistencies in the datasets can sneak in.</p>
-<p><a href="http://5.78.72.214/fieldmapper/images/qgishighways.png"><img alt="Highways in QGIS" height="200" src="../assets/validation/small-qgishighways.png" width="300" /></a></p>
-<p><a href="https://wiki.openstreetmap.org/wiki/Automated_Edits_code_of_conduct">automated edits</a></p>
 <h2 id="my-process">My Process<a class="headerlink" href="#my-process" title="Permanent link">&para;</a></h2>
 <p>I have the two datasets that I was conflating loaded as layers in
 JOSM so I can check the original sources easily if needed. Since these
@@ -1484,12 +1486,13 @@ validating conflation results.</p>
 <h2 id="missed-highway">Missed Highway<a class="headerlink" href="#missed-highway" title="Permanent link">&para;</a></h2>
 <p>Sometimes you see an external trail or highway that is not in the
 conflated data. This is because that highway is not currently in OSM,
-so we ignore it since we're focused on existing features. When you
-have the external dataset and OSM loaded in JOSM as layers, this
+so we ignore it since we're focused on existing features.</p>
+<p><a href=https://osmmerge.org/images/mvum-osm.png><img
+src="https://osmmerge.org/images/small-mvum-osm.png" align=left alt="drawing" width="500"/></a></p>
+<p>When youhave the external dataset and OSM loaded in JOSM as layers, this
 screenshot shows the other layers under the conflated data and show as
 black lines. It's easy to see which layer it came from by toggling the
 layers on and off.</p>
-<p><a href="http://5.78.72.214/fieldmapper/images/mvum-osm.png"><img alt="Missed highways screenshot" height="200" src="../assets/validation/small-mvum-osm.png" width="300" /></a></p>
 <p>The conflation software can also produce a data file of highways in
 the MVUM dataset that aren't in OSM. Importing those is a different
 process, so not discussed here. The conflation software can also
@@ -1499,9 +1502,12 @@ official sources.</p>
 <p>Sometimes the external datset has missing segments, where OSM has the
 entire highway. You can see in this screenshot of an MVUM highway
 on top of an OSM basemap. The MVUM highway is missing the middle
-segment. The conflation software sucessfully merges the tags from the
+segment.</p>
+<p><a href=https://osmmerge.org/images/missingsegments.png><img
+src="https://osmmerge.org/images/small-missingsegments.png"
+align=right alt="drawing" width="500"/></a></p>
+<p>The conflation software sucessfully merges the tags from the
 external dataset to the complete OSM highway feature.</p>
-<p><a href="http://5.78.72.214/fieldmapper/images/missingsegments.png"><img alt="Missing segments screenshot" height="200" src="../assets/validation/small-missingsegments.png" width="300" /></a></p>
 <p>Currently any features that are an exact match between the external
 dataset and OSM are not in the conflated output to reduce the data
 that needs to be validated. If you have OSM loaded into a layer in
@@ -1511,7 +1517,8 @@ JOSM, the matched segments will be black lines.</p>
 it for the official reference number. Often the reference numbers in
 the basemap are truncated, so you may think there is a problem. The
 reference number in the MVUM dataset is the correct one.</p>
-<p><a href="http://5.78.72.214/fieldmapper/images/badtopo2.png"><img alt="Bad Topo reference numbers" height="200" src="../assets/validation/badtopo2.png" width="300" /></a></p>
+<p><a href=https://osmmerge.org/images/badtopo2.png><img
+src="https://osmmerge.org/images/badtopo2.png" align=left alt="drawing" width="400"/></a></p>
 <p>The other issue with reference numbers is also related to them being
 truncated. Older versions of the external datasets are often missing
 the <strong>.1</strong> suffix. All the newer versions of the MVUM dataset and the
@@ -1546,6 +1553,8 @@ exact match of geometries. Usually these highways segments were
 imported from the same external dataset I'm conflating, so identical
 other than lacking metadata. These an easy to validate since we have
 high confidence the external feature matches the OSM feature.</p>
+<p><a href=https://osmmerge.org/images/wayoff.png><img
+src="https://osmmerge.org/images/small-wayoff.png" align=right alt="drawing" width="500"/></a></p>
 <p>Sometimes though you get a similar geometry, but they are
 parallel. This happens for highways that were traced off of satelloite
 imagery as the offsets vary. You can see in this screenshot that the
@@ -1553,13 +1562,13 @@ conflation software sucessfully made the match, and the merged the
 tags into the OSM feature, which currently is only <em>highway=track</em>. At
 some point it'd be good to go back through and fix the geometry, but
 for now we're just focused on improving the tags.</p>
-<p><a href="http://5.78.72.214/fieldmapper/images/wayoff.png"><img alt="Way off highways that matched" height="200" src="../assets/validation/small-wayoff.png" width="300" /></a></p>
 <p>When highways are traced from satellite imagery, sometimes they don't
 match the geometry in the external dataset. While too much differences
 in geometry can lead to false positives, we don't want to only
 identify an exact match. There are steering paramaters on how much
 difference is acceptable.</p>
-<p><a href="http://5.78.72.214/fieldmapper/images/geommatch.png"><img alt="Poor geometry matched" height="200" src="../assets/validation/small-geommatch.png" width="300" /></a></p>
+<p><a href=https://osmmerge.org/images/geommatch.png><img
+src="https://osmmerge.org/images/small-geommatch.png" align=left alt="drawing" width="500"/></a></p>
 <h2 id="splitting-forks">Splitting Forks<a class="headerlink" href="#splitting-forks" title="Permanent link">&para;</a></h2>
 <p>While this project is focused on conflating metadata, and not making
 geometry changes, sometimes when validating the conflation results I
@@ -1569,7 +1578,8 @@ imagery. Unfortunately without another dataset to reference, sometimes
 the highway continues on the wrong branch of the fork. This obviously
 gets flagged by the conflation process, but needs to be fixed
 manually.</p>
-<p><a href="http://5.78.72.214/fieldmapper/images/splitfork.png"><img alt="Split highway at fork" height="200" src="../assets/validation/small-splitfork.png" width="300" /></a></p>
+<p><a href=https://osmmerge.org/images/splitfork.png><img
+src="https://osmmerge.org/images/small-splitfork.png" align=right alt="drawing" width="500"/></a></p>
 <p>I try to fix these as I come across them as I'm validating the
 conflation results. Since conflation is not fast, I have time between
 conflation runs as I improve the algorythm. Fixing these takes a few
@@ -1603,7 +1613,7 @@ fixed highways, but that is optional.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 26, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 27, 2024</span>
   </span>
 
     

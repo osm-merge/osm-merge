@@ -38,7 +38,7 @@ from progress.spinner import Spinner
 from psycopg2.extensions import connection
 from shapely.geometry import Polygon, shape, LineString, MultiPolygon, box, shape
 from shapely.geometry.geo import mapping
-from shapely.ops import split, transform
+from shapely.ops import split, transform, unary_union
 # from shapely.prepared import prep
 # from textwrap import dedent
 import argparse
@@ -72,12 +72,13 @@ warnings.simplefilter(action='ignore', category=RuntimeWarning)
 log = logging.getLogger(__name__)
 
 def splitBySquare(
-    aoi,
-    meters,
+    aoi: FeatureCollection,
+    meters: int,
     ) -> FeatureCollection:
     """Split the polygon into squares.
 
     Args:
+        aoi (FeatureCollection): The project AOI
         meters (int):  The size of each task square in meters.
 
     Returns:
@@ -125,7 +126,7 @@ def splitBySquare(
                 polygons.append(clipped_polygon)
 
     tasks = list()
-    index = 0
+    index = 1
     # JOSM can't display epsg:3857, so convert back to epsg:4326 before writing
     # the geometry.
     newproj = pyproj.Transformer.from_proj(
@@ -163,7 +164,7 @@ def make_tasks(data: FeatureCollection,
         data (FeatureCollection): The input MultiPolygon to split into tasks
         outdir (str): Output directory for the output files
     """
-    index = 0
+    index = 1
     if template.find('/') > 1:
         outdir = os.path.dirname(template)
         if not os.path.exists(outdir):
@@ -280,7 +281,15 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
         make_tasks(data, template)
     elif args.grid:
         # Generate the task grid
-        aoi = shape(data["geometry"])
+        # breakpoint()
+        if "features" in data:
+            features = list()
+            # log.debug(f"Features: {len(data["features"])}")
+            for feature in data["features"]:
+                features.append(shape(feature["geometry"]))
+            aoi = unary_union(features)
+        else:
+            aoi = shape(data["geometry"])
         grid = splitBySquare(aoi, args.meters)
         if not args.outfile:
             outfile = "tasks.geojson"

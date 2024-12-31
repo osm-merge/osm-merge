@@ -79,7 +79,11 @@ many of the bugs with names that are actually a reference number.
     index = 1
     outfs.write(f"{args.infile}\n")
     # log.debug(f"There are {len(data["features"])} features")
-    for poly in data["features"]:
+    if "features" in data:
+        features = data["features"]
+    else:
+        features = [data]
+    for poly in features:
         outfs.write(f"{index}\n")
         regions = poly["geometry"]["coordinates"]
         # log.debug(f"There is {len(regions)} coordinates {poly["geometry"]["type"]}")

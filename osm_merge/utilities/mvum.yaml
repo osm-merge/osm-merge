@@ -1,23 +1,30 @@
 # Commen abbreviations found in the MVUM dataset
 - abbreviations:
     - Cr: Creek
-    - Cr\.: Creek
-    - Ck\.: Creek
+    - Cr.: Creek
+    - Ck.: Creek
     - Crk: Creek
     - Cg: Campground
+    - C G: Campground
     - Rd: Road
     - Disp: Dispersed 
     - Rd.: Road
     - Mt: Mountain 
     - Mtn.: Mountain 
     - Lk: Lake
+    - Pk: Park
     - Resvr: Reservoir
     - Spg: Spring
+    - Sp: Spring
     - Br: Bridge
     - N: North
+    - N.: North
     - W: West
+    - W.: West
     - E: East
+    - E.: East
     - S: South
+    - S.: South
     - So: South
     - Mtn: Mountain
 

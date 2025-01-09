@@ -220,9 +220,25 @@ are reasonably similar, this generates a feature in the output data
 with the tags from the external dataset. When there are tags in both
 datasets for the same features, this is where things get interesting.
 
+There are three tests made to each feature. The first test is to
+compare the name tag between the primary and secondary features. This
+is a fuzzy string match, usually any value over 85 is a good match
+with some variation. The variation is usually spelling differences, or
+*trail* vs *road* for the name of a highway segment. A match ratio of
+100 is of course a solid match.
+
+The other two tests are for the USFS reference number. The reference
+numbers have two parts, the prefix and the number. The number is an
+alphanumeric, and may also include a period. In OSM data, the prefix
+is usually __FS__ or __FR__, but often other wild variations like
+__Nsfr__. The prefix is compared, and the number is compared without
+the prefix. If the number matches, it's considered a probable hit even
+if the prefix differs. a *hit* is a rough guess as to the confidence
+the two features match.
+
 If there is a match of the name or reference number, the *hits* value
 gets set to __1__. To determine what was matched, it's possible to
-look at the additional values of _name_ratio__ and __ref_ratio__,
+look at the additional values of __name_ratio__ and __ref_ratio__,
 which are returned from tag checking. Since there is likely additional
 metadata in the external dataset, those tags are then merged with the
 OSM ones.
@@ -236,10 +252,10 @@ the reference number match is slightly off as in OSM some features use
 itself, without the prefix is also checked. This then goes in the
 output file to change to the preferred prefix for USFS highways.
 
-If *hits* is set to __3__, then the name, the reference number and
-the reference prefix all match 100%, so this feature is not put in the
-output file as no updates need to be made. Often when the number match
-isn't 100% (hits == 2), it's because OSM has *FR 123*, and the
+If *hits* is set to __3__, then the name, the reference number prefix
+and the reference prefix all match 100%, so this feature is not put in
+the output file as no updates need to be made. Often when the number
+match isn't 100% (hits == 2), it's because OSM has *FR 123*, and the
 external dataset has *FR 123.1* or *FR 123A*, or *FS 123*. OSM Merge
 changes the prefix from *FS* to FR* when it's used to make searching
 the data more consistent when using mobile apps.

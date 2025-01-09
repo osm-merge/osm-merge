@@ -13,6 +13,8 @@
         <link rel="canonical" href="https://osmmerge.org/api/conflator/">
       
       
+        <link rel="prev" href="../dbextract/">
+      
       
       
       <link rel="icon" href="../../assets/favicon.png">
@@ -20,7 +22,7 @@
     
     
       
-        <title>Conflator - osm-merge</title>
+        <title>conflator - osm-merge</title>
       
     
     
@@ -109,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Conflator
+              conflator
             
           </span>
         </div>
@@ -912,17 +914,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -936,7 +940,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             API
@@ -1132,6 +1136,210 @@
 
               
             
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    conflator
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    conflator
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator" class="md-nav__link">
+    <span class="md-ellipsis">
+      conflator
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conflator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conflator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator.getDistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      getDistance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator.checkTags" class="md-nav__link">
+    <span class="md-ellipsis">
+      checkTags
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator.conflateData" class="md-nav__link">
+    <span class="md-ellipsis">
+      conflateData
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator.dump" class="md-nav__link">
+    <span class="md-ellipsis">
+      dump
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator.parseFile" class="md-nav__link">
+    <span class="md-ellipsis">
+      parseFile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator.conflateDB" class="md-nav__link">
+    <span class="md-ellipsis">
+      conflateDB
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator.writeGeoJson" class="md-nav__link">
+    <span class="md-ellipsis">
+      writeGeoJson
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator.osmToFeature" class="md-nav__link">
+    <span class="md-ellipsis">
+      osmToFeature
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.distSort" class="md-nav__link">
+    <span class="md-ellipsis">
+      distSort
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.hitsSort" class="md-nav__link">
+    <span class="md-ellipsis">
+      hitsSort
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.angleSort" class="md-nav__link">
+    <span class="md-ellipsis">
+      angleSort
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.conflateThread" class="md-nav__link">
+    <span class="md-ellipsis">
+      conflateThread
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.main" class="md-nav__link">
+    <span class="md-ellipsis">
+      main
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1168,15 +1376,25 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#osm_merge.conflator.Conflator" class="md-nav__link">
+  <a href="#osm_merge.conflator" class="md-nav__link">
     <span class="md-ellipsis">
-      Conflator
+      conflator
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
+  <a href="#osm_merge.conflator.Conflator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conflator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conflator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#osm_merge.conflator.Conflator.getDistance" class="md-nav__link">
     <span class="md-ellipsis">
       getDistance
@@ -1184,8 +1402,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#osm_merge.conflator.Conflator.checkTags" class="md-nav__link">
     <span class="md-ellipsis">
       checkTags
@@ -1193,8 +1411,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#osm_merge.conflator.Conflator.conflateData" class="md-nav__link">
     <span class="md-ellipsis">
       conflateData
@@ -1202,8 +1420,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#osm_merge.conflator.Conflator.dump" class="md-nav__link">
     <span class="md-ellipsis">
       dump
@@ -1211,8 +1429,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#osm_merge.conflator.Conflator.parseFile" class="md-nav__link">
     <span class="md-ellipsis">
       parseFile
@@ -1220,8 +1438,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#osm_merge.conflator.Conflator.conflateDB" class="md-nav__link">
     <span class="md-ellipsis">
       conflateDB
@@ -1229,8 +1447,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#osm_merge.conflator.Conflator.writeGeoJson" class="md-nav__link">
     <span class="md-ellipsis">
       writeGeoJson
@@ -1238,11 +1456,61 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#osm_merge.conflator.Conflator.osmToFeature" class="md-nav__link">
     <span class="md-ellipsis">
       osmToFeature
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.distSort" class="md-nav__link">
+    <span class="md-ellipsis">
+      distSort
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.hitsSort" class="md-nav__link">
+    <span class="md-ellipsis">
+      hitsSort
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.angleSort" class="md-nav__link">
+    <span class="md-ellipsis">
+      angleSort
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.conflateThread" class="md-nav__link">
+    <span class="md-ellipsis">
+      conflateThread
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.conflator.main" class="md-nav__link">
+    <span class="md-ellipsis">
+      main
     </span>
   </a>
   
@@ -1269,12 +1537,42 @@
 <h1 id="conflator">Conflator<a class="headerlink" href="#conflator" title="Permanent link">&para;</a></h1>
 
 
+<div class="doc doc-object doc-module">
+
+
+
+<a id="osm_merge.conflator"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
 <div class="doc doc-object doc-class">
 
 
 
-<a id="osm_merge.conflator.Conflator"></a>
-    <div class="doc doc-contents first">
+<h2 id="osm_merge.conflator.Conflator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Conflator</span>
+
+
+<a href="#osm_merge.conflator.Conflator" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Conflator</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code>object</code></p>
 
@@ -1428,11 +1726,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="osm_merge.conflator.Conflator.getDistance" class="doc doc-heading">
+<h3 id="osm_merge.conflator.Conflator.getDistance" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">getDistance</span>
 
 
-<a href="#osm_merge.conflator.Conflator.getDistance" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#osm_merge.conflator.Conflator.getDistance" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">getDistance</span><span class="p">(</span><span class="n">newdata</span><span class="p">,</span> <span class="n">olddata</span><span class="p">)</span>
 </code></pre></div>
 
@@ -1684,11 +1982,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="osm_merge.conflator.Conflator.checkTags" class="doc doc-heading">
+<h3 id="osm_merge.conflator.Conflator.checkTags" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">checkTags</span>
 
 
-<a href="#osm_merge.conflator.Conflator.checkTags" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#osm_merge.conflator.Conflator.checkTags" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">checkTags</span><span class="p">(</span><span class="n">extfeat</span><span class="p">,</span> <span class="n">osm</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2006,11 +2304,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="osm_merge.conflator.Conflator.conflateData" class="doc doc-heading">
+<h3 id="osm_merge.conflator.Conflator.conflateData" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">conflateData</span>
 
 
-<a href="#osm_merge.conflator.Conflator.conflateData" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#osm_merge.conflator.Conflator.conflateData" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">conflateData</span><span class="p">(</span>
     <span class="n">primaryspec</span><span class="p">,</span>
     <span class="n">secondaryspec</span><span class="p">,</span>
@@ -2256,7 +2554,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The secondary dataset has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">secondarydata</span><span class="p">)</span><span class="si">}</span><span class="s2"> entries&quot;</span><span class="p">)</span>
 
     <span class="c1"># Make threading optional for easier debugging</span>
-    <span class="k">if</span> <span class="n">chunk</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">chunk</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">primarydata</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">cores</span><span class="p">:</span>
         <span class="n">single</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">single</span> <span class="o">=</span> <span class="kc">False</span>
@@ -2297,11 +2595,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="osm_merge.conflator.Conflator.dump" class="doc doc-heading">
+<h3 id="osm_merge.conflator.Conflator.dump" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">dump</span>
 
 
-<a href="#osm_merge.conflator.Conflator.dump" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#osm_merge.conflator.Conflator.dump" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">dump</span><span class="p">()</span>
 </code></pre></div>
 
@@ -2331,11 +2629,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="osm_merge.conflator.Conflator.parseFile" class="doc doc-heading">
+<h3 id="osm_merge.conflator.Conflator.parseFile" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">parseFile</span>
 
 
-<a href="#osm_merge.conflator.Conflator.parseFile" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#osm_merge.conflator.Conflator.parseFile" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">parseFile</span><span class="p">(</span><span class="n">filespec</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2479,11 +2777,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="osm_merge.conflator.Conflator.conflateDB" class="doc doc-heading">
+<h3 id="osm_merge.conflator.Conflator.conflateDB" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">conflateDB</span>
 
 
-<a href="#osm_merge.conflator.Conflator.conflateDB" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#osm_merge.conflator.Conflator.conflateDB" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">conflateDB</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2693,11 +2991,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="osm_merge.conflator.Conflator.writeGeoJson" class="doc doc-heading">
+<h3 id="osm_merge.conflator.Conflator.writeGeoJson" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">writeGeoJson</span>
 
 
-<a href="#osm_merge.conflator.Conflator.writeGeoJson" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#osm_merge.conflator.Conflator.writeGeoJson" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">writeGeoJson</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filespec</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2790,11 +3088,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="osm_merge.conflator.Conflator.osmToFeature" class="doc doc-heading">
+<h3 id="osm_merge.conflator.Conflator.osmToFeature" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">osmToFeature</span>
 
 
-<a href="#osm_merge.conflator.Conflator.osmToFeature" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#osm_merge.conflator.Conflator.osmToFeature" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">osmToFeature</span><span class="p">(</span><span class="n">osm</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2934,6 +3232,1175 @@ a GeoJson Feature.</p>
 
     </div>
 
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="osm_merge.conflator.distSort" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">distSort</span>
+
+
+<a href="#osm_merge.conflator.distSort" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">distSort</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The data to sort</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/conflator.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">distSort</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data (list): The data to sort</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="osm_merge.conflator.hitsSort" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">hitsSort</span>
+
+
+<a href="#osm_merge.conflator.hitsSort" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">hitsSort</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The data to sort</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/conflator.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">hitsSort</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data (list): The data to sort</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;hits&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="osm_merge.conflator.angleSort" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">angleSort</span>
+
+
+<a href="#osm_merge.conflator.angleSort" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">angleSort</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The data to sort</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/conflator.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">angleSort</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data (list): The data to sort</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="osm_merge.conflator.conflateThread" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">conflateThread</span>
+
+
+<a href="#osm_merge.conflator.conflateThread" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">conflateThread</span><span class="p">(</span>
+    <span class="n">primary</span><span class="p">,</span>
+    <span class="n">secondary</span><span class="p">,</span>
+    <span class="n">informal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span>
+    <span class="n">spellcheck</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Conflate features from ODK against all the features in OSM.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>primary</code>
+            </td>
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The external dataset to conflate</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>seconday</code>
+            </td>
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The secondzry dataset, probably existing OSM data</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>threshold</code>
+            </td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold for distance calculations</p>
+              </div>
+            </td>
+            <td>
+                  <code>7.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>informal</code>
+            </td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to dump features in OSM not in external data</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>spellcheck</code>
+            </td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to also spell check string values</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The conflated output</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/conflator.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">conflateThread</span><span class="p">(</span><span class="n">primary</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                   <span class="n">secondary</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                   <span class="n">informal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                   <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">7.0</span><span class="p">,</span>
+                   <span class="n">spellcheck</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                   <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Conflate features from ODK against all the features in OSM.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        primary (list): The external dataset to conflate</span>
+<span class="sd">        seconday (list): The secondzry dataset, probably existing OSM data</span>
+<span class="sd">        threshold (int): Threshold for distance calculations</span>
+<span class="sd">        informal (bool): Whether to dump features in OSM not in external data</span>
+<span class="sd">        spellcheck (bool): Whether to also spell check string values</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (list):  The conflated output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># log.debug(f&quot;Dispatching thread &quot;)</span>
+
+    <span class="c1">#timer = Timer(text=&quot;conflateFeatures() took {seconds:.0f}s&quot;)</span>
+
+    <span class="c1"># ODK data is always a single node when mapping buildings, but the</span>
+    <span class="c1"># OSM data will be a mix of nodes and ways. For the OSM data, the</span>
+    <span class="c1"># building centroid is used.</span>
+
+    <span class="c1"># Most smartphone GPS are 5-10m off most of the time, plus sometimes</span>
+    <span class="c1"># we&#39;re standing in front of an amenity and recording that location</span>
+    <span class="c1"># instead of in the building.</span>
+    <span class="c1"># gps_accuracy = 10</span>
+    <span class="c1"># this is the treshold for fuzzy string matching</span>
+    <span class="n">match_threshold</span> <span class="o">=</span> <span class="mi">80</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">newdata</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="c1"># New features not in OSM always use negative IDs</span>
+    <span class="n">odkid</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
+    <span class="n">osmid</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">cutils</span> <span class="o">=</span> <span class="n">Conflator</span><span class="p">()</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The primary dataset has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">primary</span><span class="p">)</span><span class="si">}</span><span class="s2"> entries&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The secondary dataset has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">secondary</span><span class="p">)</span><span class="si">}</span><span class="s2"> entries&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Progress bar</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">primary</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="c1"># for entry in primary:</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># timer.start()</span>
+        <span class="n">confidence</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">maybe</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="c1"># If an OSM file is the primary, ignore the nodes that comprise the</span>
+        <span class="c1"># LineString.</span>
+        <span class="c1"># log.debug(f&quot;ENTRY: {entry[&quot;properties&quot;]}&quot;)</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Point&quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">existing</span> <span class="ow">in</span> <span class="n">secondary</span><span class="p">:</span>
+            <span class="n">odktags</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">osmtags</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">feature</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">newtags</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="c1"># log.debug(f&quot;EXISTING: {existing[&quot;properties&quot;]}&quot;)</span>
+            <span class="k">if</span> <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Point&quot;</span><span class="p">:</span>
+                    <span class="c1"># data.append(existing)</span>
+                    <span class="k">continue</span>
+            <span class="n">geom</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># We could probably do this using GeoPandas or gdal, but that&#39;s</span>
+            <span class="c1"># going to do the same brute force thing anyway.</span>
+
+            <span class="c1"># If the input file is in OSM XML format, we don&#39;t want to</span>
+            <span class="c1"># conflate the nodes with no tags. They are used to build</span>
+            <span class="c1"># the geometry for the way, and after that aren&#39;t needed anymore.</span>
+            <span class="c1"># If the node has tags, then it&#39;s a POI, which we do conflate.</span>
+            <span class="c1"># log.debug(entry)</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Obviously can&#39;t do a distance comparison is a geometry is missing</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Point&quot;</span><span class="p">:</span> <span class="c1">#  and len(entry[&quot;properties&quot;]) &lt;= 2:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Point&quot;</span><span class="p">:</span> <span class="c1"># and len(existing[&quot;properties&quot;]) &lt;= 2:</span>
+                <span class="k">continue</span>
+            <span class="c1"># FIXME: some LineStrings are only two points, there two refs,</span>
+            <span class="c1"># but only one set of coordinates.</span>
+            <span class="k">if</span> <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;LineString&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;coordinates&quot;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">dist</span> <span class="o">=</span> <span class="nb">float</span><span class="p">()</span>
+            <span class="n">slope</span> <span class="o">=</span> <span class="nb">float</span><span class="p">()</span>
+            <span class="n">hits</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">angle_threshold</span> <span class="o">=</span> <span class="mf">20.0</span> <span class="c1"># the angle between two lines</span>
+            <span class="n">slope_threshold</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="c1"># the slope between two lines</span>
+            <span class="n">match_threshold</span> <span class="o">=</span> <span class="mi">86</span> <span class="c1"># the ratio for name and ref matching</span>
+            <span class="n">name1</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">name2</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">cutils</span><span class="o">.</span><span class="n">getDistance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;getDistance() just had a weird error&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ENTRY: </span><span class="si">{</span><span class="n">entry</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EXISTING: </span><span class="si">{</span><span class="n">existing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">breakpoint</span><span class="p">()</span>
+                <span class="c1"># breakpoint()</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># log.debug(f&quot;ENTRY: {dist}: {entry[&quot;properties&quot;]}&quot;)</span>
+            <span class="c1"># log.debug(f&quot;EXISTING: {existing[&quot;properties&quot;]}&quot;)</span>
+            <span class="k">if</span> <span class="n">dist</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;------------------------------------------------------&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+                    <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">angle</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">slope</span><span class="p">,</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">cutils</span><span class="o">.</span><span class="n">getSlope</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;getSlope() just had a weird error&quot;</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ENTRY: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EXISTING: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="c1"># breakpoint()</span>
+                    <span class="c1"># slope, angle = cutils.getSlope(entry, existing)</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">angle_threshold</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">slope_threshold</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Out of range: </span><span class="si">{</span><span class="n">slope</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">angle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="c1"># log.debug(f&quot;PRIMARY: {entry[&quot;properties&quot;]}&quot;)</span>
+                    <span class="c1"># log.debug(f&quot;SECONDARY: {existing[&quot;properties&quot;]}&quot;)</span>
+                    <span class="k">continue</span>
+                <span class="c1"># log.debug(f&quot;DIST: {dist}, ANGLE: {angle}, SLOPE: {slope}&quot;)</span>
+                <span class="c1"># log.debug(f&quot;PRIMARY: {entry[&quot;properties&quot;]}&quot;)</span>
+                <span class="c1"># log.debug(f&quot;SECONDARY: {existing[&quot;properties&quot;]}&quot;)</span>
+                <span class="n">hits</span><span class="p">,</span> <span class="n">tags</span> <span class="o">=</span> <span class="n">cutils</span><span class="o">.</span><span class="n">checkTags</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span>
+                <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;hits: </span><span class="si">{</span><span class="n">hits</span><span class="si">}</span><span class="s2">, dist: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dist</span><span class="p">)[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">, slope: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">slope</span><span class="p">)[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">, angle: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">angle</span><span class="p">)[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+                    <span class="n">name2</span> <span class="o">=</span> <span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+                    <span class="n">name1</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">angle_threshold</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">slope_threshold</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HITS: </span><span class="si">{</span><span class="n">hits</span><span class="si">}</span><span class="s2">, DIST: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dist</span><span class="p">)[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">, SLOPE: </span><span class="si">{</span><span class="n">slope</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Angle: </span><span class="si">{</span><span class="n">angle</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">name1</span><span class="si">}</span><span class="s2"> == </span><span class="si">{</span><span class="n">name2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">TAGs: </span><span class="si">{</span><span class="n">tags</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">hits</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">or</span> <span class="p">(</span><span class="n">slope</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">angle</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span>
+                    <span class="c1"># (tags[&quot;name_ratio&quot;] &gt;= match_threshold or tags[&quot;ref_ratio&quot;] &gt;= match_threshold)</span>
+                    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">existing</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">match_threshold</span> <span class="ow">or</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">match_threshold</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Name or ref didn&#39;t match!&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># Only add the feature to the output if there are</span>
+                            <span class="c1"># differences in the tags. If they are identical,</span>
+                            <span class="c1"># ignore it as no changes need to be made.</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Almost Perfect match, name and ref!&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Perfect match! </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">ENTRY1: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EXISTING1: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="c1"># Don&#39;t add highways that match</span>
+                    <span class="k">break</span>
+                <span class="k">elif</span> <span class="n">hits</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">dist</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">angle_threshold</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">slope_threshold</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Geometry was close, OSM was probably lacking the name&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">ENTRY2: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EXISTING2: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">hits</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">match_threshold</span> <span class="ow">or</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">match_threshold</span><span class="p">):</span>
+                    <span class="c1"># This usually means the names matched, but OSM is</span>
+                    <span class="c1"># lacking the USFS reference number, so should be in</span>
+                    <span class="c1"># the output file with this value.</span>
+                    <span class="k">if</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">match_threshold</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ref matched, no name, geom close&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Name matched, no ref, geom close&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">ENTRY3: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EXISTING3: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">hits</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">angle_threshold</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">slope_threshold</span> <span class="ow">and</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">match_threshold</span> <span class="ow">and</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">match_threshold</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Name and ref matched, geom close&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">ENTRY4: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EXISTING4: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="c1"># Don&#39;t add highways that match</span>
+                    <span class="k">break</span>
+                <span class="k">elif</span> <span class="n">hits</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="mf">2.0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">angle_threshold</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">slope_threshold</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">80</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Close geometry match, ref match&quot;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Close geometry match, name match, not ref&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Name and ref don&#39;t match!&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">ENTRY5: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EXISTING5: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">hits</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">angle_threshold</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">slope_threshold</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">100</span> <span class="ow">and</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">90</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Name matched and ref matched&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">ENTRY6: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EXISTING6: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">hits</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">angle</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">slope</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">dist</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Geometry matched, no name in OSM&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">ENTRY7: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EXISTING7: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">angle</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">slope</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">dist</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Geometry matched, not name&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">ENTRY8: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EXISTING8: </span><span class="si">{</span><span class="n">existing</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">hits</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">maybe</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;hits&quot;</span><span class="p">:</span> <span class="n">hits</span><span class="p">,</span> <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="n">dist</span><span class="p">,</span> <span class="s2">&quot;angle&quot;</span><span class="p">:</span> <span class="n">angle</span><span class="p">,</span> <span class="s2">&quot;slope&quot;</span><span class="p">:</span> <span class="n">slope</span><span class="p">,</span> <span class="s2">&quot;name_ratio&quot;</span><span class="p">:</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">],</span>  <span class="s2">&quot;ref_ratio&quot;</span><span class="p">:</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">],</span> <span class="s2">&quot;osm&quot;</span><span class="p">:</span> <span class="n">existing</span><span class="p">})</span>
+                    <span class="c1"># data.append(Feature(geometry=geom, properties=tags))</span>
+
+                <span class="c1"># cache all OSM features within our threshold distance</span>
+                <span class="c1"># These are needed by ODK, but duplicates of other fields,</span>
+                <span class="c1"># so they aren&#39;t needed and just add more clutter.</span>
+                <span class="c1"># log.debug(f&quot;DIST: {dist / 1000}km. {dist}m&quot;)</span>
+                <span class="c1"># maybe.append({&quot;hits&quot;: hits, &quot;dist&quot;: dist, &quot;slope&quot;: slope, &quot;angle&quot;: angle, &quot;hits&quot;: hits, &quot;odk&quot;: entry, &quot;osm&quot;: existing})</span>
+                <span class="c1"># don&#39;t keep checking every highway, although testing seems</span>
+                <span class="c1"># to show 99% only have one distance match within range.</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">maybe</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">7</span><span class="p">:</span>
+                    <span class="c1"># FIXME: it turns out sometimes the other nearby highways are</span>
+                    <span class="c1"># segments of the same highway, but the tags only get added</span>
+                    <span class="c1"># to the closest segment.</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Have enough matches.&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># log.debug(f&quot;MAYBE: {len(maybe)}&quot;)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">maybe</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># cache the refs to use in the OSM XML output file</span>
+            <span class="n">refs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="c1"># odk = dict()</span>
+            <span class="c1"># osm = dict()</span>
+            <span class="n">slope</span> <span class="o">=</span> <span class="nb">float</span><span class="p">()</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="nb">float</span><span class="p">()</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="nb">float</span><span class="p">()</span>
+            <span class="c1"># There are two parameters used to decide on the probably</span>
+            <span class="c1"># match. If we have at least 2 hits, it&#39;s very likely a</span>
+            <span class="c1"># good match, 3 is a perfect match.</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># maybe.sort(key=hitsSort)</span>
+            <span class="c1"># maybe.sort(key=distSort)</span>
+
+            <span class="c1"># Sometimes all the maybes are segments of the same highway.</span>
+            <span class="n">maybe</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">distSort</span><span class="p">)</span>
+            <span class="n">maybe</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">angleSort</span><span class="p">)</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">ratio</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">closest</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">maybe</span><span class="p">:</span>
+                <span class="c1"># FIXME: this is a test to see if adding the ratios, along with</span>
+                <span class="c1"># distance can find the best match in the maype list.</span>
+                <span class="n">ratio</span> <span class="o">=</span>  <span class="n">segment</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">segment</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">ratio</span> <span class="o">&gt;=</span> <span class="n">best</span><span class="p">:</span>
+                    <span class="n">closest</span> <span class="o">=</span> <span class="n">segment</span>
+
+                <span class="n">props</span> <span class="o">=</span> <span class="n">closest</span><span class="p">[</span><span class="s2">&quot;osm&quot;</span><span class="p">][</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
+                <span class="n">tags</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;refs&quot;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+                    <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;osm_id&quot;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+                    <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;osm_id&quot;</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+                    <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">props</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;version&quot;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+                    <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="s2">&quot;name_ration&quot;</span> <span class="ow">in</span> <span class="n">segment</span><span class="p">:</span>
+                    <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;ref_ration&quot;</span> <span class="ow">in</span> <span class="n">segment</span><span class="p">:</span>
+                    <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span>
+
+                <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;hits: </span><span class="si">{</span><span class="n">hits</span><span class="si">}</span><span class="s2">, dist: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">closest</span><span class="p">[</span><span class="s2">&quot;dist&quot;</span><span class="p">])[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">, slope: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">closest</span><span class="p">[</span><span class="s2">&quot;slope&quot;</span><span class="p">])[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">, angle: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">closest</span><span class="p">[</span><span class="s2">&quot;angle&quot;</span><span class="p">])[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">geom</span> <span class="o">=</span> <span class="n">shape</span><span class="p">(</span><span class="n">closest</span><span class="p">[</span><span class="s2">&quot;osm&quot;</span><span class="p">][</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+                <span class="n">pname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+                    <span class="n">pname</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="n">sname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+                    <span class="n">sname</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="c1"># if pname == &quot;Twin Mountain Road&quot;:</span>
+                <span class="c1">#     breakpoint()</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ADDING: </span><span class="si">{</span><span class="n">pname</span><span class="si">}</span><span class="s2"> == </span><span class="si">{</span><span class="n">sname</span><span class="si">}</span><span class="s2"> dist: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">closest</span><span class="p">[</span><span class="s2">&quot;dist&quot;</span><span class="p">])[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">, name: </span><span class="si">{</span><span class="n">closest</span><span class="p">[</span><span class="s2">&quot;name_ratio&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">, ref: </span><span class="si">{</span><span class="n">closest</span><span class="p">[</span><span class="s2">&quot;ref_ratio&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">, hits: </span><span class="si">{</span><span class="n">closest</span><span class="p">[</span><span class="s2">&quot;hits&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># if hits &gt;= 1:</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Feature</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geom</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">tags</span><span class="p">))</span>
+                <span class="c1"># else:</span>
+                <span class="c1">#     data.append(Feature(geometry=segment[&quot;geometry&quot;], properties=tags))</span>
+
+            <span class="c1"># data.append(Feature(geometry=geom, properties=tags))</span>
+            <span class="c1"># If no hits, it&#39;s new data. ODK data is always just a POI for now</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;informal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;fixme&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;New features should be imported following OSM guidelines.&quot;</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;hits: </span><span class="si">{</span><span class="n">hits</span><span class="si">}</span><span class="s2">, dist: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dist</span><span class="o">/</span><span class="mi">1000</span><span class="p">)[:</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="c1"># entry[&quot;properties&quot;][&quot;slope&quot;] = slope</span>
+            <span class="c1"># entry[&quot;properties&quot;][&quot;dist&quot;] = dist</span>
+            <span class="c1"># log.debug(f&quot;FOO({dist}): {entry}&quot;)</span>
+            <span class="n">newdata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+
+        <span class="c1"># timer.stop()</span>
+
+    <span class="c1"># log.debug(f&quot;OLD: {len(data)}&quot;)</span>
+    <span class="c1"># log.debug(f&quot;NEW: {len(newdata)}&quot;)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">newdata</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="osm_merge.conflator.main" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">main</span>
+
+
+<a href="#osm_merge.conflator.main" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">main</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>This main function lets this class be run standalone by a bash script</p>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/conflator.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 970</span>
+<span class="normal"> 971</span>
+<span class="normal"> 972</span>
+<span class="normal"> 973</span>
+<span class="normal"> 974</span>
+<span class="normal"> 975</span>
+<span class="normal"> 976</span>
+<span class="normal"> 977</span>
+<span class="normal"> 978</span>
+<span class="normal"> 979</span>
+<span class="normal"> 980</span>
+<span class="normal"> 981</span>
+<span class="normal"> 982</span>
+<span class="normal"> 983</span>
+<span class="normal"> 984</span>
+<span class="normal"> 985</span>
+<span class="normal"> 986</span>
+<span class="normal"> 987</span>
+<span class="normal"> 988</span>
+<span class="normal"> 989</span>
+<span class="normal"> 990</span>
+<span class="normal"> 991</span>
+<span class="normal"> 992</span>
+<span class="normal"> 993</span>
+<span class="normal"> 994</span>
+<span class="normal"> 995</span>
+<span class="normal"> 996</span>
+<span class="normal"> 997</span>
+<span class="normal"> 998</span>
+<span class="normal"> 999</span>
+<span class="normal">1000</span>
+<span class="normal">1001</span>
+<span class="normal">1002</span>
+<span class="normal">1003</span>
+<span class="normal">1004</span>
+<span class="normal">1005</span>
+<span class="normal">1006</span>
+<span class="normal">1007</span>
+<span class="normal">1008</span>
+<span class="normal">1009</span>
+<span class="normal">1010</span>
+<span class="normal">1011</span>
+<span class="normal">1012</span>
+<span class="normal">1013</span>
+<span class="normal">1014</span>
+<span class="normal">1015</span>
+<span class="normal">1016</span>
+<span class="normal">1017</span>
+<span class="normal">1018</span>
+<span class="normal">1019</span>
+<span class="normal">1020</span>
+<span class="normal">1021</span>
+<span class="normal">1022</span>
+<span class="normal">1023</span>
+<span class="normal">1024</span>
+<span class="normal">1025</span>
+<span class="normal">1026</span>
+<span class="normal">1027</span>
+<span class="normal">1028</span>
+<span class="normal">1029</span>
+<span class="normal">1030</span>
+<span class="normal">1031</span>
+<span class="normal">1032</span>
+<span class="normal">1033</span>
+<span class="normal">1034</span>
+<span class="normal">1035</span>
+<span class="normal">1036</span>
+<span class="normal">1037</span>
+<span class="normal">1038</span>
+<span class="normal">1039</span>
+<span class="normal">1040</span>
+<span class="normal">1041</span>
+<span class="normal">1042</span>
+<span class="normal">1043</span>
+<span class="normal">1044</span>
+<span class="normal">1045</span>
+<span class="normal">1046</span>
+<span class="normal">1047</span>
+<span class="normal">1048</span>
+<span class="normal">1049</span>
+<span class="normal">1050</span>
+<span class="normal">1051</span>
+<span class="normal">1052</span>
+<span class="normal">1053</span>
+<span class="normal">1054</span>
+<span class="normal">1055</span>
+<span class="normal">1056</span>
+<span class="normal">1057</span>
+<span class="normal">1058</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This main function lets this class be run standalone by a bash script&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;conflator&quot;</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This program conflates external data with existing features in OSM.&quot;</span><span class="p">,</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">This program conflates external datasets with OSM data. It can use a</span>
+<span class="s2">postgres database, a GeoJson file, or any of all three ODK formats files</span>
+<span class="s2">as the input sources. Some options are only used for greater control when</span>
+<span class="s2">using a database. By default this uses the yaml based config files in the</span>
+<span class="s2">osm-rawdata project, which are also used by the FMTM project. It is possible</span>
+<span class="s2">to pass a custom SQL query, which if two databases are being conflated,</span>
+<span class="s2">would apply to either.</span>
+
+<span class="s2">        Examples:</span>
+<span class="s2">                To conflate two files</span>
+<span class="s2">         ./conflator.py -v -s camping-2024_06_14.osm -e extract.geojson</span>
+
+<span class="s2">                To conflate a file using postgres</span>
+<span class="s2">         ./conflator.py -v -s camping-2024_06_14.geojson -e PG:localhost/usa -b utah.geojson</span>
+
+<span class="s2">The data extract file must be produced using the pgasync.py script in the</span>
+<span class="s2">osm-rawdata project on pypi.org or https://github.com/hotosm/osm-rawdata.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;verbose output&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;--secondary&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The secondary dataset&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-q&quot;</span><span class="p">,</span> <span class="s2">&quot;--query&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Custom SQL when using a database&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;highway&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The config file for the SQL query&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--primary&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The primary dataset&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="s2">&quot;--threshold&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Threshold for distance calculations&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="s2">&quot;--informal&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Dump features not in official sources&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--outfile&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;conflated.geojson&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output file from the conflation&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="s2">&quot;--boundary&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional boundary polygon to limit the data size&quot;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">indata</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># if verbose, dump to the terminal.</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%(threadName)10s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">secondary</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;You must supply a database URI or a data extract file!&quot;</span><span class="p">)</span>
+        <span class="n">quit</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">query</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;You must supply a either a conig file or custom SQL!&quot;</span><span class="p">)</span>
+        <span class="n">quit</span><span class="p">()</span>
+
+    <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">outfile</span><span class="p">:</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">outfile</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">toplevel</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
+
+    <span class="n">conflate</span> <span class="o">=</span> <span class="n">Conflator</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">boundary</span><span class="p">)</span>
+    <span class="c1"># if args.secondary[:3].lower() == &quot;pg:&quot;:</span>
+    <span class="c1">#     await conflate.initInputDB(args.config, args.secondary[3:])</span>
+
+    <span class="c1"># if args.primary[:3].lower() == &quot;pg:&quot;:</span>
+    <span class="c1">#     await conflate.initInputDB(args.config, args.secondary[3:])</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">conflate</span><span class="o">.</span><span class="n">conflateData</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">threshold</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">informal</span><span class="p">)</span>
+
+    <span class="c1"># breakpoint()</span>
+    <span class="c1"># path = Path(args.outfile)</span>
+    <span class="n">osmout</span>  <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.geojson&quot;</span><span class="p">,</span> <span class="s2">&quot;-out.osm&quot;</span><span class="p">)</span>
+    <span class="n">osm</span> <span class="o">=</span> <span class="n">OsmFile</span><span class="p">()</span>
+    <span class="n">osm</span><span class="o">.</span><span class="n">writeOSM</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">osmout</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">osmout</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">jsonout</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.geojson&quot;</span><span class="p">,</span> <span class="s2">&quot;-out.geojson&quot;</span><span class="p">)</span>
+    <span class="n">conflate</span><span class="o">.</span><span class="n">writeGeoJson</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">jsonout</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">jsonout</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">jsonout</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.geojson&quot;</span><span class="p">,</span> <span class="s2">&quot;-new.geojson&quot;</span><span class="p">)</span>
+    <span class="n">conflate</span><span class="o">.</span><span class="n">writeGeoJson</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">jsonout</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
 </div><p>options:
 show_source: false
 heading_level: 3</p>
@@ -2957,7 +4424,7 @@ heading_level: 3</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 24, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 9, 2025</span>
   </span>
 
     

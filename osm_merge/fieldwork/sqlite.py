@@ -144,7 +144,7 @@ class DataFile(object):
         """Mbtiles has a maxzoom and minzoom fields, Osmand doesn't.
 
         Args:
-            bounds (int): The bounds value for ODK Collect mbtiles
+            zoom_levels (list)): The zoom levels
         """
         min_zoom = min(zoom_levels)
         max_zoom = max(zoom_levels)

@@ -288,7 +288,10 @@ class BaseMapper(object):
                         src[k1] = v1
                 self.sources[k] = src
 
-    def customTMS(self, url: str, is_oam: bool = False, is_xy: bool = False):
+    def customTMS(self,
+                  url: str,
+                  is_oam: bool = False,
+                  is_xy: bool = False):
         """Add a custom TMS URL to the list of sources.
 
         The url must end in %s to be replaced with the tile xyz values.
@@ -302,7 +305,7 @@ class BaseMapper(object):
 
         Args:
             url (str): The URL string
-            source (str): The provier source, for setting attribution
+            is_oam (bool): Is a URL for OAM
             is_xy (bool): Swap the x and y for the provider --> 'zxy'
         """
         # Remove any file extensions if present and update the 'suffix' parameter

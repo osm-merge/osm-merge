@@ -1112,27 +1112,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../conflator/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    conflator
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../sqlite/" class="md-nav__link">
         
   
@@ -1769,18 +1748,18 @@ https://maps.nyc.gov/xyz/1.0.0/carto/basemap/{z}/{x}/{y}.jpg</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>source</code>
+                <code>is_oam</code>
             </td>
             <td>
-                  <code>str</code>
+                  <code>bool</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The provier source, for setting attribution</p>
+                <p>Is a URL for OAM</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -1857,7 +1836,13 @@ https://maps.nyc.gov/xyz/1.0.0/carto/basemap/{z}/{x}/{y}.jpg</p>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
-<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">customTMS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_oam</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">is_xy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">customTMS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+              <span class="n">is_oam</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+              <span class="n">is_xy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a custom TMS URL to the list of sources.</span>
 
 <span class="sd">    The url must end in %s to be replaced with the tile xyz values.</span>
@@ -1871,7 +1856,7 @@ https://maps.nyc.gov/xyz/1.0.0/carto/basemap/{z}/{x}/{y}.jpg</p>
 
 <span class="sd">    Args:</span>
 <span class="sd">        url (str): The URL string</span>
-<span class="sd">        source (str): The provier source, for setting attribution</span>
+<span class="sd">        is_oam (bool): Is a URL for OAM</span>
 <span class="sd">        is_xy (bool): Swap the x and y for the provider --&gt; &#39;zxy&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Remove any file extensions if present and update the &#39;suffix&#39; parameter</span>
@@ -1957,13 +1942,13 @@ https://maps.nyc.gov/xyz/1.0.0/carto/basemap/{z}/{x}/{y}.jpg</p>
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/fieldwork/basemapper.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">349</span>
 <span class="normal">350</span>
 <span class="normal">351</span>
-<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getFormat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getFormat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the image format of the map tiles.</span>
 
 <span class="sd">    Returns:</span>
@@ -2047,10 +2032,7 @@ https://maps.nyc.gov/xyz/1.0.0/carto/basemap/{z}/{x}/{y}.jpg</p>
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/fieldwork/basemapper.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">357</span>
 <span class="normal">358</span>
 <span class="normal">359</span>
 <span class="normal">360</span>
@@ -2077,7 +2059,10 @@ https://maps.nyc.gov/xyz/1.0.0/carto/basemap/{z}/{x}/{y}.jpg</p>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getTiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zoom</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getTiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zoom</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a list of tiles for the specified zoom level.</span>
 
 <span class="sd">    Args:</span>
@@ -2185,10 +2170,7 @@ https://maps.nyc.gov/xyz/1.0.0/carto/basemap/{z}/{x}/{y}.jpg</p>
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/fieldwork/basemapper.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">389</span>
 <span class="normal">390</span>
 <span class="normal">391</span>
 <span class="normal">392</span>
@@ -2203,7 +2185,10 @@ https://maps.nyc.gov/xyz/1.0.0/carto/basemap/{z}/{x}/{y}.jpg</p>
 <span class="normal">401</span>
 <span class="normal">402</span>
 <span class="normal">403</span>
-<span class="normal">404</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tileExists</span><span class="p">(</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tileExists</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">tile</span><span class="p">:</span> <span class="n">MapTile</span><span class="p">,</span>
 <span class="p">):</span>
@@ -2419,10 +2404,7 @@ custom TMS if True.</p>
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/fieldwork/basemapper.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">438</span>
 <span class="normal">439</span>
 <span class="normal">440</span>
 <span class="normal">441</span>
@@ -2539,7 +2521,10 @@ custom TMS if True.</p>
 <span class="normal">552</span>
 <span class="normal">553</span>
 <span class="normal">554</span>
-<span class="normal">555</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_basemap_file</span><span class="p">(</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_basemap_file</span><span class="p">(</span>
     <span class="n">boundary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">tms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">xy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2737,10 +2722,7 @@ directories of z/y/x structure from their z/x/y URL.</p>
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/fieldwork/basemapper.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">410</span>
 <span class="normal">411</span>
 <span class="normal">412</span>
 <span class="normal">413</span>
@@ -2763,7 +2745,10 @@ directories of z/y/x structure from their z/x/y URL.</p>
 <span class="normal">430</span>
 <span class="normal">431</span>
 <span class="normal">432</span>
-<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tileid_from_zyx_dir_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tileid_from_zyx_dir_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to get the tile id from a tile in xyz (zyx) directory structure.</span>
 
 <span class="sd">    TMS typically has structure z/y/x.png</span>

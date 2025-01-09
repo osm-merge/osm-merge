@@ -1160,27 +1160,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/conflator/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    conflator
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../api/sqlite/" class="md-nav__link">
         
   
@@ -1500,15 +1479,18 @@ national forest. These are primarily remote dirt roads, often just a
 jeep track. These are heavily used for back country access for
 wildland fires and rescues. Currently much of this data has been
 imported in the past, complete with all the bugs in the dataset. The
-RoadCore datasets is a superset of the MVUM data, but otherwise the
-same.</p>
+RoadCore dataset is a superset of the MVUM data, but otherwise the
+same. Since OpenStreetMap contains more than jeep tracks, the
+RoadCore dataset is usually used for conflation.</p>
 <p>This utility program normalizes the data, correcting or flagging bugs
 as an aid for better conflation. It can process both the MVUM and
-RoadCore datasets.</p>
+RoadCore datasets.. The schema between these two is the same other
+than a subtle difference in field names.</p>
 <p>The original datasets can be found here on the USDA 
 <a href="https://data.fs.usda.gov/geodata/edw/datasets.php?dsetCategory=transportation">FSGeodata
 Clearinghouse</a> website.</p>
 <h2 id="dataset-bugs">Dataset Bugs<a class="headerlink" href="#dataset-bugs" title="Permanent link">&para;</a></h2>
+<p>No dataset is bug free. </p>
 <h3 id="bad-geometry">Bad Geometry<a class="headerlink" href="#bad-geometry" title="Permanent link">&para;</a></h3>
 <p>There are many instances where a highway in the MVUM or RoadCore data
 is a MultiLineString instead of just a LineString. The problem with
@@ -1517,6 +1499,13 @@ with no data. These are all the same highway, just bad data. To me it
 looks like somebodies's GPS had a dropped signal in places when they
 were recording a track.</p>
 <h3 id="bad-reference-numbers">Bad Reference Numbers<a class="headerlink" href="#bad-reference-numbers" title="Permanent link">&para;</a></h3>
+<p>Every national foreset has it's own schema for reference
+numbers. There is some similarity between them all, but sometimes it's
+hard to tell the difference between a bad reference number, and a
+local numbering scheme. Having stared at much data, my guess is
+sometimes a prefix represents something like a trail vs a road. As I
+work my way through each forest, I'll try to document what appears to
+be a local numbering scheme.</p>
 <p>In some areas the MVUM and RoadCore data has extract numerals prefixed
 to the actual reference number. These are all usually in the same
 area, so I assume whomever was doing data entry had a sticky keyboard,
@@ -1534,13 +1523,13 @@ Forest Service.</p>
 <p>Cleaning up all the wrong reference numbers will make OSM the best map
 for road and trail navigation on public lands.</p>
 <h4 id="dixie-national-forest">Dixie National Forest<a class="headerlink" href="#dixie-national-forest" title="Permanent link">&para;</a></h4>
-<p>In the current MVUM dataset for this national forest, for some reason
-a <em>30, 31, 32, 33, 34</em> has been prefixed to many of the IDs, making
-the reference numbers wrong. After staring at the original data file,
-I noticed these were all 5 characters long, and lacked a letter or a
-minor number suffix. Limiting the trigger to just that case seems to
-fix the problem. A <em>note</em> is added to any feature where the
-<strong>ref:usfs</strong> is changed as an aid towards validation.</p>
+<p>In the current MVUM and RoadCore datasets for this national forest,
+for some reason a <em>30, 31, 32, 33, 34</em> has been prefixed to many of
+the IDs, making the reference numbers wrong. After staring at the
+original data file, I noticed these were all 5 characters long, and
+lacked a letter or a minor number suffix. Limiting the trigger to just
+that case seems to fix the problem. A <em>note</em> is added to any feature
+where the <strong>ref:usfs</strong> is changed as an aid towards validation.</p>
 <h4 id="manti-lasal-national-forest">Manti-LaSal National Forest<a class="headerlink" href="#manti-lasal-national-forest" title="Permanent link">&para;</a></h4>
 <p>In the current MVUM dataset for this national forest, for some reason
 a <em>5</em> or <em>7</em> has been prefixed to many of the IDs, making the reference

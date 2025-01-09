@@ -638,15 +638,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#debug-tags" class="md-nav__link">
-    <span class="md-ellipsis">
-      Debug Tags
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -658,6 +649,90 @@
       Issues
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluating-the-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluating The Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluating The Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debug-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debug Tags
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Matrix
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#name-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Name Matching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference Matching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing Tags
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issues_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluating-possible-matches" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluating Possible Matches
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1118,27 +1193,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/conflator/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    conflator
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../api/sqlite/" class="md-nav__link">
         
   
@@ -1369,15 +1423,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#debug-tags" class="md-nav__link">
-    <span class="md-ellipsis">
-      Debug Tags
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1389,6 +1434,90 @@
       Issues
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluating-the-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluating The Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluating The Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debug-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debug Tags
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Matrix
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#name-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Name Matching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference Matching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing Tags
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issues_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluating-possible-matches" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluating Possible Matches
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1508,6 +1637,13 @@ all the possible segments of any highway close to the primary segment,
 the name and reference numbers are checked, and if they match, the new
 tags from the external dataset are applied to all the matching
 segments in the secondary.</p>
+<h2 id="issues">Issues<a class="headerlink" href="#issues" title="Permanent link">&para;</a></h2>
+<p>Conflation is never 100% accurate due to the wonderful
+um... "flexibility" of the datasets. Minor tweaks to the steering
+parameters for the distance, angle, and fuzzy string matching can
+produce slightly different results. I often run the same datasets with
+different parameters looking for the best results.</p>
+<h2 id="evaluating-the-results">Evaluating The Results<a class="headerlink" href="#evaluating-the-results" title="Permanent link">&para;</a></h2>
 <h3 id="debug-tags">Debug Tags<a class="headerlink" href="#debug-tags" title="Permanent link">&para;</a></h3>
 <p>Currently a few tags are added to each feature to aid in validating
 and debugging the conflation process. These should obviously be
@@ -1515,17 +1651,109 @@ removed before uploading to OSM. They'll be removed at a future date
 after more validation. These are:</p>
 <ul>
 <li>hits - The number of matching tags in a feature</li>
-<li>ratio - The ratio for name matching if not 100%</li>
+<li>name_ratio - The ratio for name matching</li>
+<li>ref_ratio - The ratio for USFS reference number matching</li>
 <li>dist -  The distance between features</li>
 <li>angle - The angle between two features</li>
 <li>slope - The slope between two features</li>
 </ul>
-<h2 id="issues">Issues<a class="headerlink" href="#issues" title="Permanent link">&para;</a></h2>
-<p>Conflation is never 100% accurate due to the wonderful
-um... "flexibility" of the datasets. Minor tweaks to the steering
-parameters for the distance, angle, and fuzzy string matching can
-produce slightly different results. I often run the same datasets with
-different parameters looking for the best results.</p>
+<h3 id="decision-matrix">Decision Matrix<a class="headerlink" href="#decision-matrix" title="Permanent link">&para;</a></h3>
+<p>Initially each feature in the primary data source is compared to each
+feature in the secondary data source. The first step is the distance
+calculation, eliminating everything outside the threshold
+distance. Each feature from the secondary dataset within range is put
+on a list of possible matches. The angle and slope between the
+external feature and OSM is also checked.</p>
+<p>After searching through all of the secondary data, any features are
+found within the desired distance, slope and angle between the primary
+and secondary datasets. They are added to a list of possible matches.
+The slopes and angle is checked to identify branches off the highway
+that often have a similar name and reference number.</p>
+<p>If there are any features left in the secondary dataset, after the
+spatial calculations, then the tags are checked for matches.</p>
+<h4 id="name-matching">Name Matching<a class="headerlink" href="#name-matching" title="Permanent link">&para;</a></h4>
+<p>Names are compared with fuzzy logic. This handles minor spelling
+differences. All names are converted to lowercase when being compared
+so there are no problems with capitalization. The ratio from the fuzzy
+matching is returned as a float, and is the <em>name_ratio</em> for name
+matching, and  <em>ref_ratios</em> for  reference matching in the debug
+logs. There is a lot of variety in names in most datasets.</p>
+<h4 id="reference-matching">Reference Matching<a class="headerlink" href="#reference-matching" title="Permanent link">&para;</a></h4>
+<p>Reference matching is similar other than the prefix of the reference
+number has to be taken into consideration. A <em>ref</em> might be a local
+county road, so starts with a __CR __ then the number. State and
+federal highways use a similar scheme. Since we're focused on remote
+highways, those are left unchanged by conflation. For the OSM Merge
+use case, the only prefix we care about are __FR __, or __FS __. The
+ratio from the fuzzy matching is returned as a float, and is the 
+<em>ref_ratio</em> in the debug tags.</p>
+<h4 id="changing-tags">Changing Tags<a class="headerlink" href="#changing-tags" title="Permanent link">&para;</a></h4>
+<p>When cleaning up OSM features, sometimes the USFS reference number is
+in the name tag. Often this uses various prefixes, but these can be
+identified, and moved to the correct <em>ref:usfs</em> tag from the name
+tag. Or the reference is in a <em>ref</em> tag, and the same change is made,
+it's moved to the <em>ref:usfs</em> tag. This change helps the conflation
+process when trying to match tags since this process is done by the
+<a href="../mvum/">MVUM conversion</a> script, instead of in the conflation
+algorithm.</p>
+<h4 id="issues_1">Issues<a class="headerlink" href="#issues_1" title="Permanent link">&para;</a></h4>
+<p>Conflation is rarely perfect. The biggest issue is due to large
+differences in the length of the highway or multiple segments. This
+fails to match by geometry within a reasonable distance. In this case
+the primary dataset feature is considered a <em>new</em> feature, so winds
+up in the new feature output file, instead of the conflated highways
+output file.</p>
+<h4 id="evaluating-possible-matches">Evaluating Possible Matches<a class="headerlink" href="#evaluating-possible-matches" title="Permanent link">&para;</a></h4>
+<p>This is the key to conflation, evaluating the debug values to
+determine the most likely match. Each highway segment within the
+desired distance is put on a list, along with the results of comparing
+the tags. This is just a list of possible matches, which then needs to
+have the statistics evaluated to determine the best match.</p>
+<p>The primary values for conflation after geometry matching is comparing
+the tags between the external dataset and OSM. Many of these remote
+highways in OSM only have <em>highway=track</em>, whereas the external
+dataset may have a name and reference number. If the highway segments
+are reasonably similar, this generates a feature in the output data
+with the tags from the external dataset. When there are tags in both
+datasets for the same features, this is where things get interesting.</p>
+<p>There are three tests made to each feature. The first test is to
+compare the name tag between the primary and secondary features. This
+is a fuzzy string match, usually any value over 85 is a good match
+with some variation. The variation is usually spelling differences, or
+<em>trail</em> vs <em>road</em> for the name of a highway segment. A match ratio of
+100 is of course a solid match.</p>
+<p>The other two tests are for the USFS reference number. The reference
+numbers have two parts, the prefix and the number. The number is an
+alphanumeric, and may also include a period. In OSM data, the prefix
+is usually <strong>FS</strong> or <strong>FR</strong>, but often other wild variations like
+<strong>Nsfr</strong>. The prefix is compared, and the number is compared without
+the prefix. If the number matches, it's considered a probable hit even
+if the prefix differs. a <em>hit</em> is a rough guess as to the confidence
+the two features match.</p>
+<p>If there is a match of the name or reference number, the <em>hits</em> value
+gets set to <strong>1</strong>. To determine what was matched, it's possible to
+look at the additional values of <strong>name_ratio</strong> and <strong>ref_ratio</strong>,
+which are returned from tag checking. Since there is likely additional
+metadata in the external dataset, those tags are then merged with the
+OSM ones.</p>
+<p>If both the tags and the reference number match, the <em>hits</em> gets set
+to <strong>2</strong>. The tags <strong>name_ratio</strong> and <strong>ref_ratio</strong> are still set, so
+can be used to evaluate whether to trust the name or the reference
+match the possible match more, since it's a fuzzy string match. Often
+the reference number match is slightly off as in OSM some features use
+<em>ref=FS 123</em>, where <em>ref=FR 123</em> is preferred. The reference number
+itself, without the prefix is also checked. This then goes in the
+output file to change to the preferred prefix for USFS highways.</p>
+<p>If <em>hits</em> is set to <strong>3</strong>, then the name, the reference number prefix
+and the reference prefix all match 100%, so this feature is not put in
+the output file as no updates need to be made. Often when the number
+match isn't 100% (hits == 2), it's because OSM has <em>FR 123</em>, and the
+external dataset has <em>FR 123.1</em> or <em>FR 123A</em>, or <em>FS 123</em>. OSM Merge
+changes the prefix from <em>FS</em> to FR* when it's used to make searching
+the data more consistent when using mobile apps.</p>
+<p>Since each highway be a segment of the entire feature, if there is a
+good match with the name, then any other of the possible features
+with that name gets the same metadata.</p>
 
 
 
@@ -1546,7 +1774,7 @@ different parameters looking for the best results.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 25, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 9, 2025</span>
   </span>
 
     

@@ -122,19 +122,6 @@ the name and reference numbers are checked, and if they match, the new
 tags from the external dataset are applied to all the matching
 segments in the secondary.
 
-### Debug Tags
-
-Currently a few tags are added to each feature to aid in validating
-and debugging the conflation process. These should obviously be
-removed before uploading to OSM. They'll be removed at a future date
-after more validation. These are:
-
-* hits - The number of matching tags in a feature
-* ratio - The ratio for name matching if not 100%
-* dist -  The distance between features
-* angle - The angle between two features
-* slope - The slope between two features
-
 ## Issues
 
 Conflation is never 100% accurate due to the wonderful
@@ -143,3 +130,120 @@ parameters for the distance, angle, and fuzzy string matching can
 produce slightly different results. I often run the same datasets with
 different parameters looking for the best results.
 
+## Evaluating The Results
+
+### Debug Tags
+
+Currently a few tags are added to each feature to aid in validating
+and debugging the conflation process. These should obviously be
+removed before uploading to OSM. They'll be removed at a future date
+after more validation. These are:
+
+* hits - The number of matching tags in a feature
+* name_ratio - The ratio for name matching
+* ref_ratio - The ratio for USFS reference number matching
+* dist -  The distance between features
+* angle - The angle between two features
+* slope - The slope between two features
+
+### Decision Matrix
+
+Initially each feature in the primary data source is compared to each
+feature in the secondary data source. The first step is the distance
+calculation, eliminating everything outside the threshold
+distance. Each feature from the secondary dataset within range is put
+on a list of possible matches. The angle and slope between the
+external feature and OSM is also checked.
+
+After searching through all of the secondary data, any features are
+found within the desired distance, slope and angle between the primary
+and secondary datasets. They are added to a list of possible matches.
+The slopes and angle is checked to identify branches off the highway
+that often have a similar name and reference number.
+
+If there are any features left in the secondary dataset, after the
+spatial calculations, then the tags are checked for matches.
+
+#### Name Matching
+
+Names are compared with fuzzy logic. This handles minor spelling
+differences. All names are converted to lowercase when being compared
+so there are no problems with capitalization. The ratio from the fuzzy
+matching is returned as a float, and is the *name_ratio* for name
+matching, and  *ref_ratios* for  reference matching in the debug
+logs. There is a lot of variety in names in most datasets.
+
+#### Reference Matching
+
+Reference matching is similar other than the prefix of the reference
+number has to be taken into consideration. A *ref* might be a local
+county road, so starts with a __CR __ then the number. State and
+federal highways use a similar scheme. Since we're focused on remote
+highways, those are left unchanged by conflation. For the OSM Merge
+use case, the only prefix we care about are __FR __, or __FS __. The
+ratio from the fuzzy matching is returned as a float, and is the 
+*ref_ratio* in the debug tags.
+
+#### Changing Tags
+
+When cleaning up OSM features, sometimes the USFS reference number is
+in the name tag. Often this uses various prefixes, but these can be
+identified, and moved to the correct *ref:usfs* tag from the name
+tag. Or the reference is in a *ref* tag, and the same change is made,
+it's moved to the *ref:usfs* tag. This change helps the conflation
+process when trying to match tags since this process is done by the
+[MVUM conversion](mvum.md) script, instead of in the conflation
+algorithm.
+
+#### Issues
+
+Conflation is rarely perfect. The biggest issue is due to large
+differences in the length of the highway or multiple segments. This
+fails to match by geometry within a reasonable distance. In this case
+the primary dataset feature is considered a *new* feature, so winds
+up in the new feature output file, instead of the conflated highways
+output file.
+
+#### Evaluating Possible Matches
+
+This is the key to conflation, evaluating the debug values to
+determine the most likely match. Each highway segment within the
+desired distance is put on a list, along with the results of comparing
+the tags. This is just a list of possible matches, which then needs to
+have the statistics evaluated to determine the best match.
+
+The primary values for conflation after geometry matching is comparing
+the tags between the external dataset and OSM. Many of these remote
+highways in OSM only have *highway=track*, whereas the external
+dataset may have a name and reference number. If the highway segments
+are reasonably similar, this generates a feature in the output data
+with the tags from the external dataset. When there are tags in both
+datasets for the same features, this is where things get interesting.
+
+If there is a match of the name or reference number, the *hits* value
+gets set to __1__. To determine what was matched, it's possible to
+look at the additional values of _name_ratio__ and __ref_ratio__,
+which are returned from tag checking. Since there is likely additional
+metadata in the external dataset, those tags are then merged with the
+OSM ones.
+
+If both the tags and the reference number match, the *hits* gets set
+to __2__. The tags __name_ratio__ and __ref_ratio__ are still set, so
+can be used to evaluate whether to trust the name or the reference
+match the possible match more, since it's a fuzzy string match. Often
+the reference number match is slightly off as in OSM some features use
+*ref=FS 123*, where *ref=FR 123* is preferred. The reference number
+itself, without the prefix is also checked. This then goes in the
+output file to change to the preferred prefix for USFS highways.
+
+If *hits* is set to __3__, then the name, the reference number and
+the reference prefix all match 100%, so this feature is not put in the
+output file as no updates need to be made. Often when the number match
+isn't 100% (hits == 2), it's because OSM has *FR 123*, and the
+external dataset has *FR 123.1* or *FR 123A*, or *FS 123*. OSM Merge
+changes the prefix from *FS* to FR* when it's used to make searching
+the data more consistent when using mobile apps.
+
+Since each highway be a segment of the entire feature, if there is a
+good match with the name, then any other of the possible features
+with that name gets the same metadata.

@@ -281,13 +281,21 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
         make_tasks(data, template)
     elif args.grid:
         # Generate the task grid
-        # breakpoint()
         if "features" in data:
             features = list()
-            # log.debug(f"Features: {len(data["features"])}")
             for feature in data["features"]:
-                features.append(shape(feature["geometry"]))
-            aoi = unary_union(features)
+                task = feature["geometry"]
+                # Sometimes the geometry in the Administrative Boundaries isn't always
+                # a good Polygon, or even MultiPolygon, so construct a new
+                # MultiPolygon from all the geometries.
+                if task.type == "LineString":
+                    poly = Polygon(task["coordinates"])
+                    features.append(poly)
+                elif task.type == "MultiPolygon":
+                    tasks = shape(feature["geometry"])
+                    for poly in tasks.geoms:
+                        features.append(poly)
+            aoi = MultiPolygon(features)
         else:
             aoi = shape(data["geometry"])
         grid = splitBySquare(aoi, args.meters)

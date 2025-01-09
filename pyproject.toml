@@ -110,8 +110,7 @@ mvum = "osm_merge.utilities.mvum:main"
 trails = "osm_merge.utilities.trails:main"
 usgs = "osm_merge.utilities.usgs:main"
 nps = "osm_merge.utilities.nps:main"
-# FIXME: these still have bugs
-# geojson2poly = "osm_merge.utilities.geojson2poly"
-# osmhighways = "osm_merge.utilities.osmhighways:main"
-# This use asyncio, and doesn't seem possible to run via pyproject
-# tm-splitter = "osm_merge.utilities.tm_splitter:main"
+geojson2poly = "osm_merge.utilities.geojson2poly:main"
+osmhighways = "osm_merge.utilities.osmhighways:main"
+# FIXME: this doesn't want to run due to the underbar vs hypen problem
+# tm_splitter = "osm_merge.utilities.tm_splitter:main"

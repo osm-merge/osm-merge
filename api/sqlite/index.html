@@ -2133,14 +2133,14 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>bounds</code>
+                <code>zoom_levels</code>
             </td>
             <td>
-                  <code>int</code>
+                  <code>list</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The bounds value for ODK Collect mbtiles</p>
+                <p>The zoom levels</p>
               </div>
             </td>
             <td>
@@ -2171,7 +2171,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mbtiles has a maxzoom and minzoom fields, Osmand doesn&#39;t.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        bounds (int): The bounds value for ODK Collect mbtiles</span>
+<span class="sd">        zoom_levels (list)): The zoom levels</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">min_zoom</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">zoom_levels</span><span class="p">)</span>
     <span class="n">max_zoom</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">zoom_levels</span><span class="p">)</span>

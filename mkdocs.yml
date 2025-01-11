@@ -77,6 +77,7 @@ nav:
       - Calculations: calculations.md
       - Validating: validating.md
       - Boundaries: boundaries.md
+      - Dataset Details: details.md
   - Utilities:
       - Utilities: utilities.md
       - OSM Merge: osm-merge.md

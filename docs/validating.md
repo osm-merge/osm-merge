@@ -144,7 +144,7 @@ high confidence the external feature matches the OSM feature.
 src="https://osmmerge.org/images/small-wayoff.png" align=right alt="drawing" width="500"/></a>
 
 Sometimes though you get a similar geometry, but they are
-parallel. This happens for highways that were traced off of satelloite
+parallel. This happens for highways that were traced off of satellite
 imagery as the offsets vary. You can see in this screenshot that the
 conflation software sucessfully made the match, and the merged the
 tags into the OSM feature, which currently is only *highway=track*. At

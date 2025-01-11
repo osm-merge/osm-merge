@@ -7,7 +7,7 @@ weird edge cases.
 
 There are several external datasets available, this document focuses
 on the
-MVUM)](https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.Road_MVUM.zip)
+[MVUM](https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.Road_MVUM.zip)
 and [RoadCore](https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.RoadCore_FS.zip)
 datasets. The RoadCore and MVUM datasets are the same other than
 RoadCore also includes roads that aren't jeep tracks. Both of these

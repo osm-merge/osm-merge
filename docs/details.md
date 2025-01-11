@@ -19,10 +19,10 @@ conflation process.
 The goal is being able to refer to a remote highway or trail without a
 GPS. Long before the digital age, locals, forest rangers and staff,
 fire fighters, etc... needed a way to convey a location. Hence USFS
-reference numbers. Any many have names either invented by locals or by
+reference numbers. And many have names either invented by locals or by
 USFS staff a very long time ago. I really love the fun names on
 obscure highways. Often these are based on a historical incident, like
-*Burn Road* (it was 100 years ago), *Bad Stew Road*, *Broken Tire
+*Burn Road* (it was 100 years ago), *Bad Stew Road*, *Broken Wheel
 Road*, etc... While digging through lots of map data is very boring,
 finding interesting highway names helps keep it amusing.
 

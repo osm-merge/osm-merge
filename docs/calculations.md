@@ -22,8 +22,6 @@ segments. Course sometimes OSM is too. conflation successfully merges
 the MVUM dataset tags for the segments if they match onto the single
 OSM way.
 
-![Screenshot\ from\ 2024-10-19\ 14-06-00.png])
-
 ## Distance
 
 A simple distance calculation is performed after transforming the

@@ -157,7 +157,7 @@ file. When conflating highways, we don't care about amenities or
 waterways.
 
 The preferred data extraction program for conflation is the
-[osmhighways.py](https://github.com/hotosm/osm-merge/blob/main/utilities/osmhighways.py) program, which has much more fine-grained control,
+[osmhighways.py](https://github.com/osm-merge/osm-merge/blob/main/osm_merge/utilities/osmhighways.py) program, which has much more fine-grained control,
 and also replaces the older fixname.py program and fixes the issues
 when the *name* field is actually a reference. It also deletes the
 extraneous __tiger:*__ tags to reduce bloat.
@@ -184,7 +184,7 @@ The names and reference number in OSM now have a wide variety of
 tagging](https://wiki.openstreetmap.org/wiki/United_States_roads_tagging#National_Forest_Road_System)
 when it comes to names. *"Forest Service Road 123.4A"* is not a name,
 it is a reference number. Same for *"County Road 43"*.  The
-[fixname.py](https://github.com/hotosm/osm-merge/blob/tagging/utilities/osmhighways.py)
+[osmhighways.py](https://github.com/osm-merge/osm-merge/blob/main/osm_merge/utilities/osmhighways.py)
 utility scan the OSM extract and when it see incorrect tagging,
 correct it to the OSM standard. Since the external datasets already
 follow the same guidelines, this increases the chance of a good match
@@ -268,7 +268,7 @@ I then used *ogrmerge* to produce a single file for each feature from
 all the smaller files. This file covers an entire state. This file has
 also has many fields we don't need, so only want the same set used for
 all the datasets. The
-[usgs.py](https://github.com/hotosm/osm-merge/blob/main/utilities/usgs.py)
+[usgs.py](https://github.com/osm-merge/osm-merge/blob/main/osm_merge/utilities/usgs.py)
 contained in this project is then run to filter the input data file
 into GeoJson with OSM tagging schema. The topographical data is
 especially useful for conflation, since the name and reference number

@@ -308,14 +308,12 @@ many of the bugs with names that are actually a reference number.
     keep = ["track",
             "unclassified",
             "residential",
-            "path",
-            "footway",
-            "pedestrian"
             "primary",
             "secondary",
             "tertiary",
             "trunk",
             "motorway",
+            "service",
             ]
     spin = Spinner('Processing...')
     fp = osmium.FileProcessor(args.infile).with_filter(osmium.filter.KeyFilter('highway'))

@@ -1,22 +1,28 @@
-# MVUM & RodCore Conversion
+# MVUM & RoadCore Conversion
 
 The MVUM and RoadCore datasets are all of the motor vehicle roads in a
 national forest. These are primarily remote dirt roads, often just a
 jeep track. These are heavily used for back country access for
 wildland fires and rescues. Currently much of this data has been
 imported in the past, complete with all the bugs in the dataset. The
-RoadCore datasets is a superset of the MVUM data, but otherwise the
-same.
+RoadCore dataset is a superset of the MVUM data, but otherwise the
+same. Since OpenStreetMap contains more than jeep tracks, the
+RoadCore dataset is usually used for conflation.
 
 This utility program normalizes the data, correcting or flagging bugs
 as an aid for better conflation. It can process both the MVUM and
-RoadCore datasets.
+RoadCore datasets.. The schema between these two is the same other
+than a subtle difference in field names.
 
 The original datasets can be found here on the USDA 
 [FSGeodata
 Clearinghouse](https://data.fs.usda.gov/geodata/edw/datasets.php?dsetCategory=transportation) website.
 
 ## Dataset Bugs
+
+No dataset is bug free. This includes all the external datasets and
+OSM as well. To avoid creating new bugs, each feature must be
+validated carefully.
 
 ### Bad Geometry
 
@@ -28,6 +34,14 @@ looks like somebodies's GPS had a dropped signal in places when they
 were recording a track.
 
 ### Bad Reference Numbers
+
+Every national foreset has it's own schema for reference
+numbers. There is some similarity between them all, but sometimes it's
+hard to tell the difference between a bad reference number, and a
+local numbering scheme. Having stared at much data, my guess is
+sometimes a prefix represents something like a trail vs a road. As I
+work my way through each forest, I'll try to document what appears to
+be a local numbering scheme.
 
 In some areas the MVUM and RoadCore data has extract numerals prefixed
 to the actual reference number. These are all usually in the same
@@ -47,34 +61,6 @@ Forest Service.
 
 Cleaning up all the wrong reference numbers will make OSM the best map
 for road and trail navigation on public lands.
-
-#### Dixie National Forest
-
-In the current MVUM dataset for this national forest, for some reason
-a *30, 31, 32, 33, 34* has been prefixed to many of the IDs, making
-the reference numbers wrong. After staring at the original data file,
-I noticed these were all 5 characters long, and lacked a letter or a
-minor number suffix. Limiting the trigger to just that case seems to
-fix the problem. A *note* is added to any feature where the
-__ref:usfs__ is changed as an aid towards validation.
-
-#### Manti-LaSal National Forest
-
-In the current MVUM dataset for this national forest, for some reason
-a *5* or *7* has been prefixed to many of the IDs, making the reference
-numbers wrong.
-
-#### Fishlake National Forest
-
-In the current MVUM dataset for this national forest, for some reason
-a *4* or *40* has been prefixed to some of the IDs, making the
-reference numbers wrong.
-
-#### Mount Hood National Forest
-
-For some reason, some of the reference numbers have a *000* appended,
-making the reference numbers wrong. This applies to paved roads, not
-just remote jeep tracks.
 
 ### Doesn't Match The Sign
 

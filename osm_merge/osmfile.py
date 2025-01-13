@@ -197,7 +197,9 @@ class OsmFile(object):
             # geom =
             tmp = list()
             for ref in refs:
-                tmp.append(nodes[ref]['coordinates'])
+                if ref in nodes:
+                    # Only add nodes that have been cached
+                    tmp.append(nodes[ref]['coordinates'])
             geom = LineString(tmp)
             if geom is None:
                 breakpoint()

@@ -193,8 +193,8 @@ def conflateThread(primary: list,
                 dist = cutils.getDistance(entry, existing)
             except:
                 log.error(f"getDistance() just had a weird error")
-                log.error(f"ENTRY: {entry}")
-                log.error(f"EXISTING: {existing}")
+                # log.error(f"ENTRY: {entry}")
+                # log.error(f"EXISTING: {existing}")
                 breakpoint()
                 # breakpoint()
                 continue
@@ -204,7 +204,7 @@ def conflateThread(primary: list,
             if dist >= threshold:
                 continue
             else:
-                print("------------------------------------------------------")
+                # print("------------------------------------------------------")
                 if "id" not in existing["properties"]:
                     existing["properties"]["id"] = -1
                 angle = 0.0
@@ -212,15 +212,15 @@ def conflateThread(primary: list,
                     slope, angle = cutils.getSlope(entry, existing)
                 except:
                     log.error(f"getSlope() just had a weird error")
-                    log.error(f"ENTRY: {entry["properties"]}")
-                    log.error(f"EXISTING: {existing["properties"]}")
+                    # print(f"ENTRY: {entry["properties"]}")
+                    # print(f"EXISTING: {existing["properties"]}")
                     # breakpoint()
                     # slope, angle = cutils.getSlope(entry, existing)
                     continue
                 if abs(angle) > angle_threshold or abs(slope) > slope_threshold:
-                    print(f"\tOut of range: {slope} : {angle}")
-                    # log.debug(f"PRIMARY: {entry["properties"]}")
-                    # log.debug(f"SECONDARY: {existing["properties"]}")
+                    # print(f"\tOut of range: {slope} : {angle}")
+                    # print(f"PRIMARY: {entry["properties"]}")
+                    # print(f"SECONDARY: {existing["properties"]}")
                     continue
                 # log.debug(f"DIST: {dist}, ANGLE: {angle}, SLOPE: {slope}")
                 # log.debug(f"PRIMARY: {entry["properties"]}")
@@ -233,8 +233,8 @@ def conflateThread(primary: list,
                     name1 = entry["properties"]["name"]
                 if (abs(angle) > angle_threshold or abs(slope) > slope_threshold):
                     continue
-                print(f"HITS: {hits}, DIST: {str(dist)[:7]}, NAME: {tags["name_ratio"]}, REF: {tags["ref_ratio"]}, SLOPE: {slope:.3f}, Angle: {angle:.3f},  - {name1} == {name2}")
-                print(f"\tTAGs: {tags}")
+                # print(f"HITS: {hits}, DIST: {str(dist)[:7]}, NAME: {tags["name_ratio"]}, REF: {tags["ref_ratio"]}, SLOPE: {slope:.3f}, Angle: {angle:.3f},  - {name1} == {name2}")
+                # print(f"\tTAGs: {tags}")
                 # breakpoint()
                 # Don't add highways that match
                 match = False
@@ -242,90 +242,74 @@ def conflateThread(primary: list,
                     # (tags["name_ratio"] >= match_threshold or tags["ref_ratio"] >= match_threshold)
                     if entry['properties'] != existing['properties']:
                         if tags["name_ratio"] >= match_threshold or tags["ref_ratio"] >= match_threshold:
-                            print(f"\tName or ref didn't match!")
+                            log.debug(f"\tName or ref didn't match!")
                         else:
                             # Only add the feature to the output if there are
                             # differences in the tags. If they are identical,
                             # ignore it as no changes need to be made.
                             print(f"\tAlmost Perfect match, name and ref!")
                     else:
-                        print(f"\tPerfect match! {entry['properties']}")
+                        log.debug(f"\tPerfect match! {entry['properties']}")
                     # print(f"\tENTRY1: {entry["properties"]}")
                     # print(f"\tEXISTING1: {existing["properties"]}")
                     break
                 elif hits == 2 and dist == 0.0:
-                    print(f"\tName and ref matched, geom close")
-                    print(f"\tENTRY1: {entry["properties"]}")
-                    print(f"\tEXISTING1: {existing["properties"]}")
+                    log.debug(f"\tName and ref matched, geom close")
+                    # print(f"\tENTRY1: {entry["properties"]}")
+                    # print(f"\tEXISTING1: {existing["properties"]}")
                     break
                 elif hits == 1:
                     if tags["name_ratio"] == 0 and tags["ref_ratio"] >= match_threshold:
-                        print(f"Ref matched, no name in data, geom close")
+                        log.debug(f"Ref matched, no name in data, geom close")
                         # breakpoint()
                         if "name" not in tags:
                             break
                     elif (tags["name_ratio"] >= match_threshold and tags["ref_ratio"] == 0):
-                        print(f"Name matched, no ref in data, geom close")
+                        log.debug(f"Name matched, no ref in data, geom close")
                         if "ref:usfs" not in tags:
                             break
                 elif hits == 0 and dist == 0.0:
-                    print(f"\tGeometry was close, OSM was probably lacking the name")
-                    print(f"\tENTRY2: {entry["properties"]}")
-                    print(f"\tEXISTING2: {existing["properties"]}")
+                    log.debug(f"\tGeometry was close, OSM was probably lacking the name")
+                    # print(f"\tENTRY2: {entry["properties"]}")
+                    # print(f"\tEXISTING2: {existing["properties"]}")
                     if tags["ref_ratio"] >= match_threshold:
                         break
                     hits += 1
-                    # if there is no name in the external dataset, then this is a
-                    # match.
-                    # print(f"\tENTRY22: {entry["properties"]}")
-                    # print(f"\tEXISTING22: {existing["properties"]}")
-                # elif hits == 1 and tags["name_ratio"] >= match_threshold or tags["ref_ratio"] >= match_threshold:
-                #     # This usually means the names matched, but OSM is
-                #     # lacking the USFS reference number, so should be in
-                #     # the output file with this value.
-                #     if tags["name_ratio"] == 0.0 and tags["ref_ratio"] > match_threshold:
-                #         print(f"Ref matched, no name, geom close")
-                #     else:
-                #         print(f"\tName matched, no ref, geom close")
-                #     print(f"\tENTRY3: {entry["properties"]}")
-                #     print(f"\tEXISTING3: {existing["properties"]}")
-                #     hits += 1 
-                #     # Don't add highways that match
                 elif hits == 2 and dist == 0.0:
-                    print(f"\tName and ref matched, geom close")
-                    print(f"\tENTRY4: {entry["properties"]}")
-                    print(f"\tEXISTING4: {existing["properties"]}")
+                    log.debug(f"\tName and ref matched, geom close")
+                    # print(f"\tENTRY4: {entry["properties"]}")
+                    # print(f"\tEXISTING4: {existing["properties"]}")
                     break
                 elif hits == 1 and tags["name_ratio"] >= match_threshold:
                     if tags["name_ratio"] == 0 and tags["ref_ratio"] > 80:
-                        print(f"\tClose geometry match, ref match")
+                        log.debug(f"\tClose geometry match, ref match")
                         if not "name" in tags:
                             break
                     elif tags["name_ratio"] > 0 and tags["ref_ratio"] == 0:
-                        print(f"\tClose geometry match, name match, not ref")
+                        log.debug(f"\tClose geometry match, name match, not ref")
                         if not "name" in tags:
                             break
                     else:
                         log.error(f"Name and ref don't match!")
-                    print(f"\tENTRY5: {entry["properties"]}")
-                    print(f"\tEXISTING5: {existing["properties"]}")
+                    # print(f"\tENTRY5: {entry["properties"]}")
+                    # print(f"\tEXISTING5: {existing["properties"]}")
                     hits += 1
                 elif hits == 2:
                     if tags["name_ratio"] == match_threshold and tags["ref_ratio"] >= match_threshold:
-                        print(f"\tName matched and ref matched")
-                        print(f"\tENTRY6: {entry["properties"]}")
-                        print(f"\tEXISTING6: {existing["properties"]}")
+                        log.debug(f"\tName matched and ref matched")
+                        # print(f"\tENTRY6: {entry["properties"]}")
+                        # print(f"\tEXISTING6: {existing["properties"]}")
                     hits += 1
                     break
                 elif hits == 0:
-                    print(f"\tGeometry matched, no name or ref in OSM")
-                    print(f"\tENTRY7: {entry["properties"]}")
-                    print(f"\tEXISTING7: {existing["properties"]}")
+                    log.debug(f"\tGeometry matched, no name or ref in OSM")
+                    # print(f"\tENTRY7: {entry["properties"]}")
+                    # print(f"\tEXISTING7: {existing["properties"]}")
                     hits += 1
                 elif angle == 0.0 and slope == 0.0 and dist == 0.0:
-                    print(f"\tGeometry matched, not name")
-                    print(f"\tENTRY8: {entry["properties"]}")
-                    print(f"\tEXISTING8: {existing["properties"]}")
+                    log.debug(f"\tGeometry matched, not name")
+                    # print(f"\tENTRY8: {entry["properties"]}")
+                    # print(f"\tEXISTING8: {existing["properties"]}")
                     hits += 1
 
                 if hits > 0:
@@ -376,7 +360,7 @@ def conflateThread(primary: list,
                 # FIXME: this is a test to see if adding the ratios, along with
                 # distance can find the best match in the maype list.
                 ratio =  segment["name_ratio"] + segment["ref_ratio"]
-                print(f"RATIO: {ratio} - {segment["match"]}")
+                # print(f"RATIO: {ratio} - {segment["match"]}")
                 # It was a solid match, so doesn't go in any output files
                 if segment["match"]:
                     continue
@@ -425,7 +409,7 @@ def conflateThread(primary: list,
                 # if pname == "Twin Mountain Road":
                 #     breakpoint()
 
-                print(f"ADDING: {pname} == {sname} dist: {str(closest["dist"])[:7]}, name: {closest["name_ratio"]}, ref: {closest["ref_ratio"]}, hits: {closest["hits"]}")
+                # print(f"ADDING: {pname} == {sname} dist: {str(closest["dist"])[:7]}, name: {closest["name_ratio"]}, ref: {closest["ref_ratio"]}, hits: {closest["hits"]}")
                 # if hits >= 1:
                 data.append(Feature(geometry=geom, properties=tags))
                 # else:
@@ -622,8 +606,8 @@ class Conflator(object):
                 name = olddata["properties"]["ref:usfs"]
             else:
                 name = "n/a"
-            log.error(f"Large difference in highway lengths! {abs(diff)} {name}")
-            return 0.0
+            # log.error(f"Large difference in highway lengths! {abs(diff)} {name}")
+            return 1000.0
         for segment in lines:
             if oldobj.geom_type == "LineString" and segment.geom_type == "LineString":
                 # Compare two highways
@@ -734,7 +718,7 @@ class Conflator(object):
                 # a similar length.
                 length = len(extfeat["properties"][key]) - len(osm["properties"][key])
                 ratio = fuzz.ratio(extfeat["properties"][key].lower(), osm["properties"][key].lower())
-                print(f"\tChecking ({key}:{ratio}): \'{extfeat["properties"][key].lower()}\', \'{osm["properties"][key].lower()}\'")
+                # print(f"\tChecking ({key}:{ratio}): \'{extfeat["properties"][key].lower()}\', \'{osm["properties"][key].lower()}\'")
                 if key == "name":
                     props["name_ratio"] = ratio
                 else:
@@ -755,7 +739,7 @@ class Conflator(object):
                             tmp = osm["properties"]["ref:usfs"].split(' ')
                             newtype = tmp[0]
                             newref = tmp[1].upper()
-                            print(f"\tREFS: {newtype} - {extref} vs {newref}: {extref == newref}")
+                            # print(f"\tREFS: {newtype} - {extref} vs {newref}: {extref == newref}")
                             if key == "ref" and (newtype != "FS" or newtype != "FR"):
                                 props[key] = newtype
                                 continue
@@ -839,7 +823,7 @@ class Conflator(object):
         else:
             single = False
 
-        single = True          # FIXME: debug
+        # single = True          # FIXME: debug
         if single:
             alldata = conflateThread(primarydata, secondarydata)
         else:

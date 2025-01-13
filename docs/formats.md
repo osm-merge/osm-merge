@@ -97,9 +97,10 @@ __building=yes__.
 ## Converting Between Formats
 
 To support reading and writing OSM XML files, this project has it's
-own code that builds on top of the __OsmFile()__ class in the [OSM
-Fieldwork](https://hotosm.github.io/osm-fieldwork/). This parses the
-OSM XML file into GeoJson format for internal use. All of the
-attributes in the OSM XML file being read are convert to tags in the
-GeoJson properties section, and then later converted from the
-properties back to OSM XML attributes when writing the output file.
+own code for parsing OSM XML and GepoJson data files. When parsing OSM
+XML files, the data is stored internally as GeoJson. When writing an
+OSM XML output file, this data structure is converted to OSM XML.
+All of the attributes in the OSM XML file being read are convert to
+tags in the GeoJson properties section, and then later converted from
+the properties back to OSM XML attributes when writing the output
+file.

@@ -71,7 +71,7 @@ create efficient XForms that are easy to convert to OSM. The primary
 task when manually converting ODK collected data into OSM format is
 converting the tags. If the XLSForm is created with a focus towards
 OSM the XLSForm can make this a much simpler process. This [is
-detailed](https://www.senecass.com/projects/Mapping/tech/ImproveXLSForms.html)
+detailed](https://osmmerge.org/tech/ImproveXLSForms.html)
 more in this document. Simply stated, what is in the *name* colum in
 the XLSForm becomes the *name* of the tag in OSM, and the response
 from the choices sheet becomes the value.
@@ -187,12 +187,11 @@ manually decide if it is a duplicate.
 
 Part of the key detail to improve conflation requires a carefully
 created XLSForm. There is much more detailed information on
-[XLSForm
-design](https://hotosm.github.io/osm-fieldwork/about/xlsforms/), but
-briefly whatever is in the *name* column in the *survey* sheet becomes
-the name of the tags, and whatever is in the *name* column in the
-*choices* sheet becomes the value. If you want a relatively smooth
-conflation, make sure your XLSForm uses OSM tagging schemas.
+[XLSForm design](xlsforms.md), but briefly whatever is in the *name*
+column in the *survey* sheet becomes the name of the tags, and
+whatever is in the *name* column in the *choices* sheet becomes the
+value. If you want a relatively smooth conflation, make sure your
+XLSForm uses OSM tagging schemas.
 
 If you don't follow OSM tagging, then conflation will assumme all your
 ODK data is a new feature, and you'll have to manually conflate the

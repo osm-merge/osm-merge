@@ -34,7 +34,8 @@ is useful for OpenStreetMap.
 
 The other goal of this project is to support field data collection
 using OpenDataKit. The
-[osm-fieldwork](https://hotosm.github.io/osm-fieldwork/) project can
+[fieldwork
+scripts](https://github.com/osm-merge/osm-merge/tree/main/osm_merge/utilities)can
 be used to convert the ODK data files into
 [GeoJson](https://geojson.org/) and [OSM
 XML](https://wiki.openstreetmap.org/wiki/OSM_XML). This
@@ -77,14 +78,13 @@ these sources.
 
 Much of the process of conflation is splitting huge datasets into
 managable sized files for data processing. I have that process [mostly
-automated](https://github.com/hotosm/osm-merge/tree/main/contrib) so I
+automated](https://github.com/osm-merge/osm-merge/blob/main/contrib/update.sh) so I
 can easily regenerate data extracts any time I make improvements to the
 conversion process. Currently there isn't any conflated data yet, just the
 convered data files chopped into manageable sized files. The processed
 map data is available [from
-here](http://5.78.72.214/osm-merge/). Please note the website is work
-in progress. Feedback on the data conversion to OpenStreetMap tagging
-is appreciated.
+here](https://osmmerge.org/). Feedback on the data conversion to
+OpenStreetMap tagging is appreciated.
 
 ![Skipped highway segments](https://github.com/osm-merge/osm-merge/blob/main/docs/assets/skippedsegments.png)
 

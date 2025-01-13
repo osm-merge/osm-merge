@@ -26,7 +26,7 @@ important item used to confirm a near match in geometry, too much
 variety can make this a slow process.
 
 This project has an
-[osmhighways.py](https://github.com/hotosm/osm-merge/blob/main/utilities/osmhighways.py)
+[osmhighways.py](https://github.com/osm-merge/osm-merge/blob/main/osm_merge/utilities/osmhighways.py)
 program that is used to cleanup some of the problems, like deleting
 unnecessary tags, and fixing the name vs reference number
 problem. Deleting all bogus tags reduces the data size, which is a

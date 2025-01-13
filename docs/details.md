@@ -116,6 +116,16 @@ as long as you are aware of this issue. This is noticeable when
 comparing digital maps with older USGS topographical maps or USFS
 forest maps.
 
+## Rio Grande National Forest
+
+Often a road that branches off of a more major highway is a Spur, and
+includes an alpha numberic. Often this is the same as the suffix, for
+example *ref:usfs=FR 123.2B* the name might be *Black Forest Spur B*.
+In this forest none of that applies. Spur roads do have different
+reference numbers, but the name is the same on all of them. At least
+that's how it is in the data. It'll take a ground-truthing trip to
+really know.
+
 ## Dixie National Forest
 
 In the current MVUM and RoadCore datasets for this national forest,

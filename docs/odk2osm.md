@@ -28,7 +28,7 @@ The options for this program are:
    -i INFILE, --infile INFILE
        The input file
 By default, the
-[xforms.yaml](https://github.com/hotosm/osm-fieldwork/blob/main/osm_fieldwork/xforms.yaml)
+[xforms.yaml](https://github.com/osm-merge/osm-merge/blob/main/osm_merge/fieldwork/xforms.yaml)
 file is used when converting to OSM XML format. Using the *--yaml*
 option allows you to have a custom conversion of the data collected by
 your [XLSForm](https://xlsform.org/en/). This only applies to the OSM

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2021, 2022, 2023, 2024 OpenStreetMap US
+# Copyright (c) 2021, 2022, 2023, 2024, 2025 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -151,7 +151,22 @@ def conflateThread(primary: list,
         if entry["geometry"]["type"] == "Point":
             continue
 
+        print(f"PRIMARY: {entry["properties"]}")
         for existing in secondary:
+            # FIXME: debug
+            if existing["geometry"]["type"] == "Point":
+                continue
+            foo = f"ID: {existing["properties"]["id"]}, "
+            if "name" in existing["properties"]:
+                foo += f"NAME: {existing["properties"]["name"]}, "
+            if "highway" in existing["properties"]:
+                foo += f"HIGHWAY: {existing["properties"]["highway"]}, "
+            if "ref" in existing["properties"]:
+                foo += f"REF: {existing["properties"]["ref"]}, "
+            if "ref:usfs" in existing["properties"]:
+                foo += f"REF:USFS: {existing["properties"]["ref:usfs"]}, "
+            if len(foo) < 0:
+                print(f"\tSECONDARY: {foo}")
             feature = dict()
             newtags = dict()
             # log.debug(f"EXISTING: {existing["properties"]}")
@@ -183,9 +198,9 @@ def conflateThread(primary: list,
             dist = float()
             slope = float()
             hits = 0
-            angle_threshold = 15.0 # 20.0 # the angle between two lines
+            angle_threshold = 17.0 # 20.0 # the angle between two lines
             slope_threshold = 4.0 # the slope between two lines
-            match_threshold = 86 # the ratio for name and ref matching
+            match_threshold = 80 # the ratio for name and ref matching
             name1 = None
             name2 = None
             match = False
@@ -193,18 +208,22 @@ def conflateThread(primary: list,
                 dist = cutils.getDistance(entry, existing)
             except:
                 log.error(f"getDistance() just had a weird error")
-                # log.error(f"ENTRY: {entry}")
-                # log.error(f"EXISTING: {existing}")
+                log.error(f"ENTRY: {entry}")
+                log.error(f"EXISTING: {existing}")
                 breakpoint()
-                # breakpoint()
                 continue
 
+            # This is only returned when the difference in linestring
+            # length is large, which often means the OSM highway doesn't
+            # exist in the external dataset.
+            if dist < 0:
+                continue
             # log.debug(f"ENTRY: {dist}: {entry["properties"]}")
             # log.debug(f"EXISTING: {existing["properties"]}")
-            if dist >= threshold:
+            if abs(dist) >= threshold:
                 continue
             else:
-                # print("------------------------------------------------------")
+                print("------------------------------------------------------")
                 if "id" not in existing["properties"]:
                     existing["properties"]["id"] = -1
                 angle = 0.0
@@ -212,19 +231,22 @@ def conflateThread(primary: list,
                     slope, angle = cutils.getSlope(entry, existing)
                 except:
                     log.error(f"getSlope() just had a weird error")
-                    # print(f"ENTRY: {entry["properties"]}")
-                    # print(f"EXISTING: {existing["properties"]}")
+                    print(f"\tENTRY: {entry["properties"]}")
+                    print(f"\tEXISTING: {existing["properties"]}")
                     # breakpoint()
                     # slope, angle = cutils.getSlope(entry, existing)
                     continue
                 if abs(angle) > angle_threshold or abs(slope) > slope_threshold:
-                    # print(f"\tOut of range: {slope} : {angle}")
+                    print(f"\tOut of range: {slope} : {angle}")
                     # print(f"PRIMARY: {entry["properties"]}")
                     # print(f"SECONDARY: {existing["properties"]}")
                     continue
                 # log.debug(f"DIST: {dist}, ANGLE: {angle}, SLOPE: {slope}")
                 # log.debug(f"PRIMARY: {entry["properties"]}")
                 # log.debug(f"SECONDARY: {existing["properties"]}")
+            if "name" in entry["properties"]:
+                if entry["properties"]["name"] == "Wommer Road" and existing["properties"]["id"] == 17088578:
+                    breakpoint()
                 hits, tags = cutils.checkTags(entry, existing)
                 tags["debug"] = f"hits: {hits}, dist: {str(dist)[:7]}, slope: {str(slope)[:7]}, angle: {str(angle)[:7]}"
                 if "name" in existing["properties"]:
@@ -233,32 +255,39 @@ def conflateThread(primary: list,
                     name1 = entry["properties"]["name"]
                 if (abs(angle) > angle_threshold or abs(slope) > slope_threshold):
                     continue
-                # print(f"HITS: {hits}, DIST: {str(dist)[:7]}, NAME: {tags["name_ratio"]}, REF: {tags["ref_ratio"]}, SLOPE: {slope:.3f}, Angle: {angle:.3f},  - {name1} == {name2}")
-                # print(f"\tTAGs: {tags}")
+                print(f"HITS: {hits}, DIST: {str(dist)[:7]}, NAME: {tags["name_ratio"]}, REF: {tags["ref_ratio"]}, SLOPE: {slope:.3f}, Angle: {angle:.3f},  - {name1} == {name2}")
+                foo = tags
+                if "ref" in foo:
+                    del foo["ref"]
+                print(f"\tTAGs: {foo}")
                 # breakpoint()
                 # Don't add highways that match
                 match = False
                 if hits == 3: # or (slope == 0.0 and angle == 0.0):
                     # (tags["name_ratio"] >= match_threshold or tags["ref_ratio"] >= match_threshold)
                     if entry['properties'] != existing['properties']:
-                        if tags["name_ratio"] >= match_threshold or tags["ref_ratio"] >= match_threshold:
-                            log.debug(f"\tName or ref didn't match!")
-                        else:
-                            # Only add the feature to the output if there are
-                            # differences in the tags. If they are identical,
-                            # ignore it as no changes need to be made.
-                            print(f"\tAlmost Perfect match, name and ref!")
+                        # if tags["name_ratio"] >= match_threshold or tags["ref_ratio"] <= match_threshold:
+                        #     log.debug(f"\tName or ref didn't match!")
+                        # else:
+                        # Only add the feature to the output if there are
+                        # differences in the tags. If they are identical,
+                        # ignore it as no changes need to be made.
+                        print(f"\tAlmost Perfect match, name and ref!")
                     else:
                         log.debug(f"\tPerfect match! {entry['properties']}")
                     # print(f"\tENTRY1: {entry["properties"]}")
                     # print(f"\tEXISTING1: {existing["properties"]}")
+                    maybe = list()
+                    hits = 0
                     break
                 elif hits == 2 and dist == 0.0:
                     log.debug(f"\tName and ref matched, geom close")
                     # print(f"\tENTRY1: {entry["properties"]}")
                     # print(f"\tEXISTING1: {existing["properties"]}")
+                    hits = 0
+                    maybe = list()
                     break
-                elif hits == 1:
+                elif hits == 1 and dist <= 2.0:
                     if tags["name_ratio"] == 0 and tags["ref_ratio"] >= match_threshold:
                         log.debug(f"Ref matched, no name in data, geom close")
                         # breakpoint()
@@ -272,13 +301,14 @@ def conflateThread(primary: list,
                     log.debug(f"\tGeometry was close, OSM was probably lacking the name")
                     # print(f"\tENTRY2: {entry["properties"]}")
                     # print(f"\tEXISTING2: {existing["properties"]}")
-                    if tags["ref_ratio"] >= match_threshold:
-                        break
-                    hits += 1
+                    if "name" in entry["properties"] or "ref:usfs" in entry["properties"]:
+                        hits += 1
                 elif hits == 2 and dist == 0.0:
                     log.debug(f"\tName and ref matched, geom close")
                     # print(f"\tENTRY4: {entry["properties"]}")
                     # print(f"\tEXISTING4: {existing["properties"]}")
+                    maybe = list()
+                    hits = 0
                     break
                 elif hits == 1 and tags["name_ratio"] >= match_threshold:
                     if tags["name_ratio"] == 0 and tags["ref_ratio"] > 80:
@@ -301,10 +331,10 @@ def conflateThread(primary: list,
                         # print(f"\tEXISTING6: {existing["properties"]}")
                     hits += 1
                     break
-                elif hits == 0:
+                elif hits == 0 and dist == 0.0:
                     log.debug(f"\tGeometry matched, no name or ref in OSM")
-                    # print(f"\tENTRY7: {entry["properties"]}")
-                    # print(f"\tEXISTING7: {existing["properties"]}")
+                    print(f"\tENTRY7: {entry["properties"]}")
+                    print(f"\tEXISTING7: {existing["properties"]}")
                     hits += 1
                 elif angle == 0.0 and slope == 0.0 and dist == 0.0:
                     log.debug(f"\tGeometry matched, not name")
@@ -599,15 +629,32 @@ class Conflator(object):
 
         # dists = list()
         best = None
+        size_threshold = 0
         diff = newobj.length - oldobj.length
         # FIXME: this is just for current debug
-        if diff > 10000:
+        if abs(diff) > 1000:
             if "ref:usfs" in olddata["properties"]:
                 name = olddata["properties"]["ref:usfs"]
             else:
                 name = "n/a"
             # log.error(f"Large difference in highway lengths! {abs(diff)} {name}")
-            return 1000.0
+
+            oldpoly = oldobj.convex_hull
+            inold = oldpoly.dwithin(newobj, size_threshold)
+            newpoly = oldobj.convex_hull
+            innew = newpoly.dwithin(oldobj, size_threshold)
+            # print(f"IN: {inold} vs {innew}")
+            if inold and innew:
+                # print(f"ID: {olddata["properties"]["id"]}")
+                return 0.0
+            else:
+                # if inold or innew:
+                # print(f"ID: {olddata["properties"]["id"]}")
+                # This is the only time a negative distance is returned !
+                return -1.0
+            # else:
+            #     return 12345678.9
+
         for segment in lines:
             if oldobj.geom_type == "LineString" and segment.geom_type == "LineString":
                 # Compare two highways
@@ -755,8 +802,9 @@ class Conflator(object):
                         # For a fuzzy match, cache the value from the
                         # secondary dataset and use the value in the
                         # primary dataset.
-                    if ratio != 100:
-                        props[f"old_{key}"] = osm["properties"][key]
+                elif key == "name" and ratio > 0:
+                        props["name"] = osm["properties"][key]
+                        props["alt_name"] = extfeat["properties"]["name"]
 
         # print(props)
         return hits, props
@@ -823,7 +871,7 @@ class Conflator(object):
         else:
             single = False
 
-        # single = True          # FIXME: debug
+        single = True          # FIXME: debug
         if single:
             alldata = conflateThread(primarydata, secondarydata)
         else:

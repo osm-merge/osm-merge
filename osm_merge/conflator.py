@@ -244,9 +244,6 @@ def conflateThread(primary: list,
                 # log.debug(f"DIST: {dist}, ANGLE: {angle}, SLOPE: {slope}")
                 # log.debug(f"PRIMARY: {entry["properties"]}")
                 # log.debug(f"SECONDARY: {existing["properties"]}")
-            if "name" in entry["properties"]:
-                if entry["properties"]["name"] == "Wommer Road" and existing["properties"]["id"] == 17088578:
-                    breakpoint()
                 hits, tags = cutils.checkTags(entry, existing)
                 tags["debug"] = f"hits: {hits}, dist: {str(dist)[:7]}, slope: {str(slope)[:7]}, angle: {str(angle)[:7]}"
                 if "name" in existing["properties"]:
@@ -708,7 +705,7 @@ class Conflator(object):
         """
         match_threshold = 80
         match = ["name", "ref", "ref:usfs"]
-        # skip = ["UT", "CR", "WY", "CO"]
+        keep = ["UT", "CR", "WY", "CO", "US"]
         hits = 0
         props = dict()
         id = 0
@@ -753,6 +750,13 @@ class Conflator(object):
             if key not in props:
                 continue
 
+            # In OSM, there may be an existing value for the ref
+            # that is a county or state designation in addition to
+            # the USFS reference number. That should be kept.
+            if key == "ref" and osm["properties"]["ref"][:2] in keep:
+                props["ref"] = osm["properties"]["ref"]
+                continue
+
             # Usually it's the name field that has the most variety in
             # in trying to match strings. This often is differences in
             # capitalization, singular vs plural, and typos from using
@@ -760,10 +764,10 @@ class Conflator(object):
             # too so if it isn't a match, use the new name from the
             # external dataset.
             if key in osm["properties"] and key in extfeat["properties"]:
+                length = len(extfeat["properties"][key]) - len(osm["properties"][key])
                 # Sometimes there will be a word match, which returns a
                 # ratio in the low 80s. In that case they should be
                 # a similar length.
-                length = len(extfeat["properties"][key]) - len(osm["properties"][key])
                 ratio = fuzz.ratio(extfeat["properties"][key].lower(), osm["properties"][key].lower())
                 # print(f"\tChecking ({key}:{ratio}): \'{extfeat["properties"][key].lower()}\', \'{osm["properties"][key].lower()}\'")
                 if key == "name":
@@ -787,9 +791,6 @@ class Conflator(object):
                             newtype = tmp[0]
                             newref = tmp[1].upper()
                             # print(f"\tREFS: {newtype} - {extref} vs {newref}: {extref == newref}")
-                            if key == "ref" and (newtype != "FS" or newtype != "FR"):
-                                props[key] = newtype
-                                continue
                             if extref == newref:
                                 hits += 1 
                                 # Many minor changes of FS to FR don't require
@@ -800,8 +801,10 @@ class Conflator(object):
                                     # log.debug(f"Ignoring old ref {osm["properties"]["ref:usfs"]}")
                                     continue
                         # For a fuzzy match, cache the value from the
-                        # secondary dataset and use the value in the
-                        # primary dataset.
+                        # primary dataset and use the value in the
+                        # secondary dataset since sometims the name in OSM is
+                        # what  the highway is generally called, which at times
+                        # may be greatly different from the official name.
                 elif key == "name" and ratio > 0:
                         props["name"] = osm["properties"][key]
                         props["alt_name"] = extfeat["properties"]["name"]
@@ -871,7 +874,7 @@ class Conflator(object):
         else:
             single = False
 
-        single = True          # FIXME: debug
+        # single = True          # FIXME: debug
         if single:
             alldata = conflateThread(primarydata, secondarydata)
         else:

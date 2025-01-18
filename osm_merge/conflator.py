@@ -259,9 +259,7 @@ def conflateThread(primary: list,
                 print(f"\tTAGs: {foo}")
                 # breakpoint()
                 # Don't add highways that match
-                match = False
                 if hits == 3: # or (slope == 0.0 and angle == 0.0):
-                    # (tags["name_ratio"] >= match_threshold or tags["ref_ratio"] >= match_threshold)
                     if entry['properties'] != existing['properties']:
                         # if tags["name_ratio"] >= match_threshold or tags["ref_ratio"] <= match_threshold:
                         #     log.debug(f"\tName or ref didn't match!")
@@ -272,16 +270,15 @@ def conflateThread(primary: list,
                         print(f"\tAlmost Perfect match, name and ref!")
                     else:
                         log.debug(f"\tPerfect match! {entry['properties']}")
-                    # print(f"\tENTRY1: {entry["properties"]}")
-                    # print(f"\tEXISTING1: {existing["properties"]}")
-                    maybe = list()
-                    hits = 0
-                    break
+                        # print(f"\tENTRY1: {entry["properties"]}")
+                        # print(f"\tEXISTING1: {existing["properties"]}")
+                        # maybe = list()
+                        break
                 elif hits == 2 and dist == 0.0:
                     log.debug(f"\tName and ref matched, geom close")
                     # print(f"\tENTRY1: {entry["properties"]}")
                     # print(f"\tEXISTING1: {existing["properties"]}")
-                    hits = 0
+                    # hits = 0
                     maybe = list()
                     break
                 elif hits == 1 and dist <= 2.0:
@@ -296,8 +293,8 @@ def conflateThread(primary: list,
                             break
                 elif hits == 0 and dist == 0.0:
                     log.debug(f"\tGeometry was close, OSM was probably lacking the name")
-                    # print(f"\tENTRY2: {entry["properties"]}")
-                    # print(f"\tEXISTING2: {existing["properties"]}")
+                    print(f"\tENTRY2: {entry["properties"]}")
+                    print(f"\tEXISTING2: {existing["properties"]}")
                     if "name" in entry["properties"] or "ref:usfs" in entry["properties"]:
                         hits += 1
                 elif hits == 2 and dist == 0.0:
@@ -358,7 +355,7 @@ def conflateThread(primary: list,
                     break
 
         # log.debug(f"MAYBE: {len(maybe)}")
-        if len(maybe) > 0 :
+        if len(maybe) > 0:
             # cache the refs to use in the OSM XML output file
             refs = list()
             # odk = dict()
@@ -449,8 +446,9 @@ def conflateThread(primary: list,
             entry["properties"]["informal"] = "yes"
             entry["properties"]["fixme"] = "New features should be imported following OSM guidelines."
             entry["properties"]["debug"] = f"hits: {hits}, dist: {str(dist)[:7]}"
-            # entry["properties"]["slope"] = slope
-            # entry["properties"]["dist"] = dist
+            entry["properties"]["slope"] = slope
+            entry["properties"]["angle"] = angle
+            entry["properties"]["dist"] = dist
             # log.debug(f"FOO({dist}): {entry}")
             newdata.append(entry)
 

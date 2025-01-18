@@ -1,0 +1,35 @@
+# Common abbreviations found in the datasets
+- abbreviations:
+    - RD: Road
+    - DR: Drive
+    - LN: Lane
+    - PL: Place
+    - ST: Street
+    - WY: Way
+    - AV: Avenue
+    - AVE: Avenue
+    - CI: Circle
+    - CIR: Circle
+    - CT: Court
+    - N: North
+    - E: East
+    - S: South
+    - W: West
+    - FWY: Freeway
+
+- tags:
+    # Utah Local Roads
+    - FULLNAME: name
+    - SPEED_LMT: speed_limit
+    - adminclass:
+        - "1  Arterial Service"
+        - "2  Local Service"
+        - "4  Proposed Local Jurisdiction"
+        - "6  Toll Road"
+        - "8  Open non-HUTF Eligible"
+        - "9  Primitive/Non-maintained"
+    # Colorado Local Roads
+    # - surf_type: surface
+    - surfname: surface
+    - routename: name
+

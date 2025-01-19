@@ -86,6 +86,7 @@ nav:
       - Odk2osm: odk2osm.md
       - Osm2favorites: osm2favorites.md
       - dbextract: dbextract.md
+      - local-roads: local-roads.md
   - Data Conversion:
       - Data Formats: formats.md
       - MVUM: mvum.md

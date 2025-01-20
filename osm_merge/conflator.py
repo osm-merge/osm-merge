@@ -151,7 +151,7 @@ def conflateThread(primary: list,
         if entry["geometry"]["type"] == "Point":
             continue
 
-        print(f"PRIMARY: {entry["properties"]}")
+        # print(f"PRIMARY: {entry["properties"]}")
         for existing in secondary:
             # FIXME: debug
             if existing["geometry"]["type"] == "Point":
@@ -195,6 +195,7 @@ def conflateThread(primary: list,
             if existing["geometry"]["type"] == "LineString" and len(existing["geometry"]["coordinates"]) <= 1:
                 continue
 
+            angle = 0.0
             dist = float()
             slope = float()
             hits = 0
@@ -223,10 +224,9 @@ def conflateThread(primary: list,
             if abs(dist) >= threshold:
                 continue
             else:
-                print("------------------------------------------------------")
+                # print("------------------------------------------------------")
                 if "id" not in existing["properties"]:
                     existing["properties"]["id"] = -1
-                angle = 0.0
                 try:
                     slope, angle = cutils.getSlope(entry, existing)
                 except:
@@ -237,7 +237,7 @@ def conflateThread(primary: list,
                     # slope, angle = cutils.getSlope(entry, existing)
                     continue
                 if abs(angle) > angle_threshold or abs(slope) > slope_threshold:
-                    print(f"\tOut of range: {slope} : {angle}")
+                    # print(f"\tOut of range: {slope} : {angle}")
                     # print(f"PRIMARY: {entry["properties"]}")
                     # print(f"SECONDARY: {existing["properties"]}")
                     continue
@@ -252,11 +252,11 @@ def conflateThread(primary: list,
                     name1 = entry["properties"]["name"]
                 if (abs(angle) > angle_threshold or abs(slope) > slope_threshold):
                     continue
-                print(f"HITS: {hits}, DIST: {str(dist)[:7]}, NAME: {tags["name_ratio"]}, REF: {tags["ref_ratio"]}, SLOPE: {slope:.3f}, Angle: {angle:.3f},  - {name1} == {name2}")
+                # print(f"HITS: {hits}, DIST: {str(dist)[:7]}, NAME: {tags["name_ratio"]}, REF: {tags["ref_ratio"]}, SLOPE: {slope:.3f}, Angle: {angle:.3f},  - {name1} == {name2}")
                 foo = tags
                 if "ref" in foo:
                     del foo["ref"]
-                print(f"\tTAGs: {foo}")
+                # print(f"\tTAGs: {foo}")
                 # breakpoint()
                 # Don't add highways that match
                 if hits == 3: # or (slope == 0.0 and angle == 0.0):
@@ -293,8 +293,8 @@ def conflateThread(primary: list,
                             break
                 elif hits == 0 and dist == 0.0:
                     log.debug(f"\tGeometry was close, OSM was probably lacking the name")
-                    print(f"\tENTRY2: {entry["properties"]}")
-                    print(f"\tEXISTING2: {existing["properties"]}")
+                    # print(f"\tENTRY2: {entry["properties"]}")
+                    # print(f"\tEXISTING2: {existing["properties"]}")
                     if "name" in entry["properties"] or "ref:usfs" in entry["properties"]:
                         hits += 1
                 elif hits == 2 and dist == 0.0:
@@ -367,10 +367,7 @@ def conflateThread(primary: list,
             # match. If we have at least 2 hits, it's very likely a
             # good match, 3 is a perfect match.
             best = None
-            # maybe.sort(key=hitsSort)
-            # maybe.sort(key=distSort)
 
-            # Sometimes all the maybes are segments of the same highway.
             # maybe.sort(key=distSort)
             # maybe.sort(key=angleSort)
             # maybe.sort(key=hitsSort)
@@ -378,31 +375,17 @@ def conflateThread(primary: list,
             ratio = 0
             closest = None
             hits = 0
-            # if len(maybe) > 1:
-            #     breakpoint()
+            # Sometimes all the maybes are segments of the same highway.
             for segment in maybe:
                 # FIXME: this is a test to see if adding the ratios, along with
                 # distance can find the best match in the maype list.
                 ratio =  segment["name_ratio"] + segment["ref_ratio"]
+                # if "name" in segment:
+                #     if segment["name"] == "Lost Man Trailhead Road":
+                #         breakpoint()
                 # print(f"RATIO: {ratio} - {segment["match"]}")
                 # It was a solid match, so doesn't go in any output files
-                if segment["match"]:
-                    continue
-                # Ref or name matched, geometry close
-                # elif segment["hits"] == 2 and ratio >= 100:
-                #     print(f"Good match!")
-                #     break
-                # elif segment["hits"] == 1:
-                #     print(f"Poor match!")
-                #     # breakpoint()
-                #     break
-                # elif segment["hits"] == 0:
-                #     print(f"No match!")
-                #     # breakpoint()
-                #     break
-                # if ratio >= best:
-                #     closest = segment
-                if segment["hits"] > hits:
+                if segment["hits"] >= hits:
                     hits = segment["hits"]
                     closest = segment
                 props = closest["osm"]["properties"]
@@ -430,10 +413,9 @@ def conflateThread(primary: list,
                 sname = str()
                 if "name" in props:
                     sname = props["name"]
-                # if pname == "Twin Mountain Road":
-                #     breakpoint()
-
                 # print(f"ADDING: {pname} == {sname} dist: {str(closest["dist"])[:7]}, name: {closest["name_ratio"]}, ref: {closest["ref_ratio"]}, hits: {closest["hits"]}")
+                # if segment["hits"] == 1:
+                #     breakpoint()
                 # if hits >= 1:
                 data.append(Feature(geometry=geom, properties=tags))
                 # else:
@@ -441,14 +423,14 @@ def conflateThread(primary: list,
 
             # data.append(Feature(geometry=geom, properties=tags))
             # If no hits, it's new data. ODK data is always just a POI for now
-        elif hits == 0 and dist <= threshold:
-            entry["properties"]["version"] = 1
-            entry["properties"]["informal"] = "yes"
-            entry["properties"]["fixme"] = "New features should be imported following OSM guidelines."
-            entry["properties"]["debug"] = f"hits: {hits}, dist: {str(dist)[:7]}"
+            if hits == 0 and dist <= threshold:
+                entry["properties"]["version"] = 1
+                entry["properties"]["informal"] = "yes"
+                entry["properties"]["fixme"] = "New features should be imported following OSM guidelines."
+                entry["properties"]["debug"] = f"hits: {hits}, dist: {str(dist)[:7]}"
             entry["properties"]["slope"] = slope
             entry["properties"]["angle"] = angle
-            entry["properties"]["dist"] = dist
+            # entry["properties"]["dist"] = dist
             # log.debug(f"FOO({dist}): {entry}")
             newdata.append(entry)
 

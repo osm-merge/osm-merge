@@ -113,11 +113,10 @@ class LocalRoads(object):
                 # Don't convert all fields
                 if key not in config["tags"]:
                     continue
-                # In OSM, tag values don't have a space unless it's
-                # a name or ref tag.
+                # County Roads are only a number
                 if type(value) == int:
                     if key in config["tags"]:
-                        props[config["tags"][key]] = value
+                        props[config["tags"][key]] = f"CR {value}"
                     continue
 
                 if len(value) == 0:
@@ -128,11 +127,26 @@ class LocalRoads(object):
                     if word in abbrevs:
                         props[config["tags"][key]] = value.replace(word, abbrevs[word]).title()
                 if "name" in props:
+                    if props["name"] == "0" or props["name"][:3] == "0.0":
+                        continue
+                    # Colorado Local Roads data has both the Forest Service
+                    # reference number and the name in the same field.
+                    if props["name"][:3] == "Fs ":
+                        tmp = props["name"].split('-')
+                        props["ref:usfs"] = f"FR {tmp[0].split(' ')[1]}"
+                        props["name"] = tmp[1].title()
                     if "County Road" in props["name"]:
+                        # these have no reference number
+                        if len(props["name"]) == len("County Road"):
+                            continue
                         props["ref"] = props["name"].replace("County Road", "CR")
+                        # County roads are a ref, not a name
+                        del props["name"]
             if geom is not None:
-                props["highway"] = "unclassified"
-                highways.append(Feature(geometry=geom, properties=props))
+                # props["highway"] = "unclassified"
+                if len(props) > 0:
+                    # breakpoint()
+                    highways.append(Feature(geometry=geom, properties=props))
             # print(props)
 
         return FeatureCollection(highways)

@@ -114,27 +114,39 @@ class LocalRoads(object):
                 if key not in config["tags"]:
                     continue
                 # County Roads are only a number
-                if type(value) == int:
-                    if key in config["tags"]:
-                        props[config["tags"][key]] = f"CR {value}"
-                    continue
-
                 if len(value) == 0:
                     continue
+                newvalue = str()
                 for word in value.split():
                     # Fix some common abbreviations
                     abbrevs = config["abbreviations"]
                     if word in abbrevs:
-                        props[config["tags"][key]] = value.replace(word, abbrevs[word]).title()
+                        newvalue += abbrevs[word]
+                    else:
+                        newvalue += word
+                    newvalue += ' '
+
+                if config["tags"][key] == "name":
+                    props["name"] = newvalue.strip().title()
                 if "name" in props:
-                    if props["name"] == "0" or props["name"][:3] == "0.0":
+                    #pat = re.compile("[0-9.]*")
+                    #if re.search(pat, props["name"]):
+                    if props["name"].isalnum():
+                        if props["name"] == "0":
+                            continue
+                        props["ref"] = f"CR {value}"
+                        # Delete the name as this is a ref
+                        del props["name"]
                         continue
                     # Colorado Local Roads data has both the Forest Service
                     # reference number and the name in the same field.
                     if props["name"][:3] == "Fs ":
                         tmp = props["name"].split('-')
                         props["ref:usfs"] = f"FR {tmp[0].split(' ')[1]}"
-                        props["name"] = tmp[1].title()
+                        if len(tmp) == 1:
+                            props["name"] = tmp[0].title()
+                        else:
+                            props["name"] = tmp[1].title()
                     if "County Road" in props["name"]:
                         # these have no reference number
                         if len(props["name"]) == len("County Road"):

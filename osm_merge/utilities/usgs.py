@@ -19,21 +19,16 @@ import argparse
 import logging
 import sys
 import os
+import re
 from sys import argv
 from osm_fieldwork.osmfile import OsmFile
-from geojson import Point, Feature, FeatureCollection, dump, Polygon, load
-import geojson
-from shapely.geometry import shape, LineString, Polygon, mapping
-import shapely
-import asyncio
-from codetiming import Timer
-from time import sleep
-from pathlib import Path
 from progress.bar import Bar, PixelBar
+from osm_merge.yamlfile import YamlFile
+import geojson
+from geojson import Feature, FeatureCollection, load, LineString
+import osm_merge as om
+rootdir = om.__path__[0]
 
-# ogrmerge.py -single -o trails.shp VECTOR_*/Shape/Trans_TrailSegment.shp
-
-# https://prd-tnm.s3.amazonaws.com/index.html?prefix=StagedProducts/TopoMapVector/
 # Instantiate logger
 log = logging.getLogger(__name__)
 
@@ -41,11 +36,30 @@ log = logging.getLogger(__name__)
 
 class USGS(object):
     def __init__(self,
-                 filespec: str = None,
+                 dataspec: str = None,
+                 yamlspec: str = "utilities/usgs.yaml",
                  ):
+        """
+        This class processes the dataset.
+
+        Args:
+            dataspec (str): The input data to convert
+            yamlspec (str): The YAML config file for converting data
+
+        Returns:
+            (LocalRoads): An instance of this class
+        """
         self.file = None
-        if filespec is not None:
-            self.file = open(filespec, "r")
+        if dataspec is not None:
+            self.file = open(dataspec, "r")
+
+        yaml = f"{rootdir}/{yamlspec}"
+        if not os.path.exists(yaml):
+            log.error(f"{yaml} does not exist!")
+            quit()
+
+        file = open(yaml, "r")
+        self.yaml = YamlFile(f"{yaml}")
 
     def convert(self,
                 state: str,
@@ -67,148 +81,91 @@ class USGS(object):
             file = open(filespec, "r")
         else:
             file = self.file
-
         data = geojson.load(file)
 
+        config = self.yaml.getEntries()
         highways = list()
         spin = Bar('Processing...', max=len(data['features']))
         for entry in data["features"]:
             geom = entry["geometry"]
+            if geom is None or not geom["type"]:
+                continue
+            # We don't care about POIs for now
+            if geom["type"] == "Point":
+                continue
             props = dict()
             spin.next()
-            if "name" in entry["properties"]:
-                props["name"] =  entry["properties"]["name"]
-            if "sourceorig" in entry["properties"]:
-                props["highway"] = "path"
-                # These are for the trail data
-                if entry['properties']['sourceorig'] is not None:
-                    props["source"] = entry['properties']['sourceorig']
-                if 'trailnumbe' in entry['properties']:
-                    if entry['properties']['trailnumbe'] is not None:
-                        props["ref:usfs"] = f"{entry['properties']['trailnumbe']}"
-                if "bicycle" in entry['properties']:
-                    if entry['properties']['bicycle'] is not None:
-                        if entry['properties']['bicycle'] == "Y":
-                            props["bicycle"] = "designated"
-                        # else:
-                        #     props["bicycle"] = "no"
-                if "atv" in entry['properties']:
-                    if entry['properties']['atv'] is not None:
-                        if entry['properties']['atv'] == "Y":
-                            props["atv"] = "designated"
-                        # else:
-                        #     props["atv"] = "no"
-                if "packsaddle" in entry['properties']:
-                    if entry['properties']['packsaddle'] is not None:
-                        if entry['properties']['packsaddle'] == "Y":
-                            props["horse"] = "designated"
-                        # else:
-                        #     props["horse"] = "no"
-                if "motorcycle" in entry['properties']:
-                    if entry['properties']['motorcycle'] is not None:
-                        if entry['properties']['motorcycle'] == "Y":
-                            props["motorcycle"] = "designated"
-                        # else:
-                        #     props["motorcycle"] = "no"
-                if 'snowshoe' in entry['properties']:
-                    if entry['properties']['snowshoe'] is not None:
-                        if entry['properties']['snowshoe'] == "Y":
-                            props["piste:type"] = "hike"
-                    if entry['properties']['crosscount'] is not None:
-                        if entry['properties']['crosscount'] == "Y":
-                            props["ski"] = "yes"
-                            props["piste:type"] = "nordic"
-                # if entry['properties']['dogsled'] is not None:
-                #     if entry['properties']['dogsled'] == "Y":
-                #         props["dogsled"] = "yes"
-                # if entry['properties']['hikerpedes'] is not None:
-                #     if entry['properties']['hikerpedes'] == "Y":
-                #         props["hiker"] = "yes"
-                #     else:
-                #         props["hiker"] = "no"
-                if "snowmobile"in entry['properties']:
-                    if entry['properties']['snowmobile'] is not None:
-                        if entry['properties']['snowmobile'] == "Y":
-                            props["snowmobile"] = "designated"
-                        # else:
-                        #     props["snowmobile"] = "no"
-                if "motorizedw" in entry['properties']:
-                    if entry['properties']['motorizedw'] is not None:
-                        # FIXME: there's a better tag
-                        if entry['properties']['motorizedw'] == "Y":
-                            props["motorized"] = "designated"
-                        # else:
-                        #     props["motorized"] = "no"
-                if len(props) == 0:
+            operator = str()
+            for key, value in entry["properties"].items():
+                # Many fields have no value
+                if not value:
                     continue
-                if geom is not None:
-                    highways.append(Feature(geometry=geom, properties=props))
-                continue
-            
-            # These are for the highways data
-            if "highway" not in entry["properties"]:
-                props["highway"] = "unclassified"
-            if entry["properties"] is None or entry is None:
-                continue
-            if 'source_ori' in entry['properties']:
-                if entry['properties']['source_ori'] is not None:
-                    props["source"] = entry['properties']['source_ori']
-            if 'us_route_a' in entry['properties']:
-                if entry['properties']['us_route_a'] is not None:
-                    props["ref"] = f"US {entry['properties']['us_route_a']}"
-            if 'us_route' in entry['properties']:
-                if entry['properties']['us_route'] is not None:
-                    props["ref"] = f"US {entry['properties']['us_route']}"
-            if 'county_rou' in entry['properties']:
-                if entry['properties']['county_rou'] is not None:
-                    props["ref"] = f"US {entry['properties']['county_rou']}"
-            if 'state_ro_1' in entry['properties']:
-                if entry['properties']['state_ro_1'] is not None:
-                    props["ref"] = f"{state} {entry['properties']['state_ro_1']}"
-            if 'state_rout' in entry['properties']:
-                if entry['properties']['state_rout'] is not None:
-                    props["ref"] = f"{state} {entry['properties']['state_rout']}"
-            if 'federal_la' in entry['properties']:
-                if entry['properties']['federal_la'] is not None:
-                    # FIXME: add . between numbers and Letters.
-                    props["ref:usfs"] = f"FR {entry['properties']['federal_la']}"
+                # Don't convert all fields
+                print(f"FIXME: {key} == {value}")
+                if len(props) > 0:
+                    print(f"FIXME2: {props}")
+                if key not in config["tags"] and key not in config["tags"]["access"]:
+                    continue
+                # breakpoint()
+                if key in config["tags"]["access"]:
+                    if value == "Y":
+                        props[key] = "designated"
+                    continue
+                if key not in config["tags"]:
+                    continue
 
-            if 'name' not in entry['properties']:
-                continue
-            if  entry['properties']['name'] is not None:
-                if entry['properties']['name'][:8] == "USFS Rd ":
-                    props["ref:usfs"] = f"FR {entry['properties']['name'][8:]}"
-                elif entry['properties']['name'][:3] == "Rd ":
-                    props["ref"] = f"CR {entry['properties']['name'][3:]}"
-                    props["name"] = f"County Road {entry['properties']['name'][3:]}"
-                elif entry['properties']['name'][:6] == "Co Rd ":
-                    props["ref"] = f"CR {entry['properties']['name'][6:]}"
-                    props["name"] = f"County Road {entry['properties']['name'][6:]}"
-                elif entry['properties']['name'][:6] == "State Hwy ":
-                    props["ref"] = f"{state} {entry['properties']['name'][6:]}"
-                    props["name"] = f"State Highway {entry['properties']['name'][6:]}"
-                elif entry['properties']['name'][:6] == "Us Hwy ":
-                    props["ref"] = f"US {entry['properties']['name'][6:]}"
-                    props["name"] = f"US Highway {entry['properties']['name'][6:]}"
-                else:
-                    # The USGS topo data when it comes to names is a real
-                    # mess, full of abbreviations. So expand them which
-                    # is what OSM prefers, and of course will be needed
-                    # when conflating to get a string match.
-                    name = f"{entry['properties']['name'].title()}"
-                    name = name.replace(" Rd", " Road")
-                    name = name.replace(" Hwy", " Highway")
-                    name = name.replace(" Ln", " Lane")
-                    name = name.replace(" Mnt", " Mountain ")
-                    name = name.replace("E ", "East ")
-                    name = name.replace("W ", "West ")
-                    name = name.replace("N ", "North ")
-                    name = name.replace("S ", "South ")
-                    props["name"] = name
+                if key == "name":
+                    # Look for USFS reference numbers
+                    pat = re.compile("[0-9]+[a-z]*")
+                    # Look for USGS reference numbers
+                    if re.match(pat, value.lower()) is not None:
+                        # Common roads like "2nd Strret" all have a space
+                        if value.find(' ' ) > 0:
+                            newvalue = str()
+                            for word in value.split():
+                                # Fix some common abbreviations
+                                abbrevs = config["abbreviations"]
+                                if word in abbrevs:
+                                    newvalue += abbrevs[word]
+                                else:
+                                    newvalue += word
+                                    newvalue += ''
+                            props["name"] = f"{newvalue.title()} Road"
+                        else:
+                            props["ref"] = f"{value.upper()}"
+                    elif "County Road" in value:
+                        props["ref"] = value.replace("County Road", "CR")
+                    else:
+                        props["name"] = f"{value.title()} Road"
 
-            if len(props) == 0 or geom is None:
-                continue
-            highways.append(Feature(geometry=geom, properties=props))
+                elif config["tags"][key] == "operator":
+                    if value not in config["tags"]["operator"]:
+                        break
+                    if "ref" in props:
+                        breakpoint()
+                        props[f"ref:{value.lower()}"] = f"{value.upper()} {props["ref"]}"
+                        del props["ref"]
+                    props["operator"] = config["tags"]["operator"]
+
+                # We don't want all the non highway data
+                # elif config["tags"][key] == "source":
+                elif key == "source":
+                    if value not in config["tags"][source]:
+                        break
+                    else:
+                        breakpoint()
+                        if "ref" in props:
+                            prefix = config["tags"]["source"][key]
+                            if prefix == "blm":
+                                props["ref:blm"] = f"BLM {props["ref"]}"
+                            elif prefix == "usgs":
+                                props["ref:usgs"] = f"FR {props["ref"]}"
+                            elif prefix == "nps":
+                                props["ref:nps"] = f"NPS {props["ref"]}"
+                            del props["ref"]
+
+            if len(props) > 0:
+                highways.append(Feature(geometry=geom, properties=props))
 
         return FeatureCollection(highways)
 
@@ -254,7 +211,4 @@ def main():
         
 if __name__ == "__main__":
     """This is just a hook so this file can be run standlone during development."""
-    # loop = asyncio.new_event_loop()
-    # asyncio.set_event_loop(loop)
-    # loop.run_until_complete(main())
     main()

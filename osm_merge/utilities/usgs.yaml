@@ -1,0 +1,61 @@
+# Common abbreviations found in the datasets
+- abbreviations:
+    - RD: Road
+    - DR: Drive
+    - LN: Lane
+    - PL: Place
+    - ST: Street
+    - WY: Way
+    - AV: Avenue
+    - St: Street
+    - AVE: Avenue
+    - CI: Circle
+    - CIR: Circle
+    - CT: Court
+    - N: North
+    - E: East
+    - S: South
+    - W: West
+    - Mt: Mountain
+    - FWY: Freeway
+    - WY: Highway
+    - Ave: Avenue
+    - CT: Court
+
+- tags:
+    - access:
+        - hikerpedestrian
+        - atv
+        - bicycle
+        - motorcycle
+        - packsaddle
+        - snowmobile
+        - snowshoe
+        - crosscountryski
+        - dogsled
+    - sourcecitationabbreviation: source
+    - source:
+        - BLM: blm
+        - NPS: nps
+        - U.S. Forest Service: usgs
+        - USFS: usgs
+        # - BOC
+        # - CDTC
+        # - Census MAF/TIGER database
+        # - CPW
+        # - FAA
+        # - FRA
+        # - FWS
+    - primarytrailmaintainer: operator
+    - operator:
+        - FS: US Forest Service
+        - BLM: The Bureau of Land Management
+        - NPS: National Park Service
+        # - FWS: National Something or Other
+        # - County Parish Borough: Local
+        # - Local Gvernment: Local Government
+        # - NGO: Non-profit
+        # - Private: private
+        # - State: State
+    - trailnumber: ref
+    - name: name

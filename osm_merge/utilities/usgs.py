@@ -100,20 +100,22 @@ class USGS(object):
                 # Many fields have no value
                 if not value:
                     continue
-                # Don't convert all fields
-                print(f"FIXME: {key} == {value}")
-                if len(props) > 0:
-                    print(f"FIXME2: {props}")
-                if key not in config["tags"] and key not in config["tags"]["access"]:
-                    continue
-                # breakpoint()
+                # print(f"FIXME: {key} == {value}")
+                # if len(props) > 0:
+                #     print(f"\tFIXME2: {props}")
                 if key in config["tags"]["access"]:
-                    if value == "Y":
-                        props[key] = "designated"
+                    if type(config["tags"]["access"][key]) == str:
+                        breakpoint()
+                        keyword = config["tags"]["access"][key]
+                    elif type(config["tags"]["access"][key]) == dict:
+                        if len(config["tags"]["access"][key]) == 0:
+                            if value == "Y":
+                                props[key] = "designated"
                     continue
                 if key not in config["tags"]:
                     continue
 
+                # breakpoint()
                 if key == "name":
                     # Look for USFS reference numbers
                     pat = re.compile("[0-9]+[a-z]*")
@@ -139,10 +141,10 @@ class USGS(object):
                         props["name"] = f"{value.title()} Road"
 
                 elif config["tags"][key] == "operator":
+                    # breakpoint()
                     if value not in config["tags"]["operator"]:
                         break
                     if "ref" in props:
-                        breakpoint()
                         props[f"ref:{value.lower()}"] = f"{value.upper()} {props["ref"]}"
                         del props["ref"]
                     props["operator"] = config["tags"]["operator"]

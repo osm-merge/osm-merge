@@ -37,8 +37,16 @@
     - source:
         - BLM: blm
         - NPS: nps
-        - U.S. Forest Service: usgs
-        - USFS: usgs
+        - U.S. Forest Service: usfs
+        - USFS: usfs
+        - FS: usfs
+    - prefix:
+        - BLM: BLM
+        - NPS: NPS
+        - U.S. Forest Service: FR
+        - USFS: FR
+        - FS: FR
+
         # - BOC
         # - CDTC
         # - Census MAF/TIGER database

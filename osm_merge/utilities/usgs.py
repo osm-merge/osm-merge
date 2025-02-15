@@ -100,12 +100,11 @@ class USGS(object):
                 # Many fields have no value
                 if not value:
                     continue
-                # print(f"FIXME: {key} == {value}")
                 # if len(props) > 0:
                 #     print(f"\tFIXME2: {props}")
                 if key in config["tags"]["access"]:
                     if type(config["tags"]["access"][key]) == str:
-                        breakpoint()
+                        # breakpoint()
                         keyword = config["tags"]["access"][key]
                     elif type(config["tags"]["access"][key]) == dict:
                         if len(config["tags"]["access"][key]) == 0:
@@ -115,14 +114,14 @@ class USGS(object):
                 if key not in config["tags"]:
                     continue
 
-                # breakpoint()
+                # print(f"FIXME: {key} = {value}")
                 if key == "name":
                     # Look for USFS reference numbers
                     pat = re.compile("[0-9]+[a-z]*")
                     # Look for USGS reference numbers
                     if re.match(pat, value.lower()) is not None:
-                        # Common roads like "2nd Strret" all have a space
-                        if value.find(' ' ) > 0:
+                        # Common roads like "2nd Street" all have a space
+                        if value.find(' ') > 0:
                             newvalue = str()
                             for word in value.split():
                                 # Fix some common abbreviations
@@ -134,25 +133,34 @@ class USGS(object):
                                     newvalue += ''
                             props["name"] = f"{newvalue.title()} Road"
                         else:
+                            # breakpoint()
                             props["ref"] = f"{value.upper()}"
                     elif "County Road" in value:
                         props["ref"] = value.replace("County Road", "CR")
                     else:
                         props["name"] = f"{value.title()} Road"
 
+                elif config["tags"][key] == "ref":
+                    # breakpoint()
+                    props["ref"] = value
+
                 elif config["tags"][key] == "operator":
                     # breakpoint()
                     if value not in config["tags"]["operator"]:
                         break
                     if "ref" in props:
-                        props[f"ref:{value.lower()}"] = f"{value.upper()} {props["ref"]}"
+                        source = config["tags"]["source"][value]
+                        prefix = config["tags"]["prefix"][value]
+                        props[f"ref:{source}"] = f"{prefix} {props["ref"]}"
                         del props["ref"]
-                    props["operator"] = config["tags"]["operator"]
+                    props["operator"] = config["tags"]["operator"][value]
 
                 # We don't want all the non highway data
                 # elif config["tags"][key] == "source":
-                elif key == "source":
+                elif config["tags"][key] == "source":
+                    breakpoint()
                     if value not in config["tags"][source]:
+                        print(f"Dropping source {value}")
                         break
                     else:
                         breakpoint()

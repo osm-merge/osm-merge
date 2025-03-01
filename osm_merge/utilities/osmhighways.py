@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2021, 2022, 2023, 2024 OpenStreetMap US
+# Copyright (c) 2021, 2022, 2023, 2024, 2025 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -53,26 +53,29 @@ def getRef(name) -> str:
         # log.error(f"Nothing done, empty string")
         return name
 
-    # The number is always (supposedly) last, so this gets all the
-    # weird contortions without getting complicated.
-    ref = "[0-9].*+"
-    pat = re.compile(ref)
-    result = pat.findall(name.lower())
-    if len(result) == 0:
-        # if it's as a an integer, not decimals or character appended,
-        # look for that too.
-        ref = " [0-9]+"
-        pat = re.compile(ref)
-        result = pat.findall(name.lower())
-        if len(result) == 0:
-            return name
-        else:
-            return result[0].strip().replace(' ', '.')
-    else:
-        if '/' in result[0]:
-            return result[0]
-        else:
-            return result[0].replace(' ', '.')
+    tmp = name.split(' ')
+    return tmp[len(tmp) - 1:][0]
+
+    # # The number is always (supposedly) last, so this gets all the
+    # # weird contortions without getting complicated.
+    # ref = "[0-9].*+"
+    # pat = re.compile(ref)
+    # result = pat.findall(name.lower())
+    # if len(result) == 0:
+    #     # if it's an integer, not decimals or character appended,
+    #     # look for that too.
+    #     ref = " [0-9]+"
+    #     pat = re.compile(ref)
+    #     result = pat.findall(name.lower())
+    #     if len(result) == 0:
+    #         return name
+    #     else:
+    #         return result[0].strip().replace(' ', '.')
+    # else:
+    #     if '/' in result[0]:
+    #         return result[0]
+    #     else:
+    #         return result[0].replace(' ', '.')
     
 def filterTags(obj):
     """
@@ -84,13 +87,14 @@ def filterTags(obj):
     Returns:
     
     """
-    fix = ["name", "ref", "ref:usfs"]
+    fix = ["name", "name_1", "alt_name", "ref", "ref:usfs"]
 
     name = None
-    newtags = dict() # obj.tags
+    newtags = dict()
     if "name" in obj.tags:
         name = obj.tags.get("name")
     # log.debug(f"NAME: {name}")
+
     for tag in obj.tags:
         matched = False
         key = tag[0]
@@ -112,7 +116,6 @@ def filterTags(obj):
             newtags[key] = val
             continue
 
-        # It's the name tag that has the most problems.
         if key == "ref" or key == "ref:usfs":
             # A good ref has an FR or FS prefixed, so just use it, but move it
             # to the ref:usfs tag.
@@ -124,8 +127,11 @@ def filterTags(obj):
                 newtags["ref:usfs"] = f"FR {ref}"
                 continue
             elif key == "ref" and val[:3] == "CR ":
-                # It's a well mapped county road, do nothing
-                newtags[key] = val
+                pat = re.compile("county road")
+                if pat.search(val.lower()):
+                    newtags[key] = getRef(val)
+                else:
+                    newtags[key] = val
                 continue
             ref = getRef(name)
             if ref and len(ref) > 0:
@@ -147,15 +153,34 @@ def filterTags(obj):
                     "forest road",
                     "usfs trail ",
                     ]
+        pat = re.compile("county road")
         if key == "name" and name is not None:
+            if pat.search(name.lower()):
+                # breakpoint()
+                ref = getRef(name)
+                # log.debug(f"COUNTY: {pat.pattern} REF={ref.title()} NAME={name}")
+                if ref and len(ref) > 0:
+                    newtags["ref"] = f"CR {ref.title()}"
+                continue
+        # Often the County ref is in the name_1 column, which isn't supported
+        # by OSM anyway.
+        if key == "name_1":
+            name = obj.tags.get("name_1").lower()
             pat = re.compile("county road")
-            if pat.match(name.lower()):
-                for entry in name.split(';'):
-                    ref = getRef(entry)
-                    # log.debug(f"COUNTY: {pat.pattern} REF={ref.title()} NAME={name}")
-                    if ref and len(ref) > 0:
-                        newtags["ref"] = f"CR {ref.title()}"
-                    matched = True
+            if pat.search(name):
+                ref = getRef(name)
+                # log.debug(f"COUNTY: {pat.pattern} REF={ref.title()} NAME={name}")
+                if ref and len(ref) > 0:
+                    newtags["ref"] = f"CR {ref.title()}"
+                continue
+        if key == "alt_name":
+            name = obj.tags.get("alt_name").lower()
+            pat = re.compile("county road")
+            if pat.search(name):
+                ref = getRef(name)
+                # log.debug(f"COUNTY: {pat.pattern} REF={ref.title()} NAME={name}")
+                if ref and len(ref) > 0:
+                    newtags["ref"] = f"CR {ref.title()}"
                 continue
 
             # FIXME: Since we're focused on roads in national forests or
@@ -179,6 +204,13 @@ def filterTags(obj):
         else:
             newtags[key] = val
 
+    if "ref" in newtags and "ref:usfs" in newtags:
+        newtags["ref"] = f"{newtags["ref"]};{newtags["ref:usfs"]}"
+        del newtags["ref:usfs"]
+    if "ref" not in obj.tags and "ref:usfs" in newtags:
+        # breakpoint()
+        newtags["ref"] = newtags["ref:usfs"]
+        del newtags["ref:usfs"]
     # print(f"OLDTAGS: {len(obj.tags)}: {obj.tags}")
     # print(f"NEWTAGS: {len(newtags)} {newtags}")
     return newtags
@@ -269,10 +301,10 @@ many of the bugs with names that are actually a reference number.
         """,
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
-    parser.add_argument("-i", "--infile", required=True, help="Top-level input directory")
+    parser.add_argument("-i", "--infile", required=True, help="Top-level input file")
     parser.add_argument("-o", "--outfile", default="out.osm", help="Output file")
-    parser.add_argument("-c", "--clip", help="Clip file by polygon")
-    parser.add_argument("-s", "--small", help="Small dataset")
+    # parser.add_argument("-c", "--clip", help="Clip file by polygon")
+    # parser.add_argument("-s", "--small", help="Small dataset")
 
     args = parser.parse_args()
     # if verbose, dump to the terminal.
@@ -287,21 +319,21 @@ many of the bugs with names that are actually a reference number.
         stream=sys.stdout,
     )
 
-    if args.clip:
-        # cachefile = os.path.basename(args.infile.replace(".pbf", ".cache"))
-        # create_nodecache(args.infile, cachefile)
-        if not clip:
-            log.error(f"You must specify a boundary!")
-            parser.print_help()
-            quit()
-        if not args.infile:
-            log.error(f"You must specify the input file!")
-            parser.print_help()
-            quit()
+    # if args.clip:
+    #     # cachefile = os.path.basename(args.infile.replace(".pbf", ".cache"))
+    #     # create_nodecache(args.infile, cachefile)
+    #     if not clip:
+    #         log.error(f"You must specify a boundary!")
+    #         parser.print_help()
+    #         quit()
+    #     if not args.infile:
+    #         log.error(f"You must specify the input file!")
+    #         parser.print_help()
+    #         quit()
 
-        clip(args.clip, args.infile, args.outfile)
-        log.info(f"Wrote clipped file {args.outfile}")
-        quit()
+    #     clip(args.clip, args.infile, args.outfile)
+    #     log.info(f"Wrote clipped file {args.outfile}")
+    #     quit()
 
     # FIXME: this should change
     outfile = args.outfile

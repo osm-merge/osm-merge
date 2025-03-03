@@ -800,6 +800,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../local-roads/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    local-roads
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1355,7 +1376,8 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/dbextract.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 45</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 44</span>
+<span class="normal"> 45</span>
 <span class="normal"> 46</span>
 <span class="normal"> 47</span>
 <span class="normal"> 48</span>
@@ -1425,38 +1447,7 @@
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This program queries a postgres database as maintained by Underpass.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1482,67 +1473,37 @@
         <span class="n">curs</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t connect to database: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">quit</span><span class="p">()</span>
 
 
     <span class="c1"># Make a temporary view to reduce the data size</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">boundary</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Clipping by boundary...&#39;</span><span class="p">)</span>
         <span class="c1"># optionally clip by a boundary</span>
         <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">boundary</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">geojson</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="n">aoi</span> <span class="o">=</span> <span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
         <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CREATE OR REPLACE VIEW highway_view AS SELECT * FROM ways_line WHERE tags-&gt;&gt;&#39;highway&#39; IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT(&#39;SRID=4326;</span><span class="si">{</span><span class="n">aoi</span><span class="o">.</span><span class="n">wkt</span><span class="si">}</span><span class="s2">&#39;), geom);&quot;</span>
-        <span class="c1"># print(sql)</span>
-        <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CREATE OR REPLACE VIEW nodes_view AS SELECT * FROM nodes WHERE ST_CONTAINS(ST_GeomFromEWKT(&#39;SRID=4326;</span><span class="si">{</span><span class="n">aoi</span><span class="o">.</span><span class="n">wkt</span><span class="si">}</span><span class="s2">&#39;), geom);&quot;</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags-&gt;&gt;&#39;highway&#39; IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT(&#39;SRID=4326;</span><span class="si">{</span><span class="n">aoi</span><span class="o">.</span><span class="n">wkt</span><span class="si">}</span><span class="s2">&#39;), geom)&quot;</span>
         <span class="c1"># print(sql)</span>
         <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># By default, get all the highways</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CREATE OR REPLACE VIEW highway_view AS SELECT * FROM ways_line WHERE tags-&gt;&gt;&#39;highway&#39; IS NOT NULL&quot;</span>
-        <span class="c1"># print(sql)</span>
-        <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CREATE OR REPLACE VIEW nodes_view AS SELECT * FROM nodes&quot;</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags-&gt;&gt;&#39;highway&#39; IS NOT NULL&quot;</span>
         <span class="c1"># print(sql)</span>
         <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
 
-    <span class="c1"># Process the nodes</span>
-    <span class="n">features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT osm_id,version,timestamp,ST_AsTEXT(geom) FROM nodes_view WHERE tags IS NULL ORDER BY osm_id;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processing nodes...&#39;</span><span class="p">)</span>
-    <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="c1">#result = curs.fetchall()</span>
-    <span class="nb">breakpoint</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">curs</span><span class="o">.</span><span class="n">fetchone</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-        <span class="c1"># spin.next()</span>
-        <span class="n">osm_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">geom</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;osm_id&quot;</span><span class="p">:</span> <span class="n">osm_id</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">}</span>
-        <span class="c1"># print(data)</span>
-        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Feature</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geom</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">data</span><span class="p">))</span>
-
-    <span class="c1"># Process the highways</span>
     <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT osm_id,version,timestamp,refs,tags,ST_AsTEXT(geom) FROM highway_view WHERE tags-&gt;&gt;&#39;highway&#39; IS NOT NULL;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="c1"># spin = Spinner(&#39;Processing ways...&#39;)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processing ways...&#39;</span><span class="p">)</span>
+    <span class="c1"># print(sql)</span>
     <span class="n">curs</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">curs</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-        <span class="c1"># spin.next()</span>
         <span class="n">osm_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">timestamp</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">refs</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
         <span class="n">geom</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">from_wkt</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;osm_id&quot;</span><span class="p">:</span> <span class="n">osm_id</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span> <span class="s2">&quot;refs&quot;</span><span class="p">:</span> <span class="n">refs</span><span class="p">}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;osm_id&quot;</span><span class="p">:</span> <span class="n">osm_id</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span> <span class="s2">&quot;refs&quot;</span><span class="p">:</span> <span class="n">refs</span><span class="p">,</span> <span class="s2">&quot;geom&quot;</span><span class="p">:</span> <span class="n">geom</span><span class="p">}</span>
         <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
         <span class="c1"># print(data)</span>
         <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Feature</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geom</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">data</span><span class="p">))</span>

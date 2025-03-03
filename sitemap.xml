@@ -2,150 +2,154 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://osmmerge.org/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/CHANGELOG/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/LICENSE/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/about/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/basemapper/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/boundaries/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/calculations/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/conflation/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/dataflow/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/dbextract/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/details/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/formats/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/highways/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
+    </url>
+    <url>
+         <loc>https://osmmerge.org/local-roads/</loc>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/mvum/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/odk2osm/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/odkconflation/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/osm-merge/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/osm2favorites/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/osmhighways/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/setup/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/tm-splitter/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/trails/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/usgs/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/utilities/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/validating/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/wiki_redirect/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/zion/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/basemapper/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/conflator/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/convert/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/dbextract/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/filter_data/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/odk2osm/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/osmfile/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/parsers/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/sqlite/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
     <url>
          <loc>https://osmmerge.org/api/yamlfile/</loc>
-         <lastmod>2025-01-11</lastmod>
+         <lastmod>2025-03-03</lastmod>
     </url>
 </urlset>

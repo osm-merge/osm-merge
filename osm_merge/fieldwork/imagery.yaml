@@ -22,3 +22,9 @@ sources:
       - url: https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/%s
       - suffix: jpg
       - xy: False
+
+  - usgs:
+      - name: USGS Hybrid ImageryMap
+      - url: https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/%s
+      - suffix: jpg
+      - xy: False

@@ -184,7 +184,8 @@ def format_url(site: dict, tile: tuple) -> Optional[str]:
             bingkey = mercantile.quadkey(tile)
             return source_url % bingkey
         case "topo":
-            # FIXME does this work an intended?
+            return source_url % f"{tile[2]}/{tile[1]}/{tile[0]}"
+        case "usgs":
             return source_url % f"{tile[2]}/{tile[1]}/{tile[0]}"
         case "google":
             return source_url % f"x={tile[0]}&s=&y={tile[1]}&z={tile[2]}"
@@ -457,7 +458,7 @@ def create_basemap_file(
             (e.g., "12-17") or comma-separated levels (e.g., "12,13,14").
         outdir (str, optional): Output directory name for tile cache.
         source (str, optional): Imagery source, one of
-            ["esri", "bing", "topo", "google", "oam", "custom"] (default is "esri").
+            ["esri", "bing", "topo", "usgs", "google", "oam", "custom"] (default is "esri").
         append (bool, optional): Whether to append to an existing file
 
     Returns:
@@ -629,7 +630,7 @@ def main():
         "-s",
         "--source",
         default="esri",
-        choices=["esri", "bing", "topo", "google", "oam"],
+        choices=["esri", "bing", "topo", "usgs", "google", "oam"],
         help="Imagery source",
     )
     args = parser.parse_args()

@@ -115,5 +115,4 @@ osmhighways = "osm_merge.utilities.osmhighways:main"
 basemapper = "osm_merge.fieldwork.basemapper:main"
 osm2favorites = "osm_merge.fieldwork.osm2favorites:main"
 odk2osm = "osm_merge.fieldwork.odk2osm:main"
-# FIXME: this doesn't want to run due to the underbar vs hypen problem
-# tm_splitter = "osm_merge.utilities.tm_splitter:main"
+tm-splitter = "osm_merge.utilities.tm_splitter:main"

@@ -116,27 +116,31 @@ def filterTags(obj):
             newtags[key] = val
             continue
 
-        if key == "ref" or key == "ref:usfs":
+        if key[:3] == "ref":
+            if "ref" in newtags:
+                newtags["ref"] += ';'
+            else:
+                newtags["ref"] = str()
             # A good ref has an FR or FS prefixed, so just use it, but move it
             # to the ref:usfs tag.
             if val[:3] == "FS " or val[:3] == "FR ":
-                newtags["ref:usfs"] = val
+                newtags["ref"] += val
                 continue
             elif val[:4] == "FSR ":
                 ref = getRef(val)
-                newtags["ref:usfs"] = f"FR {ref}"
+                newtags["ref"] += f"FR {ref}"
                 continue
             elif key == "ref" and val[:3] == "CR ":
                 pat = re.compile("county road")
                 if pat.search(val.lower()):
-                    newtags[key] = getRef(val)
+                    newtags[key] += getRef(val)
                 else:
-                    newtags[key] = val
+                    newtags[key] += val
                 continue
             ref = getRef(name)
             if ref and len(ref) > 0:
                 # log.debug(f"MATCHED: {pat.pattern}")
-                newtags["ref:usfs"] = f"FR {ref}"
+                newtags["ref"] += f"FR {ref}"
             matched = True
             continue
 
@@ -194,9 +198,14 @@ def filterTags(obj):
                 if pat.match(name.lower()):
                     for entry in name.split(';'):
                         ref = getRef(entry)
-                        # log.debug(f"MATCHED: {pat.pattern} REF={ref.title()} NAME={name}")
+                        #log.debug(f"MATCHED: {pat.pattern} REF={ref.title()} NAME={name}")
                         if ref and len(ref) > 0:
-                            newtags["ref:usfs"] = f"FR {ref.title()}"
+                            if "ref" in newtags:
+                                print(f"Adding a ; to {newtags["ref"]}")
+                                newtags["ref"] += ';'
+                            else:
+                                newtags["ref"] = str()
+                            newtags["ref"] += f"FR {ref.title()}"
                     matched = True
                     break
             if not matched:

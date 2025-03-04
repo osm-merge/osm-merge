@@ -201,7 +201,6 @@ def filterTags(obj):
                         #log.debug(f"MATCHED: {pat.pattern} REF={ref.title()} NAME={name}")
                         if ref and len(ref) > 0:
                             if "ref" in newtags:
-                                print(f"Adding a ; to {newtags["ref"]}")
                                 newtags["ref"] += ';'
                             else:
                                 newtags["ref"] = str()

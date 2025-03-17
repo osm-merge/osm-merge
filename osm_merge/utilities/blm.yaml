@@ -1,0 +1,25 @@
+- abbreviations:
+    - RD: Road
+    - CT: Court
+    - ST: Street
+    - Mtn: Mountain
+    - N: North
+    - E: East
+    - S: South
+    - W: West
+
+- tags:
+    - ROUTE_PRIMARY_NM: name
+    - ROUTE_PRMRY_NM: name
+    - ROUTE_SCNDRY_SPCL_DSGNTN_NM: ref
+    - PLAN_MODE_TRNSPRT:
+        - Motorized: motorvehicle=yes
+    - OBSRVE_ROUTE_USE_CLASS:
+        - ATV: atv=yes
+        - UTV: utv=yes
+        - Over Snow Vehicle: snowmobile=yes
+        - Motorized Single Track: motocycle=yes
+        - 4WD Low: 4wd_only=yes
+        - 4wd High Clearance: 4wd_only=yes
+        - Primitive Road: 4wd_only=yes
+        - Impassable: smoothness=horrible

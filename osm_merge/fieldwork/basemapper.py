@@ -35,6 +35,8 @@ from cpuinfo import get_cpu_info
 from pySmartDL import SmartDL
 from shapely.geometry import shape
 from shapely.ops import unary_union
+import urllib3
+from urllib.parse import urlparse
 
 from osm_merge.fieldwork.sqlite import DataFile, MapTile
 from osm_merge.yamlfile import YamlFile
@@ -43,6 +45,10 @@ import osm_merge as om
 rootdir = om.__path__[0]
 
 # Instantiate logger
+log_level = os.getenv("LOG_LEVEL", default="INFO")
+# Set log level for urllib
+logging.getLogger("urllib3").setLevel(log_level)
+
 log = logging.getLogger(__name__)
 
 BoundingBox = Tuple[float, float, float, float]
@@ -198,7 +204,7 @@ def format_url(site: dict, tile: tuple) -> Optional[str]:
             return None
 
 
-def download_tile(dest: str, tile: tuple, mirrors: list[dict]) -> None:
+def download_tile(dest: str, tile: tuple, mirrors: list[dict], http) -> None:
     """Download a single tile from the given list of mirrors.
 
     Args:
@@ -214,8 +220,15 @@ def download_tile(dest: str, tile: tuple, mirrors: list[dict]) -> None:
             if not outfile.exists():
                 try:
                     log.debug(f"Attempting URL download: {download_url}")
-                    dl = SmartDL(download_url, dest=str(outfile), connect_default_logger=False)
-                    dl.start()
+                    # dl = SmartDL(download_url, dest=str(outfile), connect_default_logger=False)
+                    # dl.start()
+                    r = http.request('GET', download_url, preload_content=False)
+                    # print(r.data)
+                    Path(os.path.dirname(outfile)).mkdir(parents=True, exist_ok=True)
+                    file = open(outfile, "wb")
+                    file.write(r.read())
+                    file.close()
+                    log.debug(f"Downloaded: {download_url}")
                     return
                 except Exception as e:
                     log.error(e)
@@ -224,7 +237,6 @@ def download_tile(dest: str, tile: tuple, mirrors: list[dict]) -> None:
                 log.debug(f"{outfile} exists!")
         else:
             continue
-
 
 def dlthread(dest: str, mirrors: list[dict], tiles: list[tuple]) -> None:
     """Thread to handle downloads for Queue.
@@ -242,11 +254,20 @@ def dlthread(dest: str, mirrors: list[dict], tiles: list[tuple]) -> None:
     Path(dest).mkdir(parents=True, exist_ok=True)
 
     log.info(f"Downloading {len(tiles)} tiles in thread {threading.get_ident()} to {dest}")
+    info = get_cpu_info()
+    cores = int(info["count"])
+    # http = urllib3.PoolManager(maxsize=cores)
+    http = urllib3.PoolManager()
+    host = urlparse(mirrors[0]["url"])
+    # http = urllib3.HTTPConnectionPool(f"https://{host.netloc}", maxsize=cores, block=True)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-        futures = [executor.submit(download_tile, dest, tile, mirrors) for tile in tiles]
-        concurrent.futures.wait(futures)
-
+    if False:                   # FIXME: can't run debugger with threading
+        for tile in tiles:
+            futures = download_tile(dest, tile, mirrors, http)
+    else:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            futures = [executor.submit(download_tile, dest, tile, mirrors, http) for tile in tiles]
+            concurrent.futures.wait(futures)
 
 class BaseMapper(object):
     """Basemapper parent class."""
@@ -365,7 +386,7 @@ class BaseMapper(object):
             int: The total number of map tiles downloaded.
         """
         info = get_cpu_info()
-        cores = info["count"]
+        cores = info["count"]/2
 
         self.tiles = list(mercantile.tiles(self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3], zoom))
         total = len(self.tiles)
@@ -374,7 +395,8 @@ class BaseMapper(object):
         mirrors = [self.sources[self.source]]
         chunk_size = max(1, round(total / cores))
 
-        if total < chunk_size or chunk_size == 0:
+        #if total < chunk_size or chunk_size == 0:
+        if True:            # FIXME: can't run debugger with threading
             dlthread(self.base, mirrors, self.tiles)
         else:
             with concurrent.futures.ThreadPoolExecutor(max_workers=cores) as executor:
@@ -412,7 +434,8 @@ def tileid_from_zyx_dir_path(filepath: Union[Path, str]) -> int:
     """Helper function to get the tile id from a tile in xyz (zyx) directory structure.
 
     TMS typically has structure z/y/x.png
-    If the --xy flag was used previously, the TMS was downloaed into
+    If the --xy flag was used previously, the TMS was down
+    loaed into
     directories of z/y/x structure from their z/x/y URL.
 
     Args:

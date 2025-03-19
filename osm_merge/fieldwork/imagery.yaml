@@ -7,7 +7,7 @@ sources:
 
   - esri:
       - name: ESRI
-      - url: http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/%s
+      - url: http://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/%s
       - suffix: jpg
       - xy: False
 

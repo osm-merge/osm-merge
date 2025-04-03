@@ -16,6 +16,7 @@
     - ROUTE_SCNDRY_SPCL_DSGNTN_NM: ref
     - PLAN_MODE_TRNSPRT:
         - Motorized: motorvehicle=yes
+        - Non-Mechanized:  motorvehicle=no
     - OBSRVE_ROUTE_USE_CLASS:
         - ATV: atv=yes
         - UTV: utv=yes

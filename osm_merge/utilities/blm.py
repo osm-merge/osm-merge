@@ -160,12 +160,19 @@ class BLM(object):
                             props["name"] += " Road"
                     elif value.isalnum():
                         props["ref"] = f"BLM {value}"
+                        if value.lower() == props["name"].lower():
+                            del props["name"]
                     # Expand abbreviations
                     if "name" in props:
                         for word in props["name"].split(' '):
                             if word.upper() in config["abbreviations"]:
                                 abbrev = config["abbreviations"][word.upper()]
                                 props["name"] = props["name"].replace(word, abbrev)
+                        if "Trail" in props["name"]:
+                            pos = props["name"].rfind(' ')
+                            ref = props["name"][pos +1:]
+                            if ref != "Trail" and ref != "Trails":
+                                props["ref"] = f"BLM {ref}"
                     if "alt_name" in props:
                         for word in props["alt_name"].split(' '):
                             if word.upper() in config["abbreviations"]:

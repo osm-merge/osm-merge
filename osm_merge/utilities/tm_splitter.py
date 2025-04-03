@@ -193,7 +193,7 @@ def make_tasks(data: FeatureCollection,
         for task in data["features"]:
             geom = shape(task["geometry"])
             outname = f"{template.replace('.geojson', '')}_{index}.geojson"
-            if type(geom) == Polygon:
+            if geom.type == 'Polygon':
                 fd = open(outname, "w")
                 properties = {"name": f"{name}_Task_{index}"}
                 feat = Feature(geometry=task, properties=properties)
@@ -201,8 +201,9 @@ def make_tasks(data: FeatureCollection,
                 log.debug(f"Wrote {outname}")
                 fd.close()
                 index += 1
-            else:               # It's a MultiPolygon
-                for poly in geom.geoms:
+            else:
+                if geom.type == 'LineString':
+                    poly = Polygon(geom)
                     outname = f"{template.replace('.geojson', '')}_{index}.geojson"
                     fd = open(outname, "w")
                     properties = {"name": f"{name}_Task_{index}"}
@@ -210,6 +211,17 @@ def make_tasks(data: FeatureCollection,
                     log.debug(f"Wrote {outname}")
                     fd.close()
                     index += 1
+                elif geom.type == 'GeometryCollection' or geom.type == 'MultiPolygon':
+                    for poly in geom.geoms:
+                        if poly.type == 'LineString':
+                            continue
+                        outname = f"{template.replace('.geojson', '')}_{index}.geojson"
+                        fd = open(outname, "w")
+                        properties = {"name": f"{name}_Task_{index}"}
+                        geojson.dump(Feature(geometry=poly, properties=properties), fd)
+                        log.debug(f"Wrote {outname}")
+                        fd.close()
+                        index += 1
 
 def main():
     """This main function lets this class be run standalone by a bash script"""

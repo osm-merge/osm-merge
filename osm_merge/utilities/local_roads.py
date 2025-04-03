@@ -114,7 +114,12 @@ class LocalRoads(object):
                 if key not in config["tags"]:
                     continue
                 # County Roads are only a number
-                if len(value) == 0:
+                if type(value) == str() and len(value) == 0:
+                    continue
+                if type(value) == int:
+                    props["ref"] = f"CR {value}"
+                    continue
+                elif value is None:
                     continue
                 newvalue = str()
                 for word in value.split():
@@ -127,6 +132,8 @@ class LocalRoads(object):
                     newvalue += ' '
 
                 if config["tags"][key] == "name":
+                    if len(newvalue) == 0:
+                        continue
                     props["name"] = newvalue.strip().title()
                 if "name" in props:
                     #pat = re.compile("[0-9.]*")
@@ -142,7 +149,10 @@ class LocalRoads(object):
                     # reference number and the name in the same field.
                     if props["name"][:3] == "Fs ":
                         tmp = props["name"].split('-')
-                        props["ref:usfs"] = f"FR {tmp[0].split(' ')[1]}"
+                        if "ref" in props:
+                             props["ref"] += f";FR {tmp[0].split(' ')[1]}"
+                        else:
+                             props["ref"] = f"FR {tmp[0].split(' ')[1]}"
                         if len(tmp) == 1:
                             props["name"] = tmp[0].title()
                         else:
@@ -160,7 +170,6 @@ class LocalRoads(object):
                     # breakpoint()
                     highways.append(Feature(geometry=geom, properties=props))
             # print(props)
-
         return FeatureCollection(highways)
     
 def main():

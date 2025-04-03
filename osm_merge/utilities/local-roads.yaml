@@ -20,14 +20,18 @@
 - tags:
     # Utah Local Roads
     - FULLNAME: name
+    - LOCAL_UID: ref
     - SPEED_LMT: speed_limit
-    - adminclass:
-        - "1  Arterial Service"
-        - "2  Local Service"
-        - "4  Proposed Local Jurisdiction"
-        - "6  Toll Road"
-        - "8  Open non-HUTF Eligible"
-        - "9  Primitive/Non-maintained"
+    # recorded2477roads.utah.gov
+    - S_NAME: name
+    - CO_UNIQUE: ref
+    # - adminclass:
+    #     - "1  Arterial Service"
+    #     - "2  Local Service"
+    #     - "4  Proposed Local Jurisdiction"
+    #     - "6  Toll Road"
+    #     - "8  Open non-HUTF Eligible"
+    #     - "9  Primitive"
     # Colorado Local Roads
     # - surf_type: surface
     - surfname: surface

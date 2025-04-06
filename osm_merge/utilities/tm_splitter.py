@@ -1,6 +1,6 @@
 #!/bin/python3
 
-# Copyright (c) 2024 OpenStreetMap US
+# Copyright (c) 2024, 2025 OpenStreetMap US
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -18,9 +18,8 @@
 
 
 """
-Class and helper methods for task splitting when working with the HOT
-Tasking Manager since our projects are larger than 5000km area it
-supports.
+Class and helper methods for task splitting. Sort of like the HOT
+Tasking Manager.
 """
 
 # from tqdm import tqdm
@@ -71,150 +70,187 @@ warnings.simplefilter(action='ignore', category=RuntimeWarning)
 # Instantiate logger
 log = logging.getLogger(__name__)
 
-def splitBySquare(
-    aoi: FeatureCollection,
-    meters: int,
-    ) -> FeatureCollection:
-    """Split the polygon into squares.
+class TM_Splitter(object):
+    def __init__(self, infile: str):
+        """
+        Args:
+            infile (str): The input file to operate on
 
-    Args:
-        aoi (FeatureCollection): The project AOI
-        meters (int):  The size of each task square in meters.
+        Returns:
+            (TM_SPlitter): An instance of this class
+        """
+        # infile is required, so will always be present
+        self.infile = Path(infile)
+        if not self.infile.exists():
+            logging.error(f"{infile} does not exist!")
+            quit()
+        # Load the AOI
+        file = self.infile.open()
+        self.data = geojson.load(file)
+        logging.debug(f"Loaded f{infile}")
 
-    Returns:
-        data (FeatureCollection): A multipolygon of all the task boundaries.
-    """
-    log.debug("Splitting the AOI by squares")
+    def splitBySquare(self,
+        aoi: FeatureCollection,
+        meters: int,
+        ) -> FeatureCollection:
+        """Split the polygon into squares.
 
-    # We want to use meters, not degrees, so change the projection to do the
-    # calculations.
-    project = pyproj.Transformer.from_proj(
-        pyproj.Proj(init='epsg:4326'),
-        pyproj.Proj(init='epsg:3857')
-    )
-    newaoi = transform(project.transform, aoi)
+        Args:
+            aoi (FeatureCollection): The project AOI
+            meters (int):  The size of each task square in meters.
 
-    # xmin, ymin, xmax, ymax = aoi.bounds
-    xmin, ymin, xmax, ymax = newaoi.bounds
+        Returns:
+            data (FeatureCollection): A multipolygon of all the task boundaries.
+        """
+        log.debug("Splitting the AOI by squares")
 
-    reference_lat = (ymin + ymax) / 2
-    # 5000km square is roughly 0.44 degrees
-    length_deg = meters # 0.44
-    width_deg = meters # 0.44
+        # We want to use meters, not degrees, so change the projection to do the
+        # calculations.
+        project = pyproj.Transformer.from_proj(
+            pyproj.Proj(init='epsg:4326'),
+            pyproj.Proj(init='epsg:3857')
+        )
+        newaoi = transform(project.transform, aoi)
 
-    # Create grid columns and rows based on the AOI bounds
-    cols = np.arange(xmin, xmax + width_deg, width_deg)
-    rows = np.arange(ymin, ymax + length_deg, length_deg)
+        # xmin, ymin, xmax, ymax = aoi.bounds
+        xmin, ymin, xmax, ymax = newaoi.bounds
 
-    extract_geoms = []
+        reference_lat = (ymin + ymax) / 2
+        # 5000km square is roughly 0.44 degrees
+        length_deg = meters # 0.44
+        width_deg = meters # 0.44
 
-    # Generate grid polygons and clip them by AOI
-    polygons = []
-    for x in cols[:-1]:
-        for y in rows[:-1]:
-            grid_polygon = box(x, y, x + width_deg, y + length_deg)
-            clipped_polygon = grid_polygon.intersection(newaoi)
+        # Create grid columns and rows based on the AOI bounds
+        cols = np.arange(xmin, xmax + width_deg, width_deg)
+        rows = np.arange(ymin, ymax + length_deg, length_deg)
 
-            if clipped_polygon.is_empty:
-                continue
+        extract_geoms = []
 
-            # Check intersection with extract geometries if available
-            if extract_geoms:
-                if any(geom.within(clipped_polygon) for geom in extract_geoms):
+        # Generate grid polygons and clip them by AOI
+        polygons = []
+        for x in cols[:-1]:
+            for y in rows[:-1]:
+                grid_polygon = box(x, y, x + width_deg, y + length_deg)
+                clipped_polygon = grid_polygon.intersection(newaoi)
+
+                if clipped_polygon.is_empty:
+                    continue
+
+                # Check intersection with extract geometries if available
+                if extract_geoms:
+                    if any(geom.within(clipped_polygon) for geom in extract_geoms):
+                        polygons.append(clipped_polygon)
+                else:
                     polygons.append(clipped_polygon)
-            else:
-                polygons.append(clipped_polygon)
 
-    tasks = list()
-    index = 1
-    # JOSM can't display epsg:3857, so convert back to epsg:4326 before writing
-    # the geometry.
-    newproj = pyproj.Transformer.from_proj(
-        pyproj.Proj(init='epsg:3857'),
-        pyproj.Proj(init='epsg:4326')
-    )
-    for poly in polygons:
-        if poly.geom_type == 'MultiPolygon':
-            # Many national forests have small polygons outside the main forest.
-            # These are often visitor centers, and other buildings that we don't
-            # care about, so filter them out of the final output file as the cause
-            # issues with conflation.
-            larger = list()
-            for geom in poly.geoms:
-                if int(geom.area) >= 100000:
-                    # log.debug(f"AREA: {foo.area}")
-                    newgeom = transform(newproj.transform, geom)
-                    larger.append(newgeom)
-            new = MultiPolygon(larger)
-            tasks.append(Feature(geometry=mapping(new), properties={"task": f"Task {index}"}))
-        else:
-            newpoly = transform(newproj.transform, poly)
-            tasks.append(Feature(geometry=mapping(newpoly), properties={"task": f"Task {index}"}))
-        index += 1
-
-    return FeatureCollection(tasks)
-
-def make_tasks(data: FeatureCollection,
-               template: str,
-               ):
-    """
-    Make the task files, one for each polygon in the input file.
-
-    Args:
-        data (FeatureCollection): The input MultiPolygon to split into tasks
-        outdir (str): Output directory for the output files
-    """
-    index = 1
-    if template.find('/') > 1:
-        outdir = os.path.dirname(template)
-        if not os.path.exists(outdir):
-            os.mkdir(outdir)
-    else:
-        outdir = "./"
-    if "name" in data:
-        # Adminstriative boundaries use FeatureCollection
-        for task in data["features"]:
-            geom = task["geometry"]
-            if "FORESTNAME" in task["properties"]:
-                name = task["properties"]["FORESTNAME"].replace(" ", "_").replace(".", "").replace("-", "_")
-                outfile = f"{outdir}/{name}.geojson"
-                fd = open(outfile, "w")
-                feat = Feature(geometry=geom, properties= {"name": name})
-                geojson.dump(feat, fd)
-                log.debug(f"Wrote {outfile}")
-                fd.close()
-    else:
-        # The forest or park output files are a MultiPolygon feature
+        tasks = list()
         index = 1
-        # if template.find('/') > 1:
-        #     if not os.path.exists(os.path.dirname(template)):
-        #         os.mkdir(os.path.dirname(template))
-        name = os.path.basename(template)
-        for task in data["features"]:
-            geom = shape(task["geometry"])
-            outname = f"{template.replace('.geojson', '')}_{index}.geojson"
-            if geom.type == 'Polygon':
-                fd = open(outname, "w")
-                properties = {"name": f"{name}_Task_{index}"}
-                feat = Feature(geometry=task, properties=properties)
-                geojson.dump(Feature(geometry=geom, properties=properties), fd)
-                log.debug(f"Wrote {outname}")
-                fd.close()
-                index += 1
+        # JOSM can't display epsg:3857, so convert back to epsg:4326 before writing
+        # the geometry.
+        newproj = pyproj.Transformer.from_proj(
+            pyproj.Proj(init='epsg:3857'),
+            pyproj.Proj(init='epsg:4326')
+        )
+        for poly in polygons:
+            if poly.geom_type == 'MultiPolygon':
+                # Many national forests have small polygons outside the main forest.
+                # These are often visitor centers, and other buildings that we don't
+                # care about, so filter them out of the final output file as the cause
+                # issues with conflation.
+                larger = list()
+                for geom in poly.geoms:
+                    if int(geom.area) >= 100000:
+                        # log.debug(f"AREA: {foo.area}")
+                        newgeom = transform(newproj.transform, geom)
+                        larger.append(newgeom)
+                new = MultiPolygon(larger)
+                tasks.append(Feature(geometry=mapping(new), properties={"task": f"Task {index}"}))
             else:
-                if geom.type == 'LineString':
-                    poly = Polygon(geom)
-                    outname = f"{template.replace('.geojson', '')}_{index}.geojson"
+                newpoly = transform(newproj.transform, poly)
+                tasks.append(Feature(geometry=mapping(newpoly), properties={"task": f"Task {index}"}))
+            index += 1
+
+        return FeatureCollection(tasks)
+
+    def make_grid(self,
+                  meters: int
+                  ):
+        """
+                  outfile: str,
+        """
+        if "features" in self.data:
+            features = list()
+            for feature in self.data["features"]:
+                task = feature["geometry"]
+                # Sometimes the geometry in the Administrative Boundaries
+                # isn't always a good Polygon, or even MultiPolygon, so
+                # construct a new MultiPolygon from all the geometries.
+                if task.type == "LineString":
+                    poly = Polygon(task["coordinates"])
+                    features.append(poly)
+                elif task.type == "MultiPolygon":
+                    tasks = shape(feature["geometry"])
+                    for poly in tasks.geoms:
+                        features.append(poly)
+            aoi = MultiPolygon(features)
+        else:
+            aoi = shape(data["geometry"])
+
+        grid = self.splitBySquare(aoi, meters)
+
+        return grid
+
+    def make_tasks(self,
+                   # data: FeatureCollection,
+                   template: str,
+                   ):
+        """
+        Make the task files, one for each polygon in the input file.
+
+        Args:
+            data (FeatureCollection): The input MultiPolygon to split into tasks
+            outdir (str): Output directory for the output files
+        """
+        index = 1
+        if template.find('/') > 1:
+            outdir = os.path.dirname(template)
+            if not os.path.exists(outdir):
+                os.mkdir(outdir)
+        else:
+            outdir = "./"
+        if "name" in self.data:
+            # Adminstriative boundaries use FeatureCollection
+            for task in self.data["features"]:
+                geom = task["geometry"]
+                if "FORESTNAME" in task["properties"]:
+                    name = task["properties"]["FORESTNAME"].replace(" ", "_").replace(".", "").replace("-", "_")
+                    outfile = f"{outdir}/{name}.geojson"
+                    fd = open(outfile, "w")
+                    feat = Feature(geometry=geom, properties= {"name": name})
+                    geojson.dump(feat, fd)
+                    log.debug(f"Wrote {outfile}")
+                    fd.close()
+        else:
+            # The forest or park output files are a MultiPolygon feature
+            index = 1
+            # if template.find('/') > 1:
+            #     if not os.path.exists(os.path.dirname(template)):
+            #         os.mkdir(os.path.dirname(template))
+            name = os.path.basename(template)
+            for task in self.data["features"]:
+                geom = shape(task["geometry"])
+                outname = f"{template.replace('.geojson', '')}_{index}.geojson"
+                if geom.type == 'Polygon':
                     fd = open(outname, "w")
                     properties = {"name": f"{name}_Task_{index}"}
-                    geojson.dump(Feature(geometry=poly, properties=properties), fd)
+                    feat = Feature(geometry=task, properties=properties)
+                    geojson.dump(Feature(geometry=geom, properties=properties), fd)
                     log.debug(f"Wrote {outname}")
                     fd.close()
                     index += 1
-                elif geom.type == 'GeometryCollection' or geom.type == 'MultiPolygon':
-                    for poly in geom.geoms:
-                        if poly.type == 'LineString':
-                            continue
+                else:
+                    if geom.type == 'LineString':
+                        poly = Polygon(geom)
                         outname = f"{template.replace('.geojson', '')}_{index}.geojson"
                         fd = open(outname, "w")
                         properties = {"name": f"{name}_Task_{index}"}
@@ -222,6 +258,89 @@ def make_tasks(data: FeatureCollection,
                         log.debug(f"Wrote {outname}")
                         fd.close()
                         index += 1
+                    elif geom.type == 'GeometryCollection' or geom.type == 'MultiPolygon':
+                        for poly in geom.geoms:
+                            if poly.type == 'LineString':
+                                continue
+                            outname = f"{template.replace('.geojson', '')}_{index}.geojson"
+                            fd = open(outname, "w")
+                            properties = {"name": f"{name}_Task_{index}"}
+                            geojson.dump(Feature(geometry=poly, properties=properties), fd)
+                            log.debug(f"Wrote {outname}")
+                            fd.close()
+                            index += 1
+
+    def clip(self,
+             boundary: str,
+             infile: str,
+             outfile: str,
+             ):
+        """
+        Clip the data in a file by a multipolygon instead of using
+        the command line program. The output file will only contain
+        ways, in JOSM doing "File->update data' will load all the
+        nodes so the highways are visible. It's slower of course
+        than the C++ version, but this gives us better fine-grained
+        control.
+
+        Args:
+            infile (str): The input data
+            outfile (str): The output file
+            boundary (str): The boundary
+
+        Returns:
+            (bool): Whether it worked or not
+        """
+        timer = Timer(text="clip() took {seconds:.0f}s")
+        timer.start()
+
+        # Load the boundary
+        file = open(boundary, 'r')
+        data = geojson.load(file)
+        boundary = data["features"]
+        task = shape(boundary[0]["geometry"])
+
+        if os.path.exists(outfile):
+            os.remove(outfile)
+        nodes = set()
+        # Pre-filter the ways by tags. The less object we need to look at, the better.
+        way_filter = osmium.filter.KeyFilter('highway')
+        # only scan the ways of the file
+        spin = Spinner('Processing nodes...')
+        fp = osmium.FileProcessor(infile, osmium.osm.WAY).with_filter(osmium.filter.KeyFilter('highway'))
+        for obj in fp:
+           spin.next()
+           if "highway" in obj.tags:
+               nodes.update(n.ref for n in obj.nodes)
+
+        writer = osmium.SimpleWriter(outfile)
+
+        # We need nodes and ways in the second pass.
+        fab = GeoJSONFactory()
+        spin = Spinner('Processing ways...')
+        way_filter = osmium.filter.KeyFilter('highway').enable_for(osmium.osm.WAY)
+        for obj in osmium.FileProcessor(infile, osmium.osm.WAY | osmium.osm.NODE).with_filter(way_filter).with_locations():
+            spin.next()
+            if obj.is_node() and obj.id in nodes:
+                # We don't want POIs for barrier or crossing, just LineStrings
+                if len(obj.tags) > 0:
+                    continue
+                wkt = fab.create_point(obj)
+                geom = shape(geojson.loads(wkt))
+                # Add a node if it exists within the boundary
+                if contains(task, geom) or intersects(task, geom):
+                    # writer.add(obj)
+                    # log.debug(f"Adding {obj.id}")
+                    continue
+                    # Strip the object of tags along the way
+                # writer.add_node(obj.replace(tags={}))
+            elif obj.is_way() and "highway" in obj.tags:
+                wkt = fab.create_linestring(obj.nodes)
+                geom = shape(geojson.loads(wkt))
+                if contains(task, geom) or intersection(task, geom):
+                    writer.add_way(obj)
+        timer.stop()
+        return True
 
 def main():
     """This main function lets this class be run standalone by a bash script"""
@@ -259,11 +378,11 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
                         help="Output filename template")
     parser.add_argument("-m", "--meters", default=50000, type=int,
                         help="Grid size in kilometers")
+    parser.add_argument("-c", "--clip", help="Clip file by polygon")
 
     args = parser.parse_args()
     indata = None
-    source = None
-    path = Path(args.infile)
+    source = None    # parser.add_argument("-c", "--clip", help="Clip file by polygon")
 
     # if verbose, dump to the terminal.
     log_level = os.getenv("LOG_LEVEL", default="INFO")
@@ -277,40 +396,30 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
         stream=sys.stdout,
     )
 
-    # The infile is either the the file to split, or the grid file.
-    if not os.path.exists(args.infile):
-        log.error(f"{args.infile} does not exist!")
-        quit()
-
-    # Load the AOI
-    file = open(args.infile, "r")
-    data = geojson.load(file)
+    tm = TM_Splitter(args.infile)
     
     # Split the large file of administrative boundaries into each
     # area so they can be used for clipping.
     if args.split:
         template = args.outfile
-        make_tasks(data, template)
+        tm.make_tasks(template)
+    elif args.clip:
+        # cachefile = os.path.basename(args.infile.replace(".pbf", ".cache"))
+        # create_nodecache(args.infile, cachefile)
+        if not clip:
+            log.error(f"You must specify a boundary!")
+            parser.print_help()
+            quit()
+        if not args.infile:
+            log.error(f"You must specify the input file!")
+            parser.print_help()
+            quit()
+
+        tm.clip(args.clip, args.infile, args.outfile)
+        log.info(f"Wrote clipped file {args.outfile}")
+        quit()
     elif args.grid:
-        # Generate the task grid
-        if "features" in data:
-            features = list()
-            for feature in data["features"]:
-                task = feature["geometry"]
-                # Sometimes the geometry in the Administrative Boundaries isn't always
-                # a good Polygon, or even MultiPolygon, so construct a new
-                # MultiPolygon from all the geometries.
-                if task.type == "LineString":
-                    poly = Polygon(task["coordinates"])
-                    features.append(poly)
-                elif task.type == "MultiPolygon":
-                    tasks = shape(feature["geometry"])
-                    for poly in tasks.geoms:
-                        features.append(poly)
-            aoi = MultiPolygon(features)
-        else:
-            aoi = shape(data["geometry"])
-        grid = splitBySquare(aoi, args.meters)
+        grid = tm.make_grid(args.meters)
         if not args.outfile:
             outfile = "tasks.geojson"
         else:

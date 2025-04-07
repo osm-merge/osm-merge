@@ -33,9 +33,12 @@ from math import ceil
 from osgeo import ogr
 from osgeo import osr
 from pathlib import Path
+import osmium
+from osmium.geom import GeoJSONFactory
+import fiona
 from progress.spinner import Spinner
 from psycopg2.extensions import connection
-from shapely.geometry import Polygon, shape, LineString, MultiPolygon, box, shape
+from shapely.geometry import Polygon, shape, LineString, MultiPolygon, box, shape, mapping, MultiLineString
 from shapely.geometry.geo import mapping
 from shapely.ops import split, transform, unary_union
 # from shapely.prepared import prep
@@ -85,9 +88,10 @@ class TM_Splitter(object):
             logging.error(f"{infile} does not exist!")
             quit()
         # Load the AOI
+
         file = self.infile.open()
         self.data = geojson.load(file)
-        logging.debug(f"Loaded f{infile}")
+        logging.debug(f"Loaded {infile}")
 
     def splitBySquare(self,
         aoi: FeatureCollection,
@@ -270,8 +274,48 @@ class TM_Splitter(object):
                             fd.close()
                             index += 1
 
-    def clip(self,
-             boundary: str,
+    def extract_external(self,
+                         datain: str,
+                         dataout: str,
+                         ):
+        """
+        Extract data from a GeoJson file
+        """
+        boundary = 'out.geojson'
+        aoi = fiona.open(boundary)
+        polys = list()
+        for task in aoi:
+            if task['geometry']['coordinates']:
+                try:
+                    polys.append(Polygon(task['geometry']['coordinates'][0]))
+                except:
+                    logging.error(f"Bad task! {task.properties.get("name")}")
+                    continue
+
+        logging.debug(f"There are {len(polys)} in the boundary AOI")
+        # input data
+        data = fiona.open(datain)
+
+        # output file
+        meta = data.meta
+        foo = fiona.open('foobar.geojson', 'w', **meta)
+
+        for feature in data:
+            if feature["geometry"] is None:
+                continue
+            if feature["geometry"]["type"] == "LineString":
+                geom = LineString(feature["geometry"]["coordinates"])
+                for task in polys:
+                    if geom.within(task):
+                        foo.write(feature)
+            elif feature["geometry"]["type"] == "MultiLineString":
+                geom = MultiLineString(feature["geometry"]["coordinates"])
+                for segment in geom.geoms:
+                    for task in polys:
+                        if geom.within(segment):
+                            foo.write(feature)
+
+    def extract_osm(self,
              infile: str,
              outfile: str,
              ):
@@ -288,16 +332,16 @@ class TM_Splitter(object):
             outfile (str): The output file
             boundary (str): The boundary
 
-        Returns:
+        Returns:filefile
             (bool): Whether it worked or not
         """
         timer = Timer(text="clip() took {seconds:.0f}s")
         timer.start()
 
         # Load the boundary
-        file = open(boundary, 'r')
-        data = geojson.load(file)
-        boundary = data["features"]
+        # file = open(self.data, 'r')
+        # data = geojson.load(file)
+        boundary = self.data["features"]
         task = shape(boundary[0]["geometry"])
 
         if os.path.exists(outfile):
@@ -378,7 +422,7 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
                         help="Output filename template")
     parser.add_argument("-m", "--meters", default=50000, type=int,
                         help="Grid size in kilometers")
-    parser.add_argument("-c", "--clip", help="Clip file by polygon")
+    parser.add_argument("-e", "--extract", help="Extract data for Tasks")
 
     args = parser.parse_args()
     indata = None
@@ -398,24 +442,27 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
 
     tm = TM_Splitter(args.infile)
     
+    if args.outfile.find('/') > 1:
+        outdir = os.path.dirname(args.outfile)
+        if not os.path.exists(outdir):
+            os.mkdir(outdir)
+    else:
+        outdir = "./"
+
     # Split the large file of administrative boundaries into each
     # area so they can be used for clipping.
     if args.split:
         template = args.outfile
         tm.make_tasks(template)
-    elif args.clip:
+    elif args.extract:
         # cachefile = os.path.basename(args.infile.replace(".pbf", ".cache"))
         # create_nodecache(args.infile, cachefile)
-        if not clip:
-            log.error(f"You must specify a boundary!")
-            parser.print_help()
-            quit()
         if not args.infile:
             log.error(f"You must specify the input file!")
             parser.print_help()
             quit()
 
-        tm.clip(args.clip, args.infile, args.outfile)
+        data = tm.extract_external(args.extract, args.outfile)
         log.info(f"Wrote clipped file {args.outfile}")
         quit()
     elif args.grid:
@@ -424,13 +471,6 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
             outfile = "tasks.geojson"
         else:
             outfile = "./" + args.outfile
-
-        if args.outfile.find('/') > 1:
-            outdir = os.path.dirname(args.outfile)
-            if not os.path.exists(outdir):
-                os.mkdir(outdir)
-        else:
-            outdir = "./"
 
         file = open(args.outfile, "w")
         data = geojson.dump(grid, file)

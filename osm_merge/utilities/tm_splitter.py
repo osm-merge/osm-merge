@@ -286,11 +286,15 @@ class TM_Splitter(object):
         polys = list()
         for task in aoi:
             if task['geometry']['coordinates']:
-                try:
-                    polys.append(Polygon(task['geometry']['coordinates'][0]))
-                except:
-                    logging.error(f"Bad task! {task.properties.get("name")}")
-                    continue
+                if task.geometry.type == "Polygon":
+                    try:
+                        polys.append(Polygon(task['geometry']['coordinates'][0]))
+                    except:
+                        logging.error(f"Bad task! {task.properties.get("name")}")
+                        continue
+                elif task.geometry.type == "MultiPolygon":
+                    for poly in task.geometry.coordinates:
+                        polys.append(Polygon(poly[0]))
 
         logging.debug(f"There are {len(polys)} in the boundary AOI")
         # input data
@@ -306,7 +310,7 @@ class TM_Splitter(object):
             if feature["geometry"]["type"] == "LineString":
                 geom = LineString(feature["geometry"]["coordinates"])
                 for task in polys:
-                    if geom.within(task):
+                    if geom.within(task) or geom.intersects(task):
                         foo.write(feature)
             elif feature["geometry"]["type"] == "MultiLineString":
                 geom = MultiLineString(feature["geometry"]["coordinates"])

@@ -37,6 +37,7 @@ import osmium
 from osmium.geom import GeoJSONFactory
 import fiona
 from progress.spinner import Spinner
+from shapely import contains, intersects, intersection
 from psycopg2.extensions import connection
 from shapely.geometry import Polygon, shape, LineString, MultiPolygon, box, shape, mapping, MultiLineString
 from shapely.geometry.geo import mapping
@@ -90,8 +91,10 @@ class TM_Splitter(object):
         # Load the AOI
 
         file = self.infile.open()
+        self.aoi = Path(infile)
         self.data = geojson.load(file)
         logging.debug(f"Loaded {infile}")
+        file.close()
 
     def splitBySquare(self,
         aoi: FeatureCollection,
@@ -274,23 +277,47 @@ class TM_Splitter(object):
                             fd.close()
                             index += 1
 
+    def extract_data(self,
+             infile: str,
+             outfile: str,
+             ) -> bool:
+        """
+        Extract the data from file.
+
+        Args:
+            infile (str): The input filename
+            outfile (str): The output filename
+        """
+        path = Path(infile)
+        if path.suffix == ".geojson":
+            self.extract_external(infile, outfile)
+        else:
+            self.extract_osm(infile, outfile)
+
+        return True
+
     def extract_external(self,
                          datain: str,
                          dataout: str,
                          ):
         """
-        Extract data from a GeoJson file
+        Extract data from a GeoJson file. This basically replicates using
+        ogr2ogr -t_srs EPSG:4326 -makevalid -explodecollections.
+
+        Args:
+            datain (str):
+            dataout (str):
         """
-        boundary = 'out.geojson'
-        aoi = fiona.open(boundary)
+        aoi = fiona.open(self.aoi, 'r')
         polys = list()
+        # Convert the boundary AOI to a clean list of Polygons
         for task in aoi:
             if task['geometry']['coordinates']:
                 if task.geometry.type == "Polygon":
                     try:
                         polys.append(Polygon(task['geometry']['coordinates'][0]))
                     except:
-                        logging.error(f"Bad task! {task.properties.get("name")}")
+                        logging.error(f"Bad task Polygon! {task.properties.get("name")}")
                         continue
                 elif task.geometry.type == "MultiPolygon":
                     for poly in task.geometry.coordinates:
@@ -302,7 +329,7 @@ class TM_Splitter(object):
 
         # output file
         meta = data.meta
-        foo = fiona.open('foobar.geojson', 'w', **meta)
+        foo = fiona.open(dataout, 'w', **meta)
 
         for feature in data:
             if feature["geometry"] is None:
@@ -325,16 +352,15 @@ class TM_Splitter(object):
              ):
         """
         Clip the data in a file by a multipolygon instead of using
-        the command line program. The output file will only contain
-        ways, in JOSM doing "File->update data' will load all the
-        nodes so the highways are visible. It's slower of course
-        than the C++ version, but this gives us better fine-grained
+        the osmium command line program. The output file will only
+        contain ways, in JOSM doing "File->update data' will load
+        all the nodes so the highways are visible. It's slower of
+        course than the osmium way, but this gives us better fine-grained
         control.
 
         Args:
             infile (str): The input data
             outfile (str): The output file
-            boundary (str): The boundary
 
         Returns:filefile
             (bool): Whether it worked or not
@@ -343,15 +369,17 @@ class TM_Splitter(object):
         timer.start()
 
         # Load the boundary
-        # file = open(self.data, 'r')
-        # data = geojson.load(file)
-        boundary = self.data["features"]
-        task = shape(boundary[0]["geometry"])
+        if self.data["type"] == "Feature":
+            boundary = self.data
+            task = shape(boundary["geometry"])
+        elif self.data["type"] == "FeatureCollection":
+            boundary = self.data["features"]
+            task = shape(boundary[0]["geometry"])
 
         if os.path.exists(outfile):
             os.remove(outfile)
         nodes = set()
-        # Pre-filter the ways by tags. The less object we need to look at, the better.
+        # Pre-filter the ways by tags. The less objects we need to look at, the better.
         way_filter = osmium.filter.KeyFilter('highway')
         # only scan the ways of the file
         spin = Spinner('Processing nodes...')
@@ -377,7 +405,7 @@ class TM_Splitter(object):
                 geom = shape(geojson.loads(wkt))
                 # Add a node if it exists within the boundary
                 if contains(task, geom) or intersects(task, geom):
-                    # writer.add(obj)
+                    writer.add(obj)
                     # log.debug(f"Adding {obj.id}")
                     continue
                     # Strip the object of tags along the way
@@ -422,7 +450,7 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
                         help="Generate the task grid")
     parser.add_argument("-s", "--split", default=False, action="store_true",
                         help="Split Multipolygon")
-    parser.add_argument("-o", "--outfile", default="out.geojson",
+    parser.add_argument("-o", "--outfile", default="out.osm",
                         help="Output filename template")
     parser.add_argument("-m", "--meters", default=50000, type=int,
                         help="Grid size in kilometers")
@@ -430,7 +458,7 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
 
     args = parser.parse_args()
     indata = None
-    source = None    # parser.add_argument("-c", "--clip", help="Clip file by polygon")
+    source = None
 
     # if verbose, dump to the terminal.
     log_level = os.getenv("LOG_LEVEL", default="INFO")
@@ -466,7 +494,7 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
             parser.print_help()
             quit()
 
-        data = tm.extract_external(args.extract, args.outfile)
+        data = tm.extract_data(args.extract, args.outfile)
         log.info(f"Wrote clipped file {args.outfile}")
         quit()
     elif args.grid:

@@ -31,20 +31,28 @@ AC_PROG_INSTALL
 
 LT_INIT
 AX_BOOST_BASE(1.69)
-dnl AX_BOOST_IOSTREAMS
-dnl AX_BOOST_SYSTEM
-dnl AX_BOOST_FILESYSTEM
-dnl AX_BOOST_THREAD
+AX_BOOST_IOSTREAMS
+AX_BOOST_SYSTEM
+AX_BOOST_FILESYSTEM
+AX_BOOST_THREAD
 AX_BOOST_LOG
-AX_BOOST_JSON
+AX_BOOST_LOG_SETUP
 AX_BOOST_PROGRAM_OPTIONS
-dnl For some reason this test works on Fedora, and fails on Debian. For now
-dnl hardcode it.
-dnl AX_BOOST_REGEX
-dnl LIBS+=" -lboost_regex"
+AX_BOOST_JSON
+dnl C_LANG_POP(C++)
 
+dnl libboost has a dependency on GDAL
 CPPFLAGS+=" $(pkg-config --cflags gdal)"
 LIBS+=" $(pkg-config --libs gdal)"
+
+dnl libboost has a dependency on libbexpat
+CPPFLAGS+=" $(pkg-config --cflags expat)"
+LIBS+=" $(pkg-config --libs expat)"
+
+dnl libboost has a dependency on libbzip2
+CPPFLAGS+=" $(pkg-config --cflags bzip2)"
+LIBS+=" $(pkg-config --libs bzip2)"
+
 
 # Find the path for python modules
 AM_PATH_PYTHON([3])

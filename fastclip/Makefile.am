@@ -30,15 +30,29 @@ BOOST_LIBS = \
 	$(BOOST_PYTHON_LIB)
 
 if ENABLE_PYTHON
-	WRAPPER = python.cc
-endif
+EXT := $(shell python3-config --extension-suffix)
+DIR := $(shell python3-config --configdir)
+noinst_LTLIBRARIES = fastclip.la
+fastclip_la_SOURCES = python.cc
+fastclip_la_LDFADD = $(BOOST_LIBS)
+fastclip_la_LDFLAGS = -module -avoid-version -no-undefined $(BOOST_LIBS)
+PY_OBJECTS = $(fastclip_la_OBJECTS:.lo=.o)
+install-python: fastclip.la
+	@if test x"$(prefix)" = x"/usr/lib" -a "$(shell whoami)" != "root"; then \
+	    echo "Need to be root!"; \
+	else \
+	    moddir=$(shell dirname $(DIR))/lib-dynload; \
+	    if test ! -e $${moddir}; then \
+	        $(MDIR_P) $${moddir}; \
+	    fi; \
+	    cp .libs/libfastclip.so $${moddir}/libfastclip$(EXT); \
+	fi
 
-foo:
-	@echo $(BOOST_LIBS)
+endif
 
 AM_LDFLAGS = $(BOOST_LIBS) -lpthread -lz
 
 bin_PROGRAMS = fastclip
-fastclip_SOURCES = fastclip.cc fastclip.hh $(WRAPPER)
-fastclip_LDADD = $(BOOST_LIBS)
+fastclip_SOURCES = fastclip.cc fastclip.hh
+fastclip_LDADD = $(BOOST_LIBS) $(PYTHON_LIBS)
 

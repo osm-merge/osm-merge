@@ -20,24 +20,25 @@
 #include "fconfig.h"
 #endif
 
-#define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
-
-#include <boost/python.hpp>
-using namespace logger;
-
 #ifdef USE_PYTHON
 
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
+#include <boost/python.hpp>
+#include <iostream>
+
+#include "fastclip.hh"
+
+namespace logging = boost::log;
 using namespace boost::python;
 
-std::shared_ptr<multipolygon_t> &make_geometry(const std::string &wkt) {
+void make_foo(const std::string &wkt) {
     std::cout << "FastClip::make_geometry(wkt) called" << std::endl;
 }
 
 BOOST_PYTHON_MODULE(fastclip)
 {
-    class_<OsmChangeFile, boost::noncopyable>("OsmChangeFile")
-        .def("readChanges", &OsmChangeFile::readChanges)
-        .def("dump", &OsmChangeFile::dump);
+    class_<FastClip, boost::noncopyable>("FastClip")
+        .def("make_geometry", &make_foo);
 }
 #endif
 

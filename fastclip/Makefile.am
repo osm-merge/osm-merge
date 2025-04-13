@@ -15,26 +15,30 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-AM_CXXFLAGS = -g -std=c++17 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DBOOST_LOG_DYN_LINK
+AM_CXXFLAGS = -g -std=c++17 \
+	-D_LARGEFILE_SOURCE \
+	-DBOOST_LOG_DYN_LINK \
+	-D_FILE_OFFSET_BITS=64 \
+	-Wno-switch
 
-BOOST_LIBS = $(BOOST_DATE_TIME_LIB) \
-	$(BOOST_SYSTEM_LIB) \
-	$(BOOST_FILESYSTEM_LIB) \
-	$(BOOST_LOG_LIB) \
+BOOST_LIBS = \
 	$(BOOST_PROGRAM_OPTIONS_LIB) \
-	$(BOOST_IOSTREAMS_LIB) \
+	$(BOOST_LOG_LIB) \
+	$(BOOST_LOG_SETUP_LIB) \
 	$(BOOST_THREAD_LIB) \
-	$(BOOST_JSON)
+	$(BOOST_JSON_LIB) \
+	$(BOOST_PYTHON_LIB)
 
 if ENABLE_PYTHON
-BOOST_LIBS ++ $(BOOST_PYTHON)
+	WRAPPER = python.cc
+endif
 
-# BOOST_LIBS=-lboost_program_options -lboost_log -lboost_log_setup -lboost_thread -lboost_json -l boot_python
+foo:
+	@echo $(BOOST_LIBS)
 
-AM_LDFLAGS = $(BOOST_LIBS) -lpthread -lz -lexpat -lbz2 -lsimdjson
+AM_LDFLAGS = $(BOOST_LIBS) -lpthread -lz
 
 bin_PROGRAMS = fastclip
-fastclip_SOURCES = fastclip.cc fastclip.hh
+fastclip_SOURCES = fastclip.cc fastclip.hh $(WRAPPER)
 fastclip_LDADD = $(BOOST_LIBS)
 
-endif

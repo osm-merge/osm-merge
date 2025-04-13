@@ -8,7 +8,7 @@ test -z "$srcdir" && srcdir=.
 DIE=0
 
 #Always use our macros
-#ACLOCAL_FLAGS="-I macros $ACLOCAL_FLAGS"
+ACLOCAL_FLAGS="-I m4 $ACLOCAL_FLAGS"
 
 if test "`uname`" = "Darwin"; then
 LIBTOOLIZE=glibtoolize

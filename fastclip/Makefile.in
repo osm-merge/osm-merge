@@ -29,6 +29,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -130,17 +131,26 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+fastclip_la_LIBADD =
+am__fastclip_la_SOURCES_DIST = python.cc
+@ENABLE_PYTHON_TRUE@am_fastclip_la_OBJECTS = python.lo
+fastclip_la_OBJECTS = $(am_fastclip_la_OBJECTS)
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+fastclip_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(fastclip_la_LDFLAGS) $(LDFLAGS) -o $@
+@ENABLE_PYTHON_TRUE@am_fastclip_la_rpath =
 am_fastclip_OBJECTS = fastclip.$(OBJEXT)
 fastclip_OBJECTS = $(am_fastclip_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-fastclip_DEPENDENCIES = $(am__DEPENDENCIES_2)
-AM_V_lt = $(am__v_lt_@AM_V@)
-am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
-am__v_lt_0 = --silent
-am__v_lt_1 = 
+fastclip_DEPENDENCIES = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -156,7 +166,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/fastclip.Po
+am__depfiles_remade = ./$(DEPDIR)/fastclip.Po ./$(DEPDIR)/python.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -194,8 +204,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(fastclip_SOURCES)
-DIST_SOURCES = $(fastclip_SOURCES)
+SOURCES = $(fastclip_la_SOURCES) $(fastclip_SOURCES)
+DIST_SOURCES = $(am__fastclip_la_SOURCES_DIST) $(fastclip_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -407,9 +417,16 @@ BOOST_LIBS = \
 	$(BOOST_JSON_LIB) \
 	$(BOOST_PYTHON_LIB)
 
+@ENABLE_PYTHON_TRUE@EXT := $(shell python3-config --extension-suffix)
+@ENABLE_PYTHON_TRUE@DIR := $(shell python3-config --configdir)
+@ENABLE_PYTHON_TRUE@noinst_LTLIBRARIES = fastclip.la
+@ENABLE_PYTHON_TRUE@fastclip_la_SOURCES = python.cc
+@ENABLE_PYTHON_TRUE@fastclip_la_LDFADD = $(BOOST_LIBS)
+@ENABLE_PYTHON_TRUE@fastclip_la_LDFLAGS = -module -avoid-version -no-undefined $(BOOST_LIBS)
+@ENABLE_PYTHON_TRUE@PY_OBJECTS = $(fastclip_la_OBJECTS:.lo=.o)
 AM_LDFLAGS = $(BOOST_LIBS) -lpthread -lz
-fastclip_SOURCES = fastclip.cc fastclip.hh $(WRAPPER)
-fastclip_LDADD = $(BOOST_LIBS)
+fastclip_SOURCES = fastclip.cc fastclip.hh
+fastclip_LDADD = $(BOOST_LIBS) $(PYTHON_LIBS)
 all: fconfig.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -513,6 +530,20 @@ clean-binPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
+
+fastclip.la: $(fastclip_la_OBJECTS) $(fastclip_la_DEPENDENCIES) $(EXTRA_fastclip_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(fastclip_la_LINK) $(am_fastclip_la_rpath) $(fastclip_la_OBJECTS) $(fastclip_la_LIBADD) $(LIBS)
+
 fastclip$(EXEEXT): $(fastclip_OBJECTS) $(fastclip_DEPENDENCIES) $(EXTRA_fastclip_DEPENDENCIES) 
 	@rm -f fastclip$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(fastclip_OBJECTS) $(fastclip_LDADD) $(LIBS)
@@ -524,6 +555,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fastclip.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/python.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -793,7 +825,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) fconfig.h
+all-am: Makefile $(PROGRAMS) $(LTLIBRARIES) fconfig.h
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -830,11 +862,13 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool \
+	clean-noinstLTLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ./$(DEPDIR)/fastclip.Po
+	-rm -f ./$(DEPDIR)/python.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -883,6 +917,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ./$(DEPDIR)/fastclip.Po
+	-rm -f ./$(DEPDIR)/python.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -905,10 +940,10 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles am--refresh check \
 	check-am clean clean-binPROGRAMS clean-cscope clean-generic \
-	clean-libtool cscope cscopelist-am ctags ctags-am dist \
-	dist-all dist-bzip2 dist-gzip dist-lzip dist-shar dist-tarZ \
-	dist-xz dist-zip dist-zstd distcheck distclean \
-	distclean-compile distclean-generic distclean-hdr \
+	clean-libtool clean-noinstLTLIBRARIES cscope cscopelist-am \
+	ctags ctags-am dist dist-all dist-bzip2 dist-gzip dist-lzip \
+	dist-shar dist-tarZ dist-xz dist-zip dist-zstd distcheck \
+	distclean distclean-compile distclean-generic distclean-hdr \
 	distclean-libtool distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
 	install install-am install-binPROGRAMS install-data \
@@ -923,11 +958,16 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
-
-@ENABLE_PYTHON_TRUE@	WRAPPER = python.cc
-
-foo:
-	@echo $(BOOST_LIBS)
+@ENABLE_PYTHON_TRUE@install-python: fastclip.la
+@ENABLE_PYTHON_TRUE@	@if test x"$(prefix)" = x"/usr/lib" -a "$(shell whoami)" != "root"; then \
+@ENABLE_PYTHON_TRUE@	echo "Need to be root!"; \
+@ENABLE_PYTHON_TRUE@	else \
+@ENABLE_PYTHON_TRUE@	moddir=$(shell dirname $(DIR))/lib-dynload; \
+@ENABLE_PYTHON_TRUE@	if test ! -e $${moddir}; then \
+@ENABLE_PYTHON_TRUE@	$(MDIR_P) $${moddir}; \
+@ENABLE_PYTHON_TRUE@	fi; \
+@ENABLE_PYTHON_TRUE@	cp .libs/libfastclip.so $${moddir}/libfastclip$(EXT); \
+@ENABLE_PYTHON_TRUE@	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

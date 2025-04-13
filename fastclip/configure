@@ -653,8 +653,27 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-BOOST_PROGRAM_OPTIONS_LIB
+ENABLE_PYTHON_FALSE
+ENABLE_PYTHON_TRUE
+BOOST_PYTHON_LIB
+PYTHON_EXTRA_LDFLAGS
+PYTHON_EXTRA_LIBS
+PYTHON_PLATFORM_SITE_PKG
+PYTHON_SITE_PKG
+PYTHON_LIBS
+PYTHON_CPPFLAGS
+pkgpyexecdir
+pyexecdir
+pkgpythondir
+pythondir
+PYTHON_EXEC_PREFIX
+PYTHON_PREFIX
+PYTHON_PLATFORM
+PYTHON_VERSION
+PYTHON
 BOOST_JSON_LIB
+BOOST_PROGRAM_OPTIONS_LIB
+BOOST_LOG_SETUP_LIB
 BOOST_LOG_LIB
 BOOST_THREAD_LIB
 BOOST_FILESYSTEM_LIB
@@ -806,8 +825,14 @@ with_boost_system
 with_boost_filesystem
 with_boost_thread
 with_boost_log
-with_boost_json
+with_boost_log_setup
 with_boost_program_options
+with_boost_json
+with_python_sys_prefix
+with_python_prefix
+with_python_exec_prefix
+enable_python
+with_boost_python
 '
       ac_precious_vars='build_alias
 host_alias
@@ -821,7 +846,9 @@ CXX
 CXXFLAGS
 CCC
 LT_SYS_LIBRARY_PATH
-CXXCPP'
+CXXCPP
+PYTHON
+PYTHON_VERSION'
 
 
 # Initialize some variables set by options.
@@ -1460,6 +1487,7 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
+  --enable-python         Enable Python binding
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1502,15 +1530,26 @@ Optional Packages:
                           use the Log library from boost - it is possible to
                           specify a certain library for the linker e.g.
                           --with-boost-log=boost_log-gcc-mt
-  --with-boost-json[=special-lib]
-                          use the JSON library from boost - it is possible to
-                          specify a certain library for the linker e.g.
-                          --with-boost-json=boost_json-gcc-mt
+  --with-boost-log_setup[=special-lib]
+                          use the Log_setup library from boost - it is
+                          possible to specify a certain library for the linker
+                          e.g. --with-boost-log_setup=boost_log_setup-gcc-mt
   --with-boost-program-options[=special-lib]
                           use the program options library from boost - it is
                           possible to specify a certain library for the linker
                           e.g.
                           --with-boost-program-options=boost_program_options-gcc-mt-1_33_1
+  --with-boost-json[=special-lib]
+                          use the JSON library from boost - it is possible to
+                          specify a certain library for the linker e.g.
+                          --with-boost-json=boost_json-gcc-mt
+  --with-python-sys-prefix
+                          use Python's sys.prefix and sys.exec_prefix values
+  --with-python_prefix    override the default PYTHON_PREFIX
+  --with-python_exec_prefix
+                          override the default PYTHON_EXEC_PREFIX
+  --with-boost-python     specify yes/no or the boost python library or suffix
+                          to use
 
 Some influential environment variables:
   CC          C compiler command
@@ -1525,6 +1564,11 @@ Some influential environment variables:
   LT_SYS_LIBRARY_PATH
               User-defined run-time library search path.
   CXXCPP      C++ preprocessor
+  PYTHON      the Python interpreter
+  PYTHON_VERSION
+              The installed Python version to use, for example '2.3'. This
+              string will be appended to the Python interpreter canonical
+              name.
 
 Use these variables to override the choices made by 'configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -3556,6 +3600,8 @@ END
 fi
 
 
+
+ac_config_headers="$ac_config_headers fconfig.h"
 
 
 
@@ -9777,6 +9823,10 @@ _lt_linker_boilerplate=`cat conftest.err`
 $RM -r conftest*
 
 
+## CAVEAT EMPTOR:
+## There is no encapsulation within the following macros, do not change
+## the running order or otherwise move them around unless you know exactly
+## what you are doing...
 if test -n "$compiler"; then
 
 lt_prog_compiler_no_builtin_flag=
@@ -17113,9 +17163,7 @@ fi
                         case ${host_cpu} in #(
   x86_64) :
     libsubdirs="lib64 libx32 lib lib64" ;; #(
-  mips*64*) :
-    libsubdirs="lib64 lib32 lib lib64" ;; #(
-  ppc64|powerpc64|s390x|sparc64|aarch64|ppc64le|powerpc64le|riscv64|e2k) :
+  ppc64|powerpc64|s390x|sparc64|aarch64|ppc64le|powerpc64le|riscv64) :
     libsubdirs="lib64 lib lib64" ;; #(
   *) :
     libsubdirs="lib"
@@ -17125,8 +17173,6 @@ esac
                 case ${host_cpu} in #(
   i?86) :
     multiarch_libsubdir="lib/i386-${host_os}" ;; #(
-  armv7l) :
-    multiarch_libsubdir="lib/arm-${host_os}" ;; #(
   *) :
     multiarch_libsubdir="lib/${host_cpu}-${host_os}"
      ;;
@@ -17174,7 +17220,7 @@ else case e in #(
         else
             search_libsubdirs="$multiarch_libsubdir $libsubdirs"
         fi
-        for _AX_BOOST_BASE_boost_path_tmp in /usr /usr/local /opt /opt/local /opt/homebrew ; do
+        for _AX_BOOST_BASE_boost_path_tmp in /usr /usr/local /opt /opt/local ; do
             if test -d "$_AX_BOOST_BASE_boost_path_tmp/include/boost" && test -r "$_AX_BOOST_BASE_boost_path_tmp/include/boost" ; then
                 for libsubdir in $search_libsubdirs ; do
                     if ls "$_AX_BOOST_BASE_boost_path_tmp/$libsubdir/libboost_"* >/dev/null 2>&1 ; then break; fi
@@ -17277,7 +17323,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
             fi
         else
             if test "x$cross_compiling" != "xyes" ; then
-                for _AX_BOOST_BASE_boost_path in /usr /usr/local /opt /opt/local /opt/homebrew ; do
+                for _AX_BOOST_BASE_boost_path in /usr /usr/local /opt /opt/local ; do
                     if test -d "$_AX_BOOST_BASE_boost_path" && test -r "$_AX_BOOST_BASE_boost_path" ; then
                         for i in `ls -d $_AX_BOOST_BASE_boost_path/include/boost-* 2>/dev/null`; do
                             _version_tmp=`echo $i | sed "s#$_AX_BOOST_BASE_boost_path##" | sed 's/\/include\/boost-//' | sed 's/_/./'`
@@ -17641,7 +17687,7 @@ fi
 
             fi
             if test "x$ax_lib" = "x"; then
-                as_fn_error $? "Could not find a version of the Boost::IOStreams library!" "$LINENO" 5
+                as_fn_error $? "Could not find a version of the library!" "$LINENO" 5
             fi
 			if test "x$link_iostreams" != "xyes"; then
 				as_fn_error $? "Could not link against $ax_lib !" "$LINENO" 5
@@ -17916,7 +17962,7 @@ fi
 
             fi
             if test "x$ax_lib" = "x"; then
-                as_fn_error $? "Could not find a version of the Boost::System library!" "$LINENO" 5
+                as_fn_error $? "Could not find a version of the library!" "$LINENO" 5
             fi
 			if test "x$link_system" = "xno"; then
 				as_fn_error $? "Could not link against $ax_lib !" "$LINENO" 5
@@ -18187,7 +18233,7 @@ fi
 
             fi
             if test "x$ax_lib" = "x"; then
-                as_fn_error $? "Could not find a version of the Boost::Filesystem library!" "$LINENO" 5
+                as_fn_error $? "Could not find a version of the library!" "$LINENO" 5
             fi
 			if test "x$link_filesystem" != "xyes"; then
 				as_fn_error $? "Could not link against $ax_lib !" "$LINENO" 5
@@ -18245,24 +18291,13 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
              CXXFLAGS_SAVE=$CXXFLAGS
 
-             case "x$host_os" in
-                 xsolaris )
-                     CXXFLAGS="-pthreads $CXXFLAGS"
-                     break;
-                     ;;
-                 xmingw32 )
-                     CXXFLAGS="-mthreads $CXXFLAGS"
-                     break;
-                     ;;
-                 *android* )
-                     break;
-                     ;;
-                 * )
-                     CXXFLAGS="-pthread $CXXFLAGS"
-                     break;
-                     ;;
-             esac
-
+             if test "x$host_os" = "xsolaris" ; then
+                 CXXFLAGS="-pthreads $CXXFLAGS"
+             elif test "x$host_os" = "xmingw32" ; then
+                 CXXFLAGS="-mthreads $CXXFLAGS"
+             else
+                CXXFLAGS="-pthread $CXXFLAGS"
+             fi
              cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -18297,23 +18332,13 @@ fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ax_cv_boost_thread" >&5
 printf "%s\n" "$ax_cv_boost_thread" >&6; }
         if test "x$ax_cv_boost_thread" = "xyes"; then
-            case "x$host_os" in
-                xsolaris )
-                    BOOST_CPPFLAGS="-pthreads $BOOST_CPPFLAGS"
-                    break;
-                    ;;
-                xmingw32 )
-                    BOOST_CPPFLAGS="-mthreads $BOOST_CPPFLAGS"
-                    break;
-                    ;;
-                *android* )
-                    break;
-                    ;;
-                * )
-                    BOOST_CPPFLAGS="-pthread $BOOST_CPPFLAGS"
-                    break;
-                    ;;
-            esac
+           if test "x$host_os" = "xsolaris" ; then
+              BOOST_CPPFLAGS="-pthreads $BOOST_CPPFLAGS"
+           elif test "x$host_os" = "xmingw32" ; then
+              BOOST_CPPFLAGS="-mthreads $BOOST_CPPFLAGS"
+           else
+              BOOST_CPPFLAGS="-pthread $BOOST_CPPFLAGS"
+           fi
 
 
 
@@ -18504,7 +18529,7 @@ fi
 
             fi
             if test "x$ax_lib" = "x"; then
-                as_fn_error $? "Could not find a version of the Boost::Thread library!" "$LINENO" 5
+                as_fn_error $? "Could not find a version of the library!" "$LINENO" 5
             fi
             if test "x$link_thread" = "xno"; then
                 as_fn_error $? "Could not link against $ax_lib !" "$LINENO" 5
@@ -18520,9 +18545,6 @@ fi
                         break;
                         ;;
                     xmingw32 )
-                        break;
-                        ;;
-                    *android* )
                         break;
                         ;;
                     * )
@@ -18803,7 +18825,7 @@ fi
 			fi
 
 			if test "x$ax_lib" = "x"; then
-				as_fn_error $? "Could not find a version of the Boost::Log library!" "$LINENO" 5
+				as_fn_error $? "Could not find a version of the library!" "$LINENO" 5
 			fi
 
 			if test "x$link_log" = "xno"; then
@@ -18813,6 +18835,493 @@ fi
 
 		CPPFLAGS="$CPPFLAGS_SAVED"
 		LDFLAGS="$LDFLAGS_SAVED"
+	fi
+
+
+
+# Check whether --with-boost-log_setup was given.
+if test ${with_boost_log_setup+y}
+then :
+  withval=$with_boost_log_setup;
+        if test "$withval" = "no"; then
+	    want_boost="no"
+        elif test "$withval" = "yes"; then
+            want_boost="yes"
+            ax_boost_user_log_setup_lib=""
+        else
+	    want_boost="yes"
+	    ax_boost_user_log_setup_lib="$withval"
+	fi
+
+else case e in #(
+  e) want_boost="yes"
+	 ;;
+esac
+fi
+
+
+	if test "x$want_boost" = "xyes"; then
+
+
+
+
+		CPPFLAGS_SAVED="$CPPFLAGS"
+		CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
+		export CPPFLAGS
+
+		LDFLAGS_SAVED="$LDFLAGS"
+		LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
+		export LDFLAGS
+
+
+
+
+printf "%s\n" "#define HAVE_BOOST_LOG_SETUP /**/" >>confdefs.h
+
+
+		BOOSTLIBDIR=`echo $BOOST_LDFLAGS | sed -e 's/[^\/]*//'`
+
+		if test "x$ax_boost_user_log_setup_lib" = "x"; then
+			for libextension in `ls $BOOSTLIBDIR/libboost_log_setup*.so* $BOOSTLIBDIR/libboost_log_setup*.dylib* $BOOSTLIBDIR/libboost_log_setup*.a* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^lib\(boost_log_setup.*\)\.so.*$;\1;' -e 's;^lib\(boost_log_setup.*\)\.dylib.*$;\1;' -e 's;^lib\(boost_log_setup.*\)\.a.*$;\1;'` ; do
+				ax_lib=${libextension}
+				as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_exit" | sed "$as_sed_sh"`
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for exit in -l$ax_lib" >&5
+printf %s "checking for exit in -l$ax_lib... " >&6; }
+if eval test \${$as_ac_Lib+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-l$ax_lib  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char exit (void);
+int
+main (void)
+{
+return exit ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  eval "$as_ac_Lib=yes"
+else case e in #(
+  e) eval "$as_ac_Lib=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+eval ac_res=\$$as_ac_Lib
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"
+then :
+  BOOST_LOG_SETUP_LIB="-l$ax_lib";  link_log_setup="yes"; break
+else case e in #(
+  e) link_log_setup="no" ;;
+esac
+fi
+
+			done
+
+			if test "x$link_log_setup" != "xyes"; then
+				for libextension in `ls $BOOSTLIBDIR/boost_log_setup*.dll* $BOOSTLIBDIR/boost_log_setup*.a* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^\(boost_log_setup.*\)\.dll.*$;\1;' -e 's;^\(boost_log_setup.*\)\.a.*$;\1;'` ; do
+					ax_lib=${libextension}
+					as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_exit" | sed "$as_sed_sh"`
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for exit in -l$ax_lib" >&5
+printf %s "checking for exit in -l$ax_lib... " >&6; }
+if eval test \${$as_ac_Lib+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-l$ax_lib  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char exit (void);
+int
+main (void)
+{
+return exit ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  eval "$as_ac_Lib=yes"
+else case e in #(
+  e) eval "$as_ac_Lib=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+eval ac_res=\$$as_ac_Lib
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"
+then :
+  BOOST_LOG_SETUP_LIB="-l$ax_lib";  link_log_setup="yes"; break
+else case e in #(
+  e) link_log_setup="no" ;;
+esac
+fi
+
+				done
+			fi
+
+		else
+			for ax_lib in $ax_boost_user_log_setup_lib boost_log_setup-$ax_boost_user_log_setup_lib; do
+				as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_exit" | sed "$as_sed_sh"`
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for exit in -l$ax_lib" >&5
+printf %s "checking for exit in -l$ax_lib... " >&6; }
+if eval test \${$as_ac_Lib+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-l$ax_lib  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char exit (void);
+int
+main (void)
+{
+return exit ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  eval "$as_ac_Lib=yes"
+else case e in #(
+  e) eval "$as_ac_Lib=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+eval ac_res=\$$as_ac_Lib
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"
+then :
+  BOOST_LOG_SETUP_LIB="-l$ax_lib";  link_log_setup="yes"; break
+else case e in #(
+  e) link_log_setup="no" ;;
+esac
+fi
+
+			done
+
+		fi
+
+		if test "x$ax_lib" = "x"; then
+			as_fn_error $? "Could not find a version of the library!" "$LINENO" 5
+		fi
+
+		if test "x$link_log_setup" = "xno"; then
+			as_fn_error $? "Could not link against $ax_lib !" "$LINENO" 5
+		fi
+
+		CPPFLAGS="$CPPFLAGS_SAVED"
+		LDFLAGS="$LDFLAGS_SAVED"
+	fi
+
+
+
+# Check whether --with-boost-program-options was given.
+if test ${with_boost_program_options+y}
+then :
+  withval=$with_boost_program_options;
+        if test "$withval" = "no"; then
+			want_boost="no"
+        elif test "$withval" = "yes"; then
+            want_boost="yes"
+            ax_boost_user_program_options_lib=""
+        else
+		    want_boost="yes"
+		ax_boost_user_program_options_lib="$withval"
+		fi
+
+else case e in #(
+  e) want_boost="yes"
+	 ;;
+esac
+fi
+
+
+	if test "x$want_boost" = "xyes"; then
+
+	    export want_boost
+		CPPFLAGS_SAVED="$CPPFLAGS"
+		CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
+		export CPPFLAGS
+		LDFLAGS_SAVED="$LDFLAGS"
+		LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
+		export LDFLAGS
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the Boost::Program_Options library is available" >&5
+printf %s "checking whether the Boost::Program_Options library is available... " >&6; }
+if test ${ax_cv_boost_program_options+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+				cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <boost/program_options/errors.hpp>
+
+int
+main (void)
+{
+boost::program_options::error err("Error message");
+                                   return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"
+then :
+  ax_cv_boost_program_options=yes
+else case e in #(
+  e) ax_cv_boost_program_options=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+					ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+		 ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ax_cv_boost_program_options" >&5
+printf "%s\n" "$ax_cv_boost_program_options" >&6; }
+		if test "$ax_cv_boost_program_options" = yes; then
+
+printf "%s\n" "#define HAVE_BOOST_PROGRAM_OPTIONS /**/" >>confdefs.h
+
+                  BOOSTLIBDIR=`echo $BOOST_LDFLAGS | sed -e 's/[^\/]*//'`
+                if test "x$ax_boost_user_program_options_lib" = "x"; then
+                for libextension in `ls $BOOSTLIBDIR/libboost_program_options*.so* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^lib\(boost_program_options.*\)\.so.*$;\1;'` `ls $BOOSTLIBDIR/libboost_program_options*.dylib* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^lib\(boost_program_options.*\)\.dylib.*$;\1;'` `ls $BOOSTLIBDIR/libboost_program_options*.a* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^lib\(boost_program_options.*\)\.a.*$;\1;'` ; do
+                     ax_lib=${libextension}
+				    as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_exit" | sed "$as_sed_sh"`
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for exit in -l$ax_lib" >&5
+printf %s "checking for exit in -l$ax_lib... " >&6; }
+if eval test \${$as_ac_Lib+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-l$ax_lib  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char exit (void);
+int
+main (void)
+{
+return exit ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  eval "$as_ac_Lib=yes"
+else case e in #(
+  e) eval "$as_ac_Lib=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+eval ac_res=\$$as_ac_Lib
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"
+then :
+  BOOST_PROGRAM_OPTIONS_LIB="-l$ax_lib";  link_program_options="yes"; break
+else case e in #(
+  e) link_program_options="no" ;;
+esac
+fi
+
+				done
+                if test "x$link_program_options" != "xyes"; then
+                for libextension in `ls $BOOSTLIBDIR/boost_program_options*.dll* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^\(boost_program_options.*\)\.dll.*$;\1;'` `ls $BOOSTLIBDIR/boost_program_options*.a* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^\(boost_program_options.*\)\.a.*$;\1;'` ; do
+                     ax_lib=${libextension}
+				    as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_exit" | sed "$as_sed_sh"`
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for exit in -l$ax_lib" >&5
+printf %s "checking for exit in -l$ax_lib... " >&6; }
+if eval test \${$as_ac_Lib+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-l$ax_lib  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char exit (void);
+int
+main (void)
+{
+return exit ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  eval "$as_ac_Lib=yes"
+else case e in #(
+  e) eval "$as_ac_Lib=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+eval ac_res=\$$as_ac_Lib
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"
+then :
+  BOOST_PROGRAM_OPTIONS_LIB="-l$ax_lib";  link_program_options="yes"; break
+else case e in #(
+  e) link_program_options="no" ;;
+esac
+fi
+
+				done
+                fi
+                else
+                  for ax_lib in $ax_boost_user_program_options_lib boost_program_options-$ax_boost_user_program_options_lib; do
+				      as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_main" | sed "$as_sed_sh"`
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -l$ax_lib" >&5
+printf %s "checking for main in -l$ax_lib... " >&6; }
+if eval test \${$as_ac_Lib+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-l$ax_lib  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  eval "$as_ac_Lib=yes"
+else case e in #(
+  e) eval "$as_ac_Lib=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+eval ac_res=\$$as_ac_Lib
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_Lib"\" = x"yes"
+then :
+  BOOST_PROGRAM_OPTIONS_LIB="-l$ax_lib";  link_program_options="yes"; break
+else case e in #(
+  e) link_program_options="no" ;;
+esac
+fi
+
+                  done
+                fi
+            if test "x$ax_lib" = "x"; then
+                as_fn_error $? "Could not find a version of the library!" "$LINENO" 5
+            fi
+				if test "x$link_program_options" != "xyes"; then
+					as_fn_error $? "Could not link against $ax_lib !" "$LINENO" 5
+				fi
+		fi
+		CPPFLAGS="$CPPFLAGS_SAVED"
+	LDFLAGS="$LDFLAGS_SAVED"
 	fi
 
 
@@ -19098,264 +19607,1047 @@ fi
 	fi
 
 
+CPPFLAGS+=" $(pkg-config --cflags gdal)"
+LIBS+=" $(pkg-config --libs gdal)"
 
-# Check whether --with-boost-program-options was given.
-if test ${with_boost_program_options+y}
+CPPFLAGS+=" $(pkg-config --cflags expat)"
+LIBS+=" $(pkg-config --libs expat)"
+
+CPPFLAGS+=" $(pkg-config --cflags bzip2)"
+LIBS+=" $(pkg-config --libs bzip2)"
+
+
+# Find the path for python modules
+
+
+
+
+
+
+        if test -n "$PYTHON"; then
+      # If the user set $PYTHON, use it and don't search something else.
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $PYTHON version is >= 3" >&5
+printf %s "checking whether $PYTHON version is >= 3... " >&6; }
+      prog="import sys
+# split strings by '.' and convert to numeric.  Append some zeros
+# because we need at least 4 digits for the hex conversion.
+# map returns an iterator in Python 3.0 and a list in 2.x
+minver = list(map(int, '3'.split('.'))) + [0, 0, 0]
+minverhex = 0
+# xrange is not present in Python 3.0 and range returns an iterator
+for i in list(range(0, 4)): minverhex = (minverhex << 8) + minver[i]
+sys.exit(sys.hexversion < minverhex)"
+  if { echo "$as_me:$LINENO: $PYTHON -c "$prog"" >&5
+   ($PYTHON -c "$prog") >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); }
 then :
-  withval=$with_boost_program_options;
-        if test "$withval" = "no"; then
-			want_boost="no"
-        elif test "$withval" = "yes"; then
-            want_boost="yes"
-            ax_boost_user_program_options_lib=""
-        else
-		    want_boost="yes"
-		ax_boost_user_program_options_lib="$withval"
-		fi
-
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
 else case e in #(
-  e) want_boost="yes"
-	 ;;
+  e) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+			       as_fn_error $? "Python interpreter is too old" "$LINENO" 5 ;;
+esac
+fi
+      am_display_PYTHON=$PYTHON
+    else
+      # Otherwise, try each interpreter until we find one that satisfies
+      # VERSION.
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a Python interpreter with version >= 3" >&5
+printf %s "checking for a Python interpreter with version >= 3... " >&6; }
+if test ${am_cv_pathless_PYTHON+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+	for am_cv_pathless_PYTHON in python python2 python3  python3.11 python3.10  python3.9 python3.8 python3.7 python3.6 python3.5 python3.4 python3.3  python3.2 python3.1 python3.0  python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1  python2.0 none; do
+	  test "$am_cv_pathless_PYTHON" = none && break
+	  prog="import sys
+# split strings by '.' and convert to numeric.  Append some zeros
+# because we need at least 4 digits for the hex conversion.
+# map returns an iterator in Python 3.0 and a list in 2.x
+minver = list(map(int, '3'.split('.'))) + [0, 0, 0]
+minverhex = 0
+# xrange is not present in Python 3.0 and range returns an iterator
+for i in list(range(0, 4)): minverhex = (minverhex << 8) + minver[i]
+sys.exit(sys.hexversion < minverhex)"
+  if { echo "$as_me:$LINENO: $am_cv_pathless_PYTHON -c "$prog"" >&5
+   ($am_cv_pathless_PYTHON -c "$prog") >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); }
+then :
+  break
+fi
+	done ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_pathless_PYTHON" >&5
+printf "%s\n" "$am_cv_pathless_PYTHON" >&6; }
+      # Set $PYTHON to the absolute path of $am_cv_pathless_PYTHON.
+      if test "$am_cv_pathless_PYTHON" = none; then
+	PYTHON=:
+      else
+        # Extract the first word of "$am_cv_pathless_PYTHON", so it can be a program name with args.
+set dummy $am_cv_pathless_PYTHON; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_PYTHON+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case $PYTHON in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PYTHON="$PYTHON" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_PYTHON="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac ;;
+esac
+fi
+PYTHON=$ac_cv_path_PYTHON
+if test -n "$PYTHON"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON" >&5
+printf "%s\n" "$PYTHON" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+      fi
+      am_display_PYTHON=$am_cv_pathless_PYTHON
+    fi
+
+
+  if test "$PYTHON" = :; then
+        as_fn_error $? "no suitable Python interpreter found" "$LINENO" 5
+  else
+
+              { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON version" >&5
+printf %s "checking for $am_display_PYTHON version... " >&6; }
+if test ${am_cv_python_version+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) am_cv_python_version=`$PYTHON -c "import sys; print ('%u.%u' % sys.version_info[:2])"` ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_version" >&5
+printf "%s\n" "$am_cv_python_version" >&6; }
+  PYTHON_VERSION=$am_cv_python_version
+
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON platform" >&5
+printf %s "checking for $am_display_PYTHON platform... " >&6; }
+if test ${am_cv_python_platform+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) am_cv_python_platform=`$PYTHON -c "import sys; sys.stdout.write(sys.platform)"` ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_platform" >&5
+printf "%s\n" "$am_cv_python_platform" >&6; }
+  PYTHON_PLATFORM=$am_cv_python_platform
+
+
+                            if test "x$prefix" = xNONE; then
+    am__usable_prefix=$ac_default_prefix
+  else
+    am__usable_prefix=$prefix
+  fi
+
+  # Allow user to request using sys.* values from Python,
+  # instead of the GNU $prefix values.
+
+# Check whether --with-python-sys-prefix was given.
+if test ${with_python_sys_prefix+y}
+then :
+  withval=$with_python_sys_prefix; am_use_python_sys=:
+else case e in #(
+  e) am_use_python_sys=false ;;
 esac
 fi
 
 
-	if test "x$want_boost" = "xyes"; then
+  # Allow user to override whatever the default Python prefix is.
 
-	    export want_boost
-		CPPFLAGS_SAVED="$CPPFLAGS"
-		CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-		export CPPFLAGS
-		LDFLAGS_SAVED="$LDFLAGS"
-		LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
-		export LDFLAGS
-		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the Boost::Program_Options library is available" >&5
-printf %s "checking whether the Boost::Program_Options library is available... " >&6; }
-if test ${ax_cv_boost_program_options+y}
+# Check whether --with-python_prefix was given.
+if test ${with_python_prefix+y}
+then :
+  withval=$with_python_prefix; am_python_prefix_subst=$withval
+   am_cv_python_prefix=$withval
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for explicit $am_display_PYTHON prefix" >&5
+printf %s "checking for explicit $am_display_PYTHON prefix... " >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_prefix" >&5
+printf "%s\n" "$am_cv_python_prefix" >&6; }
+else case e in #(
+  e)
+   if $am_use_python_sys; then
+     # using python sys.prefix value, not GNU
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for python default $am_display_PYTHON prefix" >&5
+printf %s "checking for python default $am_display_PYTHON prefix... " >&6; }
+if test ${am_cv_python_prefix+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) ac_ext=cpp
+  e) am_cv_python_prefix=`$PYTHON -c "import sys; sys.stdout.write(sys.prefix)"` ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_prefix" >&5
+printf "%s\n" "$am_cv_python_prefix" >&6; }
+
+               case $am_cv_python_prefix in
+     $am__usable_prefix*)
+       am__strip_prefix=`echo "$am__usable_prefix" | sed 's|.|.|g'`
+       am_python_prefix_subst=`echo "$am_cv_python_prefix" | sed "s,^$am__strip_prefix,\\${prefix},"`
+       ;;
+     *)
+       am_python_prefix_subst=$am_cv_python_prefix
+       ;;
+     esac
+   else # using GNU prefix value, not python sys.prefix
+     am_python_prefix_subst='${prefix}'
+     am_python_prefix=$am_python_prefix_subst
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for GNU default $am_display_PYTHON prefix" >&5
+printf %s "checking for GNU default $am_display_PYTHON prefix... " >&6; }
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_python_prefix" >&5
+printf "%s\n" "$am_python_prefix" >&6; }
+   fi ;;
+esac
+fi
+
+  # Substituting python_prefix_subst value.
+  PYTHON_PREFIX=$am_python_prefix_subst
+
+
+  # emacs-page Now do it all over again for Python exec_prefix, but with yet
+  # another conditional: fall back to regular prefix if that was specified.
+
+# Check whether --with-python_exec_prefix was given.
+if test ${with_python_exec_prefix+y}
+then :
+  withval=$with_python_exec_prefix; am_python_exec_prefix_subst=$withval
+   am_cv_python_exec_prefix=$withval
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for explicit $am_display_PYTHON exec_prefix" >&5
+printf %s "checking for explicit $am_display_PYTHON exec_prefix... " >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_exec_prefix" >&5
+printf "%s\n" "$am_cv_python_exec_prefix" >&6; }
+else case e in #(
+  e)
+   # no explicit --with-python_exec_prefix, but if
+   # --with-python_prefix was given, use its value for python_exec_prefix too.
+   if test -n "$with_python_prefix"
+then :
+  am_python_exec_prefix_subst=$with_python_prefix
+    am_cv_python_exec_prefix=$with_python_prefix
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for python_prefix-given $am_display_PYTHON exec_prefix" >&5
+printf %s "checking for python_prefix-given $am_display_PYTHON exec_prefix... " >&6; }
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_exec_prefix" >&5
+printf "%s\n" "$am_cv_python_exec_prefix" >&6; }
+else case e in #(
+  e)
+    # Set am__usable_exec_prefix whether using GNU or Python values,
+    # since we use that variable for pyexecdir.
+    if test "x$exec_prefix" = xNONE; then
+      am__usable_exec_prefix=$am__usable_prefix
+    else
+      am__usable_exec_prefix=$exec_prefix
+    fi
+    #
+    if $am_use_python_sys; then # using python sys.exec_prefix, not GNU
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for python default $am_display_PYTHON exec_prefix" >&5
+printf %s "checking for python default $am_display_PYTHON exec_prefix... " >&6; }
+if test ${am_cv_python_exec_prefix+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) am_cv_python_exec_prefix=`$PYTHON -c "import sys; sys.stdout.write(sys.exec_prefix)"` ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_exec_prefix" >&5
+printf "%s\n" "$am_cv_python_exec_prefix" >&6; }
+                        case $am_cv_python_exec_prefix in
+      $am__usable_exec_prefix*)
+        am__strip_prefix=`echo "$am__usable_exec_prefix" | sed 's|.|.|g'`
+        am_python_exec_prefix_subst=`echo "$am_cv_python_exec_prefix" | sed "s,^$am__strip_prefix,\\${exec_prefix},"`
+        ;;
+      *)
+        am_python_exec_prefix_subst=$am_cv_python_exec_prefix
+        ;;
+     esac
+   else # using GNU $exec_prefix, not python sys.exec_prefix
+     am_python_exec_prefix_subst='${exec_prefix}'
+     am_python_exec_prefix=$am_python_exec_prefix_subst
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for GNU default $am_display_PYTHON exec_prefix" >&5
+printf %s "checking for GNU default $am_display_PYTHON exec_prefix... " >&6; }
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_python_exec_prefix" >&5
+printf "%s\n" "$am_python_exec_prefix" >&6; }
+   fi ;;
+esac
+fi ;;
+esac
+fi
+
+  # Substituting python_exec_prefix_subst.
+  PYTHON_EXEC_PREFIX=$am_python_exec_prefix_subst
+
+
+  # Factor out some code duplication into this shell variable.
+  am_python_setup_sysconfig="\
+import sys
+# Prefer sysconfig over distutils.sysconfig, for better compatibility
+# with python 3.x.  See automake bug#10227.
+try:
+    import sysconfig
+except ImportError:
+    can_use_sysconfig = 0
+else:
+    can_use_sysconfig = 1
+# Can't use sysconfig in CPython 2.7, since it's broken in virtualenvs:
+# <https://github.com/pypa/virtualenv/issues/118>
+try:
+    from platform import python_implementation
+    if python_implementation() == 'CPython' and sys.version[:3] == '2.7':
+        can_use_sysconfig = 0
+except ImportError:
+    pass"
+
+
+              { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON script directory (pythondir)" >&5
+printf %s "checking for $am_display_PYTHON script directory (pythondir)... " >&6; }
+if test ${am_cv_python_pythondir+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test "x$am_cv_python_prefix" = x; then
+     am_py_prefix=$am__usable_prefix
+   else
+     am_py_prefix=$am_cv_python_prefix
+   fi
+   am_cv_python_pythondir=`$PYTHON -c "
+$am_python_setup_sysconfig
+if can_use_sysconfig:
+  if hasattr(sysconfig, 'get_default_scheme'):
+    scheme = sysconfig.get_default_scheme()
+  else:
+    scheme = sysconfig._get_default_scheme()
+  if scheme == 'posix_local':
+    # Debian's default scheme installs to /usr/local/ but we want to find headers in /usr/
+    scheme = 'posix_prefix'
+  sitedir = sysconfig.get_path('purelib', scheme, vars={'base':'$am_py_prefix'})
+else:
+  from distutils import sysconfig
+  sitedir = sysconfig.get_python_lib(0, 0, prefix='$am_py_prefix')
+sys.stdout.write(sitedir)"`
+   #
+   case $am_cv_python_pythondir in
+   $am_py_prefix*)
+     am__strip_prefix=`echo "$am_py_prefix" | sed 's|.|.|g'`
+     am_cv_python_pythondir=`echo "$am_cv_python_pythondir" | sed "s,^$am__strip_prefix,\\${PYTHON_PREFIX},"`
+     ;;
+   *)
+     case $am_py_prefix in
+       /usr|/System*) ;;
+       *) am_cv_python_pythondir="\${PYTHON_PREFIX}/lib/python$PYTHON_VERSION/site-packages"
+          ;;
+     esac
+     ;;
+   esac
+   ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_pythondir" >&5
+printf "%s\n" "$am_cv_python_pythondir" >&6; }
+  pythondir=$am_cv_python_pythondir
+
+
+          pkgpythondir=\${pythondir}/$PACKAGE
+
+
+          { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON extension module directory (pyexecdir)" >&5
+printf %s "checking for $am_display_PYTHON extension module directory (pyexecdir)... " >&6; }
+if test ${am_cv_python_pyexecdir+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test "x$am_cv_python_exec_prefix" = x; then
+     am_py_exec_prefix=$am__usable_exec_prefix
+   else
+     am_py_exec_prefix=$am_cv_python_exec_prefix
+   fi
+   am_cv_python_pyexecdir=`$PYTHON -c "
+$am_python_setup_sysconfig
+if can_use_sysconfig:
+  if hasattr(sysconfig, 'get_default_scheme'):
+    scheme = sysconfig.get_default_scheme()
+  else:
+    scheme = sysconfig._get_default_scheme()
+  if scheme == 'posix_local':
+    # Debian's default scheme installs to /usr/local/ but we want to find headers in /usr/
+    scheme = 'posix_prefix'
+  sitedir = sysconfig.get_path('platlib', scheme, vars={'platbase':'$am_py_exec_prefix'})
+else:
+  from distutils import sysconfig
+  sitedir = sysconfig.get_python_lib(1, 0, prefix='$am_py_exec_prefix')
+sys.stdout.write(sitedir)"`
+   #
+   case $am_cv_python_pyexecdir in
+   $am_py_exec_prefix*)
+     am__strip_prefix=`echo "$am_py_exec_prefix" | sed 's|.|.|g'`
+     am_cv_python_pyexecdir=`echo "$am_cv_python_pyexecdir" | sed "s,^$am__strip_prefix,\\${PYTHON_EXEC_PREFIX},"`
+     ;;
+   *)
+     case $am_py_exec_prefix in
+       /usr|/System*) ;;
+       *) am_cv_python_pyexecdir="\${PYTHON_EXEC_PREFIX}/lib/python$PYTHON_VERSION/site-packages"
+          ;;
+     esac
+     ;;
+   esac
+   ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_pyexecdir" >&5
+printf "%s\n" "$am_cv_python_pyexecdir" >&6; }
+  pyexecdir=$am_cv_python_pyexecdir
+
+
+      pkgpyexecdir=\${pyexecdir}/$PACKAGE
+
+
+
+  fi
+
+
+# Check whether --enable-python was given.
+if test ${enable_python+y}
+then :
+  enableval=$enable_python;
+else case e in #(
+  e) enable_python=yes ;;
+esac
+fi
+
+
+if test x"${enable_python}" = x"yes"; then
+  LIBS+=" $(python3-config --libs)"
+  LIBS+=" $(python3-config --embed)"
+  CPPFLAGS+=" $(python3-config --cflags)"
+
+	#
+	# Allow the use of a (user set) custom python version
+	#
+
+
+	# Extract the first word of "python[$PYTHON_VERSION]", so it can be a program name with args.
+set dummy python$PYTHON_VERSION; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_PYTHON+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case $PYTHON in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PYTHON="$PYTHON" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_PYTHON="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac ;;
+esac
+fi
+PYTHON=$ac_cv_path_PYTHON
+if test -n "$PYTHON"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON" >&5
+printf "%s\n" "$PYTHON" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+	if test -z "$PYTHON"; then
+	   as_fn_error $? "Cannot find python$PYTHON_VERSION in your system path" "$LINENO" 5
+	   PYTHON_VERSION=""
+	fi
+
+	#
+	# Check for a version of Python >= 2.1.0
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a version of Python >= '2.1.0'" >&5
+printf %s "checking for a version of Python >= '2.1.0'... " >&6; }
+	ac_supports_python_ver=`$PYTHON -c "import sys; \
+		ver = sys.version.split ()[0]; \
+		print (ver >= '2.1.0')"`
+	if test "$ac_supports_python_ver" != "True"; then
+		if test -z "$PYTHON_NOVERSIONCHECK"; then
+			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+			{ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in '$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in '$ac_pwd':" >&2;}
+as_fn_error $? "
+This version of the AC_PYTHON_DEVEL macro
+doesn't work properly with versions of Python before
+2.1.0. You may need to re-run configure, setting the
+variables PYTHON_CPPFLAGS, PYTHON_LIBS, PYTHON_SITE_PKG,
+PYTHON_EXTRA_LIBS and PYTHON_EXTRA_LDFLAGS by hand.
+Moreover, to disable this check, set PYTHON_NOVERSIONCHECK
+to something else than an empty string.
+
+See 'config.log' for more details" "$LINENO" 5; }
+		else
+			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: skip at user request" >&5
+printf "%s\n" "skip at user request" >&6; }
+		fi
+	else
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+	fi
+
+	#
+	# If the macro parameter ``version'' is set, honour it.
+	# A Python shim class, VPy, is used to implement correct version comparisons via
+	# string expressions, since e.g. a naive textual ">= 2.7.3" won't work for
+	# Python 2.7.10 (the ".1" being evaluated as less than ".3").
+	#
+	if test -n ""; then
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a version of Python " >&5
+printf %s "checking for a version of Python ... " >&6; }
+                cat << EOF > ax_python_devel_vpy.py
+class VPy:
+    def vtup(self, s):
+        return tuple(map(int, s.strip().replace("rc", ".").split(".")))
+    def __init__(self):
+        import sys
+        self.vpy = tuple(sys.version_info)[:3]
+    def __eq__(self, s):
+        return self.vpy == self.vtup(s)
+    def __ne__(self, s):
+        return self.vpy != self.vtup(s)
+    def __lt__(self, s):
+        return self.vpy < self.vtup(s)
+    def __gt__(self, s):
+        return self.vpy > self.vtup(s)
+    def __le__(self, s):
+        return self.vpy <= self.vtup(s)
+    def __ge__(self, s):
+        return self.vpy >= self.vtup(s)
+EOF
+		ac_supports_python_ver=`$PYTHON -c "import ax_python_devel_vpy; \
+                        ver = ax_python_devel_vpy.VPy(); \
+			print (ver )"`
+                rm -rf ax_python_devel_vpy*.py* __pycache__/ax_python_devel_vpy*.py*
+		if test "$ac_supports_python_ver" = "True"; then
+			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+		else
+			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+			as_fn_error $? "this package requires Python .
+If you have it installed, but it isn't the default Python
+interpreter in your system path, please pass the PYTHON_VERSION
+variable to configure. See \`\`configure --help'' for reference.
+" "$LINENO" 5
+			PYTHON_VERSION=""
+		fi
+	fi
+
+	#
+	# Check if you have distutils, else fail
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for the sysconfig Python package" >&5
+printf %s "checking for the sysconfig Python package... " >&6; }
+	ac_sysconfig_result=`$PYTHON -c "import sysconfig" 2>&1`
+	if test $? -eq 0; then
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+		IMPORT_SYSCONFIG="import sysconfig"
+	else
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for the distutils Python package" >&5
+printf %s "checking for the distutils Python package... " >&6; }
+		ac_sysconfig_result=`$PYTHON -c "from distutils import sysconfig" 2>&1`
+		if test $? -eq 0; then
+			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+			IMPORT_SYSCONFIG="from distutils import sysconfig"
+		else
+			as_fn_error $? "cannot import Python module \"distutils\".
+Please check your Python installation. The error was:
+$ac_sysconfig_result" "$LINENO" 5
+			PYTHON_VERSION=""
+		fi
+	fi
+
+	#
+	# Check for Python include path
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Python include path" >&5
+printf %s "checking for Python include path... " >&6; }
+	if test -z "$PYTHON_CPPFLAGS"; then
+		if test "$IMPORT_SYSCONFIG" = "import sysconfig"; then
+			# sysconfig module has different functions
+			python_path=`$PYTHON -c "$IMPORT_SYSCONFIG; \
+				print (sysconfig.get_path ('include'));"`
+			plat_python_path=`$PYTHON -c "$IMPORT_SYSCONFIG; \
+				print (sysconfig.get_path ('platinclude'));"`
+		else
+			# old distutils way
+			python_path=`$PYTHON -c "$IMPORT_SYSCONFIG; \
+				print (sysconfig.get_python_inc ());"`
+			plat_python_path=`$PYTHON -c "$IMPORT_SYSCONFIG; \
+				print (sysconfig.get_python_inc (plat_specific=1));"`
+		fi
+		if test -n "${python_path}"; then
+			if test "${plat_python_path}" != "${python_path}"; then
+				python_path="-I$python_path -I$plat_python_path"
+			else
+				python_path="-I$python_path"
+			fi
+		fi
+		PYTHON_CPPFLAGS=$python_path
+	fi
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON_CPPFLAGS" >&5
+printf "%s\n" "$PYTHON_CPPFLAGS" >&6; }
+
+
+	#
+	# Check for Python library path
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Python library path" >&5
+printf %s "checking for Python library path... " >&6; }
+	if test -z "$PYTHON_LIBS"; then
+		# (makes two attempts to ensure we've got a version number
+		# from the interpreter)
+		ac_python_version=`cat<<EOD | $PYTHON -
+
+# join all versioning strings, on some systems
+# major/minor numbers could be in different list elements
+from sysconfig import *
+e = get_config_var('VERSION')
+if e is not None:
+	print(e)
+EOD`
+
+		if test -z "$ac_python_version"; then
+			if test -n "$PYTHON_VERSION"; then
+				ac_python_version=$PYTHON_VERSION
+			else
+				ac_python_version=`$PYTHON -c "import sys; \
+					print ("%d.%d" % sys.version_info[:2])"`
+			fi
+		fi
+
+		# Make the versioning information available to the compiler
+
+printf "%s\n" "#define HAVE_PYTHON \"$ac_python_version\"" >>confdefs.h
+
+
+		# First, the library directory:
+		ac_python_libdir=`cat<<EOD | $PYTHON -
+
+# There should be only one
+$IMPORT_SYSCONFIG
+e = sysconfig.get_config_var('LIBDIR')
+if e is not None:
+	print (e)
+EOD`
+
+		# Now, for the library:
+		ac_python_library=`cat<<EOD | $PYTHON -
+
+$IMPORT_SYSCONFIG
+c = sysconfig.get_config_vars()
+if 'LDVERSION' in c:
+	print ('python'+c['LDVERSION'])
+else:
+	print ('python'+c['VERSION'])
+EOD`
+
+		# This small piece shamelessly adapted from PostgreSQL python macro;
+		# credits goes to momjian, I think. I'd like to put the right name
+		# in the credits, if someone can point me in the right direction... ?
+		#
+		if test -n "$ac_python_libdir" -a -n "$ac_python_library"
+		then
+			# use the official shared library
+			ac_python_library=`echo "$ac_python_library" | sed "s/^lib//"`
+			PYTHON_LIBS="-L$ac_python_libdir -l$ac_python_library"
+		else
+			# old way: use libpython from python_configdir
+			ac_python_libdir=`$PYTHON -c \
+			  "from sysconfig import get_python_lib as f; \
+			  import os; \
+			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
+			PYTHON_LIBS="-L$ac_python_libdir -lpython$ac_python_version"
+		fi
+
+		if test -z "PYTHON_LIBS"; then
+			as_fn_error $? "
+  Cannot determine location of your Python DSO. Please check it was installed with
+  dynamic libraries enabled, or try setting PYTHON_LIBS by hand.
+			" "$LINENO" 5
+		fi
+	fi
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON_LIBS" >&5
+printf "%s\n" "$PYTHON_LIBS" >&6; }
+
+
+	#
+	# Check for site packages
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Python site-packages path" >&5
+printf %s "checking for Python site-packages path... " >&6; }
+	if test -z "$PYTHON_SITE_PKG"; then
+		if test "$IMPORT_SYSCONFIG" = "import sysconfig"; then
+			PYTHON_SITE_PKG=`$PYTHON -c "
+$IMPORT_SYSCONFIG;
+if hasattr(sysconfig, 'get_default_scheme'):
+    scheme = sysconfig.get_default_scheme()
+else:
+    scheme = sysconfig._get_default_scheme()
+if scheme == 'posix_local':
+    # Debian's default scheme installs to /usr/local/ but we want to find headers in /usr/
+    scheme = 'posix_prefix'
+prefix = '$prefix'
+if prefix == 'NONE':
+    prefix = '$ac_default_prefix'
+sitedir = sysconfig.get_path('purelib', scheme, vars={'base': prefix})
+print(sitedir)"`
+		else
+			# distutils.sysconfig way
+			PYTHON_SITE_PKG=`$PYTHON -c "$IMPORT_SYSCONFIG; \
+				print (sysconfig.get_python_lib(0,0));"`
+		fi
+	fi
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON_SITE_PKG" >&5
+printf "%s\n" "$PYTHON_SITE_PKG" >&6; }
+
+
+	#
+	# Check for platform-specific site packages
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Python platform specific site-packages path" >&5
+printf %s "checking for Python platform specific site-packages path... " >&6; }
+	if test -z "$PYTHON_PLATFORM_SITE_PKG"; then
+		if test "$IMPORT_SYSCONFIG" = "import sysconfig"; then
+			PYTHON_PLATFORM_SITE_PKG=`$PYTHON -c "
+$IMPORT_SYSCONFIG;
+if hasattr(sysconfig, 'get_default_scheme'):
+    scheme = sysconfig.get_default_scheme()
+else:
+    scheme = sysconfig._get_default_scheme()
+if scheme == 'posix_local':
+    # Debian's default scheme installs to /usr/local/ but we want to find headers in /usr/
+    scheme = 'posix_prefix'
+prefix = '$prefix'
+if prefix == 'NONE':
+    prefix = '$ac_default_prefix'
+sitedir = sysconfig.get_path('platlib', scheme, vars={'platbase': prefix})
+print(sitedir)"`
+		else
+			# distutils.sysconfig way
+			PYTHON_PLATFORM_SITE_PKG=`$PYTHON -c "$IMPORT_SYSCONFIG; \
+				print (sysconfig.get_python_lib(1,0));"`
+		fi
+	fi
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON_PLATFORM_SITE_PKG" >&5
+printf "%s\n" "$PYTHON_PLATFORM_SITE_PKG" >&6; }
+
+
+	#
+	# libraries which must be linked in when embedding
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking python extra libraries" >&5
+printf %s "checking python extra libraries... " >&6; }
+	if test -z "$PYTHON_EXTRA_LIBS"; then
+	   PYTHON_EXTRA_LIBS=`$PYTHON -c "$IMPORT_SYSCONFIG; \
+                conf = sysconfig.get_config_var; \
+                print (conf('LIBS') + ' ' + conf('SYSLIBS'))"`
+	fi
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON_EXTRA_LIBS" >&5
+printf "%s\n" "$PYTHON_EXTRA_LIBS" >&6; }
+
+
+	#
+	# linking flags needed when embedding
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking python extra linking flags" >&5
+printf %s "checking python extra linking flags... " >&6; }
+	if test -z "$PYTHON_EXTRA_LDFLAGS"; then
+		PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "$IMPORT_SYSCONFIG; \
+			conf = sysconfig.get_config_var; \
+			print (conf('LINKFORSHARED'))"`
+	fi
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON_EXTRA_LDFLAGS" >&5
+printf "%s\n" "$PYTHON_EXTRA_LDFLAGS" >&6; }
+
+
+	#
+	# final check to see if everything compiles alright
+	#
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking consistency of all components of python development environment" >&5
+printf %s "checking consistency of all components of python development environment... " >&6; }
+	# save current global flags
+	ac_save_LIBS="$LIBS"
+	ac_save_LDFLAGS="$LDFLAGS"
+	ac_save_CPPFLAGS="$CPPFLAGS"
+	LIBS="$ac_save_LIBS $PYTHON_LIBS $PYTHON_EXTRA_LIBS"
+	LDFLAGS="$ac_save_LDFLAGS $PYTHON_EXTRA_LDFLAGS"
+	CPPFLAGS="$ac_save_CPPFLAGS $PYTHON_CPPFLAGS"
+	ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+		#include <Python.h>
+int
+main (void)
+{
+Py_Initialize();
+  ;
+  return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  pythonexists=yes
+else case e in #(
+  e) pythonexists=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+	ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+	# turn back to default flags
+	CPPFLAGS="$ac_save_CPPFLAGS"
+	LIBS="$ac_save_LIBS"
+	LDFLAGS="$ac_save_LDFLAGS"
+
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $pythonexists" >&5
+printf "%s\n" "$pythonexists" >&6; }
+
+	if test ! "x$pythonexists" = "xyes"; then
+	   { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in '$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in '$ac_pwd':" >&2;}
+as_fn_error $? "
+  Could not link test program to Python. Maybe the main Python library has been
+  installed in some non-standard library path. If so, pass it to configure,
+  via the LIBS environment variable.
+  Example: ./configure LIBS=\"-L/usr/non-standard-path/python/lib\"
+  ============================================================================
+   ERROR!
+   You probably have to install the development version of the Python package
+   for your distribution.  The exact name of this package varies among them.
+  ============================================================================
+
+See 'config.log' for more details" "$LINENO" 5; }
+	  PYTHON_VERSION=""
+	fi
+
+	#
+	# all done!
+	#
+
+ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-				cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <boost/program_options/errors.hpp>
+ax_boost_python_save_CPPFLAGS="$CPPFLAGS"
+ax_boost_python_save_LDFLAGS="$LDFLAGS"
+ax_boost_python_save_LIBS="$LIBS"
+if test "x$PYTHON_CPPFLAGS" != "x"; then
+  CPPFLAGS="$PYTHON_CPPFLAGS $CPPFLAGS"
+fi
 
+# Versions of AX_PYTHON_DEVEL() before serial 18 provided PYTHON_LDFLAGS
+# instead of PYTHON_LIBS, so this is just here for compatibility.
+if test "x$PYTHON_LDFLAGS" != "x"; then
+  LDFLAGS="$PYTHON_LDFLAGS $LDFLAGS"
+fi
+
+# Note: Only versions of AX_PYTHON_DEVEL() since serial 18 provide PYTHON_LIBS
+# instead of PYTHON_LDFLAGS.
+if test "x$PYTHON_LIBS" != "x"; then
+  LIBS="$PYTHON_LIBS $LIBS"
+fi
+
+if test "x$BOOST_CPPFLAGS" != "x"; then
+  CPPFLAGS="$BOOST_CPPFLAGS $CPPFLAGS"
+fi
+if test "x$BOOST_LDFLAGS" != "x"; then
+  LDFLAGS="$BOOST_LDFLAGS $LDFLAGS"
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the Boost::Python library is available" >&5
+printf %s "checking whether the Boost::Python library is available... " >&6; }
+if test ${ac_cv_boost_python+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <boost/python/module.hpp>
+BOOST_PYTHON_MODULE(test) { throw "Boost::Python test."; }
 int
 main (void)
 {
-boost::program_options::error err("Error message");
-                                   return 0;
+
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_cxx_try_compile "$LINENO"
 then :
-  ax_cv_boost_program_options=yes
+  ac_cv_boost_python=yes
 else case e in #(
-  e) ax_cv_boost_program_options=no ;;
+  e) ac_cv_boost_python=no ;;
 esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-					ac_ext=c
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_boost_python" >&5
+printf "%s\n" "$ac_cv_boost_python" >&6; }
+if test "$ac_cv_boost_python" = "yes"; then
+
+printf "%s\n" "#define HAVE_BOOST_PYTHON /**/" >>confdefs.h
+
+  ax_python_lib=boost_python
+
+# Check whether --with-boost-python was given.
+if test ${with_boost_python+y}
+then :
+  withval=$with_boost_python; if test "x$with_boost_python" != "xno" -a "x$with_boost_python" != "xyes"; then
+     ax_python_lib=$with_boost_python
+     ax_boost_python_lib=boost_python-$with_boost_python
+   fi
+fi
+
+  BOOSTLIBDIR=`echo $BOOST_LDFLAGS | sed -e 's/[^\/]*//'`
+  for ax_lib in $ax_python_lib $ax_boost_python_lib `ls $BOOSTLIBDIR/libboost_python*.so* $BOOSTLIBDIR/libboost_python*.dylib* $BOOSTLIBDIR/libboost_python*.a* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^lib\(boost_python.*\)\.so.*$;\1;' -e 's;^lib\(boost_python.*\)\.dylib.*$;\1;' -e 's;^lib\(boost_python.*\)\.a.*$;\1;' ` boost_python boost_python3; do
+    as_ax_Lib=`printf "%s\n" "ax_cv_lib_$ax_lib''_BOOST_PYTHON_MODULE" | sed "$as_sed_sh"`
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $ax_lib is the correct library" >&5
+printf %s "checking whether $ax_lib is the correct library... " >&6; }
+if eval test \${$as_ax_Lib+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) LIBS="-l$ax_lib $ax_boost_python_save_LIBS $PYTHON_LIBS"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <boost/python/module.hpp>
+BOOST_PYTHON_MODULE(test) { throw "Boost::Python test."; }
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  eval "$as_ax_Lib=yes"
+else case e in #(
+  e) eval "$as_ax_Lib=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext ;;
+esac
+fi
+eval ac_res=\$$as_ax_Lib
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+    if eval test \"x\$"$as_ax_Lib"\" = x"yes"
+then :
+  BOOST_PYTHON_LIB=-l$ax_lib break
+fi
+      done
+
+fi
+CPPFLAGS="$ax_boost_python_save_CPPFLAGS"
+LDFLAGS="$ax_boost_python_save_LDFLAGS"
+LIBS="$ax_boost_python_save_LIBS"
+ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-		 ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ax_cv_boost_program_options" >&5
-printf "%s\n" "$ax_cv_boost_program_options" >&6; }
-		if test "$ax_cv_boost_program_options" = yes; then
 
-printf "%s\n" "#define HAVE_BOOST_PROGRAM_OPTIONS /**/" >>confdefs.h
 
-                  BOOSTLIBDIR=`echo $BOOST_LDFLAGS | sed -e 's/[^\/]*//'`
-                if test "x$ax_boost_user_program_options_lib" = "x"; then
-                for libextension in `ls $BOOSTLIBDIR/libboost_program_options*.so* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^lib\(boost_program_options.*\)\.so.*$;\1;'` `ls $BOOSTLIBDIR/libboost_program_options*.dylib* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^lib\(boost_program_options.*\)\.dylib.*$;\1;'` `ls $BOOSTLIBDIR/libboost_program_options*.a* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^lib\(boost_program_options.*\)\.a.*$;\1;'` ; do
-                     ax_lib=${libextension}
-				    as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_exit" | sed "$as_sed_sh"`
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for exit in -l$ax_lib" >&5
-printf %s "checking for exit in -l$ax_lib... " >&6; }
-if eval test \${$as_ac_Lib+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-l$ax_lib  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
+printf "%s\n" "#define USE_PYTHON 1" >>confdefs.h
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char exit (void);
-int
-main (void)
-{
-return exit ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  eval "$as_ac_Lib=yes"
-else case e in #(
-  e) eval "$as_ac_Lib=no" ;;
-esac
 fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-eval ac_res=\$$as_ac_Lib
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_Lib"\" = x"yes"
-then :
-  BOOST_PROGRAM_OPTIONS_LIB="-l$ax_lib";  link_program_options="yes"; break
-else case e in #(
-  e) link_program_options="no" ;;
-esac
+ if  test x"${enable_python}" != x"no" ; then
+  ENABLE_PYTHON_TRUE=
+  ENABLE_PYTHON_FALSE='#'
+else
+  ENABLE_PYTHON_TRUE='#'
+  ENABLE_PYTHON_FALSE=
 fi
 
-				done
-                if test "x$link_program_options" != "xyes"; then
-                for libextension in `ls $BOOSTLIBDIR/boost_program_options*.dll* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^\(boost_program_options.*\)\.dll.*$;\1;'` `ls $BOOSTLIBDIR/boost_program_options*.a* 2>/dev/null | sed 's,.*/,,' | sed -e 's;^\(boost_program_options.*\)\.a.*$;\1;'` ; do
-                     ax_lib=${libextension}
-				    as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_exit" | sed "$as_sed_sh"`
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for exit in -l$ax_lib" >&5
-printf %s "checking for exit in -l$ax_lib... " >&6; }
-if eval test \${$as_ac_Lib+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-l$ax_lib  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char exit (void);
-int
-main (void)
-{
-return exit ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  eval "$as_ac_Lib=yes"
-else case e in #(
-  e) eval "$as_ac_Lib=no" ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-eval ac_res=\$$as_ac_Lib
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_Lib"\" = x"yes"
-then :
-  BOOST_PROGRAM_OPTIONS_LIB="-l$ax_lib";  link_program_options="yes"; break
-else case e in #(
-  e) link_program_options="no" ;;
-esac
-fi
-
-				done
-                fi
-                else
-                  for ax_lib in $ax_boost_user_program_options_lib boost_program_options-$ax_boost_user_program_options_lib; do
-				      as_ac_Lib=`printf "%s\n" "ac_cv_lib_$ax_lib""_main" | sed "$as_sed_sh"`
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -l$ax_lib" >&5
-printf %s "checking for main in -l$ax_lib... " >&6; }
-if eval test \${$as_ac_Lib+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-l$ax_lib  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main (void)
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  eval "$as_ac_Lib=yes"
-else case e in #(
-  e) eval "$as_ac_Lib=no" ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-eval ac_res=\$$as_ac_Lib
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_Lib"\" = x"yes"
-then :
-  BOOST_PROGRAM_OPTIONS_LIB="-l$ax_lib";  link_program_options="yes"; break
-else case e in #(
-  e) link_program_options="no" ;;
-esac
-fi
-
-                  done
-                fi
-            if test "x$ax_lib" = "x"; then
-                as_fn_error $? "Could not find a version of the Boost::Program_Options library!" "$LINENO" 5
-            fi
-				if test "x$link_program_options" != "xyes"; then
-					as_fn_error $? "Could not link against $ax_lib !" "$LINENO" 5
-				fi
-		fi
-		CPPFLAGS="$CPPFLAGS_SAVED"
-	LDFLAGS="$LDFLAGS_SAVED"
-	fi
-
-LIBS+=" -lboost_regex"
-
-CPPFLAGS+=" $(pkg-config --cflags gdal)"
-LIBS+=" $(pkg-config --libs gdal)"
 
 ac_config_files="$ac_config_files Makefile"
 
@@ -19450,41 +20742,7 @@ test "x$prefix" = xNONE && prefix=$ac_default_prefix
 # Let make expand exec_prefix.
 test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 
-# Transform confdefs.h into DEFS.
-# Protect against shell expansion while executing Makefile rules.
-# Protect against Makefile macro expansion.
-#
-# If the first sed substitution is executed (which looks for macros that
-# take arguments), then branch to the quote section.  Otherwise,
-# look for a macro that doesn't take arguments.
-ac_script='
-:mline
-/\\$/{
- N
- s,\\\n,,
- b mline
-}
-t clear
-:clear
-s/^[	 ]*#[	 ]*define[	 ][	 ]*\([^	 (][^	 (]*([^)]*)\)[	 ]*\(.*\)/-D\1=\2/g
-t quote
-s/^[	 ]*#[	 ]*define[	 ][	 ]*\([^	 ][^	 ]*\)[	 ]*\(.*\)/-D\1=\2/g
-t quote
-b any
-:quote
-s/[][	 `~#$^&*(){}\\|;'\''"<>?]/\\&/g
-s/\$/$$/g
-H
-:any
-${
-	g
-	s/^\n//
-	s/\n/ /g
-	p
-}
-'
-DEFS=`sed -n "$ac_script" confdefs.h`
-
+DEFS=-DHAVE_CONFIG_H
 
 ac_libobjs=
 ac_ltlibobjs=
@@ -19529,6 +20787,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_PYTHON_TRUE}" && test -z "${ENABLE_PYTHON_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_PYTHON\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -19942,11 +21204,15 @@ case $ac_config_files in *"
 "*) set x $ac_config_files; shift; ac_config_files=$*;;
 esac
 
+case $ac_config_headers in *"
+"*) set x $ac_config_headers; shift; ac_config_headers=$*;;
+esac
 
 
 cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
+config_headers="$ac_config_headers"
 config_commands="$ac_config_commands"
 
 _ACEOF
@@ -19968,9 +21234,14 @@ Usage: $0 [OPTION]... [TAG]...
       --recheck    update $as_me by reconfiguring in the same conditions
       --file=FILE[:TEMPLATE]
                    instantiate the configuration file FILE
+      --header=FILE[:TEMPLATE]
+                   instantiate the configuration header FILE
 
 Configuration files:
 $config_files
+
+Configuration headers:
+$config_headers
 
 Configuration commands:
 $config_commands
@@ -20040,7 +21311,18 @@ do
     esac
     as_fn_append CONFIG_FILES " '$ac_optarg'"
     ac_need_defaults=false;;
-  --he | --h |  --help | --hel | -h )
+  --header | --heade | --head | --hea )
+    $ac_shift
+    case $ac_optarg in
+    *\'*) ac_optarg=`printf "%s\n" "$ac_optarg" | sed "s/'/'\\\\\\\\''/g"` ;;
+    esac
+    as_fn_append CONFIG_HEADERS " '$ac_optarg'"
+    ac_need_defaults=false;;
+  --he | --h)
+    # Conflict between --help and --header
+    as_fn_error $? "ambiguous option: '$1'
+Try '$0 --help' for more information.";;
+  --help | --hel | -h )
     printf "%s\n" "$ac_cs_usage"; exit ;;
   -q | -quiet | --quiet | --quie | --qui | --qu | --q \
   | -silent | --silent | --silen | --sile | --sil | --si | --s)
@@ -20484,6 +21766,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
+    "fconfig.h") CONFIG_HEADERS="$CONFIG_HEADERS fconfig.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
@@ -20499,6 +21782,7 @@ done
 # bizarre bug on SunOS 4.1.3.
 if $ac_need_defaults; then
   test ${CONFIG_FILES+y} || CONFIG_FILES=$config_files
+  test ${CONFIG_HEADERS+y} || CONFIG_HEADERS=$config_headers
   test ${CONFIG_COMMANDS+y} || CONFIG_COMMANDS=$config_commands
 fi
 
@@ -20687,8 +21971,116 @@ fi
 cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_FILES"
 
+# Set up the scripts for CONFIG_HEADERS section.
+# No need to generate them if there are no CONFIG_HEADERS.
+# This happens for instance with './config.status Makefile'.
+if test -n "$CONFIG_HEADERS"; then
+cat >"$ac_tmp/defines.awk" <<\_ACAWK ||
+BEGIN {
+_ACEOF
 
-eval set X "  :F $CONFIG_FILES      :C $CONFIG_COMMANDS"
+# Transform confdefs.h into an awk script 'defines.awk', embedded as
+# here-document in config.status, that substitutes the proper values into
+# config.h.in to produce config.h.
+
+# Create a delimiter string that does not exist in confdefs.h, to ease
+# handling of long lines.
+ac_delim='%!_!# '
+for ac_last_try in false false :; do
+  ac_tt=`sed -n "/$ac_delim/p" confdefs.h`
+  if test -z "$ac_tt"; then
+    break
+  elif $ac_last_try; then
+    as_fn_error $? "could not make $CONFIG_HEADERS" "$LINENO" 5
+  else
+    ac_delim="$ac_delim!$ac_delim _$ac_delim!! "
+  fi
+done
+
+# For the awk script, D is an array of macro values keyed by name,
+# likewise P contains macro parameters if any.  Preserve backslash
+# newline sequences.
+
+ac_word_re=[_$as_cr_Letters][_$as_cr_alnum]*
+sed -n '
+s/.\{148\}/&'"$ac_delim"'/g
+t rset
+:rset
+s/^[	 ]*#[	 ]*define[	 ][	 ]*/ /
+t def
+d
+:def
+s/\\$//
+t bsnl
+s/["\\]/\\&/g
+s/^ \('"$ac_word_re"'\)\(([^()]*)\)[	 ]*\(.*\)/P["\1"]="\2"\
+D["\1"]=" \3"/p
+s/^ \('"$ac_word_re"'\)[	 ]*\(.*\)/D["\1"]=" \2"/p
+d
+:bsnl
+s/["\\]/\\&/g
+s/^ \('"$ac_word_re"'\)\(([^()]*)\)[	 ]*\(.*\)/P["\1"]="\2"\
+D["\1"]=" \3\\\\\\n"\\/p
+t cont
+s/^ \('"$ac_word_re"'\)[	 ]*\(.*\)/D["\1"]=" \2\\\\\\n"\\/p
+t cont
+d
+:cont
+n
+s/.\{148\}/&'"$ac_delim"'/g
+t clear
+:clear
+s/\\$//
+t bsnlc
+s/["\\]/\\&/g; s/^/"/; s/$/"/p
+d
+:bsnlc
+s/["\\]/\\&/g; s/^/"/; s/$/\\\\\\n"\\/p
+b cont
+' <confdefs.h | sed '
+s/'"$ac_delim"'/"\\\
+"/g' >>$CONFIG_STATUS || ac_write_fail=1
+
+cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
+  for (key in D) D_is_set[key] = 1
+  FS = ""
+}
+/^[\t ]*#[\t ]*(define|undef)[\t ]+$ac_word_re([\t (]|\$)/ {
+  line = \$ 0
+  split(line, arg, " ")
+  if (arg[1] == "#") {
+    defundef = arg[2]
+    mac1 = arg[3]
+  } else {
+    defundef = substr(arg[1], 2)
+    mac1 = arg[2]
+  }
+  split(mac1, mac2, "(") #)
+  macro = mac2[1]
+  prefix = substr(line, 1, index(line, defundef) - 1)
+  if (D_is_set[macro]) {
+    # Preserve the white space surrounding the "#".
+    print prefix "define", macro P[macro] D[macro]
+    next
+  } else {
+    # Replace #undef with comments.  This is necessary, for example,
+    # in the case of _POSIX_SOURCE, which is predefined and required
+    # on some systems where configure will not decide to define it.
+    if (defundef == "undef") {
+      print "/*", prefix defundef, macro, "*/"
+      next
+    }
+  }
+}
+{ print }
+_ACAWK
+_ACEOF
+cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
+  as_fn_error $? "could not setup config headers machinery" "$LINENO" 5
+fi # test -n "$CONFIG_HEADERS"
+
+
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
 shift
 for ac_tag
 do
@@ -20907,7 +22299,64 @@ which seems to be undefined.  Please make sure it is defined" >&2;}
   esac \
   || as_fn_error $? "could not create $ac_file" "$LINENO" 5
  ;;
-
+  :H)
+  #
+  # CONFIG_HEADER
+  #
+  if test x"$ac_file" != x-; then
+    {
+      printf "%s\n" "/* $configure_input  */" >&1 \
+      && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs"
+    } >"$ac_tmp/config.h" \
+      || as_fn_error $? "could not create $ac_file" "$LINENO" 5
+    if diff "$ac_file" "$ac_tmp/config.h" >/dev/null 2>&1; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: $ac_file is unchanged" >&5
+printf "%s\n" "$as_me: $ac_file is unchanged" >&6;}
+    else
+      rm -f "$ac_file"
+      mv "$ac_tmp/config.h" "$ac_file" \
+	|| as_fn_error $? "could not create $ac_file" "$LINENO" 5
+    fi
+  else
+    printf "%s\n" "/* $configure_input  */" >&1 \
+      && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs" \
+      || as_fn_error $? "could not create -" "$LINENO" 5
+  fi
+# Compute "$ac_file"'s index in $config_headers.
+_am_arg="$ac_file"
+_am_stamp_count=1
+for _am_header in $config_headers :; do
+  case $_am_header in
+    $_am_arg | $_am_arg:* )
+      break ;;
+    * )
+      _am_stamp_count=`expr $_am_stamp_count + 1` ;;
+  esac
+done
+echo "timestamp for $_am_arg" >`$as_dirname -- "$_am_arg" ||
+$as_expr X"$_am_arg" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
+	 X"$_am_arg" : 'X\(//\)[^/]' \| \
+	 X"$_am_arg" : 'X\(//\)$' \| \
+	 X"$_am_arg" : 'X\(/\)' \| . 2>/dev/null ||
+printf "%s\n" X"$_am_arg" |
+    sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{
+	    s//\1/
+	    q
+	  }
+	  /^X\(\/\/\)[^/].*/{
+	    s//\1/
+	    q
+	  }
+	  /^X\(\/\/\)$/{
+	    s//\1/
+	    q
+	  }
+	  /^X\(\/\).*/{
+	    s//\1/
+	    q
+	  }
+	  s/.*/./; q'`/stamp-h$_am_stamp_count
+ ;;
 
   :C)  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
 printf "%s\n" "$as_me: executing $ac_file commands" >&6;}

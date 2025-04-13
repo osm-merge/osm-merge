@@ -37,3 +37,4 @@ bin_PROGRAMS = fastclip
 fastclip_SOURCES = fastclip.cc fastclip.hh
 fastclip_LDADD = $(BOOST_LIBS)
 
+endif

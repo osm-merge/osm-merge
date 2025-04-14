@@ -24,30 +24,29 @@
 #include "fconfig.h"
 #endif
 
-#include <cstdlib>
-#include <vector>
-#include <iostream>
-#include <sstream>
+// #include <sstream>
 #include <filesystem>
-#include <algorithm>
-#include <string>
+#include <unistd.h>
+#include <stdio.h>
 namespace fs = std::filesystem;
 
+#include <boost/geometry.hpp>
 #include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/core/core.hpp>
-#include <boost/log/core/record.hpp>
-#include <boost/log/core/record_view.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/algorithm/string.hpp>
-namespace logging = boost::log;
+#include <boost/json.hpp>
 using namespace boost;
+namespace logging = boost::log;
+namespace json = boost::json;
+
+#include <osmium/handler/node_locations_for_ways.hpp>
+#include <osmium/index/map/dense_file_array.hpp>
+#include <osmium/geom/ogr.hpp>
+#include <osmium/area/multipolygon_manager.hpp>
+
+#include <osmium/io/any_output.hpp>
+#include <osmium/index/nwr_array.hpp>
+#include <osmium/index/id_set.hpp>
 
 #include "fastclip.hh"
-
-#include <iostream>
-#include <boost/json.hpp>
-namespace json = boost::json;
 
 // using index_type = osmium::index::map::SparseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
 

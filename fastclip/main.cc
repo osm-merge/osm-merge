@@ -23,6 +23,7 @@
 #include <iostream>
 #include <string>
 #include <boost/program_options.hpp>
+#include <boost/geometry.hpp>
 #include <boost/json.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/core/core.hpp>
@@ -33,7 +34,6 @@ namespace logging = boost::log;
 using namespace boost;
 namespace opts = boost::program_options;
 
-#include <boost/geometry.hpp>
 #include <osmium/index/map/dense_file_array.hpp>
 #include <osmium/osm/object.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>

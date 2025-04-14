@@ -147,7 +147,7 @@ FastClip::copy_data(osmium::ProgressBar& progress_bar,
     }
 }
 
-std::shared_ptr<multipolygon_t> &
+std::shared_ptr<multipolygon_t>
 FastClip::make_geometry(const std::string &wkt) {
     // Convert a WKT string into a geometry
     auto geom = boost::geometry::from_wkt<multipolygon_t>(wkt);
@@ -156,7 +156,7 @@ FastClip::make_geometry(const std::string &wkt) {
     return mpoly;
 }
 
-std::shared_ptr<multipolygon_t> &
+std::shared_ptr<multipolygon_t>
 FastClip::make_geometry(json::value &data) {
     auto mpoly = std::make_shared<multipolygon_t>();
     if (data.is_array()) {

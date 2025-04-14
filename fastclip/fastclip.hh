@@ -61,8 +61,8 @@ public:
     void add_filter(osmium::osm_entity_bits::type entities,
                     const osmium::TagMatcher& matcher);
     void add_nodes(const osmium::Way& way);
-    std::shared_ptr<multipolygon_t> &make_geometry(const std::string &wkt);
-    std::shared_ptr<multipolygon_t> &make_geometry(json::value &data);
+    std::shared_ptr<multipolygon_t> make_geometry(const std::string &wkt);
+    std::shared_ptr<multipolygon_t> make_geometry(json::value &data);
     bool filterFile(const std::string &infile,
                     const std::string &outfile);
     json::value readAOI(const std::string &filespec);

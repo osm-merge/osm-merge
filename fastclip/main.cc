@@ -22,25 +22,23 @@
 
 #include <iostream>
 #include <string>
-
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/core/core.hpp>
-#include <boost/log/core/record.hpp>
-#include <boost/log/core/record_view.hpp>
-#include <boost/log/utility/setup/file.hpp>
-
 #include <boost/program_options.hpp>
+#include <boost/json.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/core/core.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/file.hpp>
 namespace logging = boost::log;
 using namespace boost;
 namespace opts = boost::program_options;
 
+#include <boost/geometry.hpp>
+#include <osmium/index/map/dense_file_array.hpp>
+#include <osmium/osm/object.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+
 #include "fastclip.hh"
-
-#include <iostream>
-
-using namespace boost;
-namespace opts = boost::program_options;
 
 int
 main(int argc, char *argv[])

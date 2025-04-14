@@ -1,0 +1,57 @@
+site_name: OSM Merge
+site_description: Process external datasets for OSM
+# strict: true
+site_url: "https://osmmerge.org"
+
+theme:
+  name: material
+  palette:
+    primary: custom
+  favicon: images/favicon.png
+  # logo: images/hot_logo.png
+
+extra_css:
+  - css/extra.css
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+      title: Page contents
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.extra
+  - pymdownx.emoji:
+  - pymdownx.tabbed:
+      alternate_style: true
+  - mdx_truly_sane_lists
+
+plugins:
+  - search
+  - git-revision-date-localized
+
+nav:
+  - Home: index.md
+  - Intro to Workflows: intro.md
+  - Build & Deploy (Containers):
+      - Image Build: image_build.md
+      - Image Artifact: image_artifact.md
+      - Remote Deploy (Compose): remote_deploy_compose.md
+      - Get Env Vars: env_vars.md
+      - Image Multi-Arch: image_build_multi.md
+  - Running Tests:
+      - Compose: test_compose.md
+      - PyTest: test_pytest.md
+      - PNPM: test_pnpm.md
+  - Updating Docs:
+      - MkDocs Build: mkdocs_build.md
+      - Doxygen Build: doxygen_build.md
+      - OpenAPI Build: openapi_build.md
+      - PNPM Build: pnpm_build.md
+      - Wiki Build: wiki.md
+  - Publishing Packages:
+      - PyPi Publish: pypi_publish.md
+      - NPM Publish: npm_publish.md
+      - Python App Version: py_app_version.md

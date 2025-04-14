@@ -36,15 +36,15 @@ available_tags='CXX '
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Which release of libtool.m4 was used?
-macro_version=2.4.7
-macro_revision=2.4.7
-
 # Whether or not to build shared libraries.
 build_libtool_libs=yes
 
 # Whether or not to build static libraries.
-build_old_libs=yes
+build_old_libs=no
+
+# Which release of libtool.m4 was used?
+macro_version=2.4.7
+macro_revision=2.4.7
 
 # What type of objects to build.
 pic_mode=default

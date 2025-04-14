@@ -20,6 +20,10 @@
 #include "fconfig.h"
 #endif
 
+// This code should actually not be built at all unless --enable-python
+// is passed to configure. So we should never get, but let's be paranoid
+// and wrap it with a conditional anyway.
+
 #ifdef USE_PYTHON
 
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
@@ -38,7 +42,7 @@ void make_foo(const std::string &wkt) {
 BOOST_PYTHON_MODULE(fastclip)
 {
     class_<FastClip, boost::noncopyable>("FastClip")
-        .def("make_geometry", &make_foo);
+        .def("make_foo", &make_foo);
 }
 #endif
 

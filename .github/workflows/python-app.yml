@@ -18,9 +18,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      with:
-        python-version: "3.10"
-      run:
-        mkdocs gh-deploy
+      - uses: actions/checkout@v4
+      -run: mkdocs gh-deploy

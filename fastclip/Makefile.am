@@ -29,29 +29,25 @@ BOOST_LIBS = \
 	$(BOOST_THREAD_LIB) \
 	$(BOOST_JSON_LIB)
 
-SOURCES = fastclip.cc fastclip.hh
-
-lib_LTLIBRARIES = libfastclip.la
-libfastclip_la_SOURCES = $(SOURCES)
-libfastclip_la_LIBADD = $(BOOST_LIBS)
+noinst_LTLIBRARIES = libosmmerge.la
+libosmmerge_la_SOURCES = fastclip.cc fastclip.hh
+libosmmerge_la_LIBADD = $(BOOST_LIBS)
 
 # An executable for debugging convienince
-# if ENABLE_STANDALONE
 bin_PROGRAMS = fastclip
 fastclip_SOURCES = main.cc
-fastclip_LDADD = $(BOOST_LIBS) libfastclip.la
-# endif
+fastclip_LDADD = $(BOOST_LIBS) libosmmerge.la
 
-# if ENABLE_PYTHON
-# EXT := $(shell python3-config --extension-suffix)
-# DIR := $(shell python3-config --configdir)
-# lib_LTIBRARIES = libfastclip.la
-# libfastclip_la_SOURCES = python.cc
-# libfastclip_la_LDADD = $(BOOST_LIBS) libosmmerge.la
-# libfastclip_la_LDFLAGS = -module -avoid-version -no-undefined \
-# 	$(BOOST_LIBS)
-# 	$(PYTHON_LIBS) \
-# 	$(BOOST_PYTHON_LIB)
+if ENABLE_PYTHON
+EXT := $(shell python3-config --extension-suffix)
+DIR := $(shell python3-config --configdir)
+lib_LTLIBRARIES = libfastclip.la
+libfastclip_la_SOURCES = python.cc
+libfastclip_la_LIBADD = libosmmerge.la $(BOOST_LIBS)
+libfastclip_la_LDFLAGS = -module -avoid-version -no-undefined \
+	$(BOOST_LIBS)
+	$(PYTHON_LIBS) \
+	$(BOOST_PYTHON_LIB)
 
 # PY_OBJECTS = $(fastclip_la_OBJECTS:.lo=.o)
 # install-python: fastclip.la
@@ -62,8 +58,8 @@ fastclip_LDADD = $(BOOST_LIBS) libfastclip.la
 # 	    if test ! -e $${moddir}; then \
 # 	        $(MDIR_P) $${moddir}; \
 # 	    fi; \
-# 	    cp .libs/libfastclip.so $${moddir}/libfastclip$(EXT); \
+	    cp .libs/libfastclip.so $${moddir}/libfastclip$(EXT); \
 # 	fi
 
-# endif
+endif
 

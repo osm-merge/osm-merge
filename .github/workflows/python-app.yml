@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Deploy docs
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
@@ -21,5 +21,9 @@ jobs:
           EXTRA_PACKAGES: build-base
           # GITHUB_DOMAIN: github.myenterprise.com
           # REQUIREMENTS: folder/requirements.txt
-  plugins:
-    - git-revision-date-localized
+plugins:
+  - search
+  - git-revision-date-localized:
+      exclude:
+        - blog/archive/*
+        - blog/category/*

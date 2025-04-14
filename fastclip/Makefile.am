@@ -15,6 +15,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
+AM_LDFLAGS = $(BOOST_LIBS) -lpthread -lz
 AM_CXXFLAGS = -g -std=c++17 \
 	-D_LARGEFILE_SOURCE \
 	-DBOOST_LOG_DYN_LINK \
@@ -26,33 +27,43 @@ BOOST_LIBS = \
 	$(BOOST_LOG_LIB) \
 	$(BOOST_LOG_SETUP_LIB) \
 	$(BOOST_THREAD_LIB) \
-	$(BOOST_JSON_LIB) \
-	$(BOOST_PYTHON_LIB)
+	$(BOOST_JSON_LIB)
 
-if ENABLE_PYTHON
-EXT := $(shell python3-config --extension-suffix)
-DIR := $(shell python3-config --configdir)
-noinst_LTLIBRARIES = fastclip.la
-fastclip_la_SOURCES = python.cc
-fastclip_la_LDFADD = $(BOOST_LIBS)
-fastclip_la_LDFLAGS = -module -avoid-version -no-undefined $(BOOST_LIBS)
-PY_OBJECTS = $(fastclip_la_OBJECTS:.lo=.o)
-install-python: fastclip.la
-	@if test x"$(prefix)" = x"/usr/lib" -a "$(shell whoami)" != "root"; then \
-	    echo "Need to be root!"; \
-	else \
-	    moddir=$(shell dirname $(DIR))/lib-dynload; \
-	    if test ! -e $${moddir}; then \
-	        $(MDIR_P) $${moddir}; \
-	    fi; \
-	    cp .libs/libfastclip.so $${moddir}/libfastclip$(EXT); \
-	fi
+SOURCES = fastclip.cc fastclip.hh
 
-endif
+lib_LTLIBRARIES = libfastclip.la
+libfastclip_la_SOURCES = $(SOURCES)
+libfastclip_la_LIBADD = $(BOOST_LIBS)
 
-AM_LDFLAGS = $(BOOST_LIBS) -lpthread -lz
-
+# An executable for debugging convienince
+# if ENABLE_STANDALONE
 bin_PROGRAMS = fastclip
-fastclip_SOURCES = fastclip.cc fastclip.hh
-fastclip_LDADD = $(BOOST_LIBS) $(PYTHON_LIBS)
+fastclip_SOURCES = main.cc
+fastclip_LDADD = $(BOOST_LIBS) libfastclip.la
+# endif
+
+# if ENABLE_PYTHON
+# EXT := $(shell python3-config --extension-suffix)
+# DIR := $(shell python3-config --configdir)
+# lib_LTIBRARIES = libfastclip.la
+# libfastclip_la_SOURCES = python.cc
+# libfastclip_la_LDADD = $(BOOST_LIBS) libosmmerge.la
+# libfastclip_la_LDFLAGS = -module -avoid-version -no-undefined \
+# 	$(BOOST_LIBS)
+# 	$(PYTHON_LIBS) \
+# 	$(BOOST_PYTHON_LIB)
+
+# PY_OBJECTS = $(fastclip_la_OBJECTS:.lo=.o)
+# install-python: fastclip.la
+# 	if test x"$(prefix)" = x"/usr/lib" -a "$(shell whoami)" != "root"; then \
+# 	    echo "Need to be root!"; \
+# 	else \
+# 	    moddir=$(shell dirname $(DIR))/lib-dynload; \
+# 	    if test ! -e $${moddir}; then \
+# 	        $(MDIR_P) $${moddir}; \
+# 	    fi; \
+# 	    cp .libs/libfastclip.so $${moddir}/libfastclip$(EXT); \
+# 	fi
+
+# endif
 

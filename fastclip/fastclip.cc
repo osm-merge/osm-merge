@@ -27,17 +27,8 @@
 #include <cstdlib>
 #include <vector>
 #include <iostream>
-#include <future>
-#include <mutex>
-#include <thread>
-#include <string>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include <csignal>
 #include <sstream>
+#include <filesystem>
 #include <algorithm>
 #include <string>
 namespace fs = std::filesystem;
@@ -48,24 +39,15 @@ namespace fs = std::filesystem;
 #include <boost/log/core/record.hpp>
 #include <boost/log/core/record_view.hpp>
 #include <boost/log/utility/setup/file.hpp>
-
-// #include <gdal/ogr_geometry.h>
-// #include <gdal/ogrsf_frmts.h>
-
 #include <boost/algorithm/string.hpp>
-#include <boost/program_options.hpp>
 namespace logging = boost::log;
 using namespace boost;
-namespace opts = boost::program_options;
 
 #include "fastclip.hh"
 
 #include <iostream>
 #include <boost/json.hpp>
 namespace json = boost::json;
-
-using namespace boost;
-namespace opts = boost::program_options;
 
 // using index_type = osmium::index::map::SparseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
 
@@ -93,7 +75,7 @@ FastClip::check_index_type(const std::string& index_type_name) {
     // const auto& map_factory = osmium::index::MapFactory<osmium::unsigned_object_id_type, osmium::Location>::instance();
 
     return index_type_name;
-};
+}
 
 // void find_member_nodes(std::string filespec) {
 //     osmium::io::Reader reader{filespec, osmium::osm_entity_bits::relation, osmium::io::read_meta::no};
@@ -389,185 +371,6 @@ FastClip::readAOI(const std::string &filespec) {
     while( ! feof(f) );
     std::fclose(f);
     return p.release();
-}
-
-int
-main(int argc, char *argv[])
-{
-    opts::positional_options_description p;
-    opts::variables_map vm;
-    opts::options_description desc("Allowed options");
-
-    logging::add_file_log("fastclip.log");
-    try {
-        // clang-format off
-        desc.add_options()
-            ("help,h", "display help")
-            ("verbose,v", "Enable verbosity")
-            ("infile,i", opts::value<std::string>(), "Input data file"
-                        "The file to be processed")
-            ("outfile,o", opts::value<std::string>(), "Output data file"
-                "The output boundaries MultiPolygon")
-            ("filter,f", "Filter for only highways")
-            ("boundary,b", opts::value<std::string>(), "Boundary data file"
-             "The boundary MultiPolygon to use for clipping");
-            // clang-format on
-            opts::store(opts::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-        opts::notify(vm);
-        if (argc == 1) {
-            std::cout << "Usage: options_description [options]" << std::endl;
-            std::cout << desc << std::endl;
-            exit(0);
-        }
-        if (vm.count("help")) {
-            std::cout << "Usage: options_description [options]" << std::endl;
-            std::cout << desc << std::endl;
-            exit(0);
-        }
-    } catch (std::exception &e) {
-        std::cout << e.what() << std::endl;
-        return 1;
-    }
-
-    opts::store(opts::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    opts::notify(vm);
-
-    // By default, write everything to the log file
-    logging::core::get()->set_filter(
-        logging::trivial::severity >= logging::trivial::debug
-        );
-#include <sstream>
-    if (vm.count("verbose")) {
-        // Enable also displaying to the terminal
-        logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
-    }
-
-    std::string outfile;
-    std::string infile;
-    auto fastclip = FastClip();
-
-    if (vm.count("boundary")) {
-        std::string filespec = vm["boundary"].as<std::string>();
-        auto boundary = fastclip.readAOI(filespec);
-        // std::cout  << foo.kind() << std::endl;        
-        switch(boundary.kind()) {
-          case json::kind::object: {
-              std::cout << "{\n";
-              // indent->append(4, ' ');
-              auto const& obj = boundary.get_object();
-              if(! obj.empty()) {
-                  auto it = obj.begin();
-                  for(;;) {
-                      // std::cout << *indent << json::serialize(it->key()) << " : ";
-                      std::cout  << "FIXME: OBJECT" << std::endl;
-                      // std::cout << it->value() << std::endl;
-                      if(++it == obj.end())
-                          break;
-                      // std::cout << ",\n";
-                  }
-              }
-          }
-          case json::kind::array: {
-              std::cout << "FIXME: ARRAY" << std::endl;
-              auto const& arr = boundary.get_object();
-              if(! arr.empty()) {
-                  // std::cout  << "FIXME: " << it[0].as_string() << std::endl;
-                  auto it = arr.begin();
-                  if(it != arr.end()) {
-                      goto arr_first;
-                      while(it != arr.end()) {
-                          // dest.push_back(',');
-                        arr_first:
-                          //to_string_test(dest, *it);
-                          ++it;
-                      }
-                  }
-              }
-          }
-          case json::kind::string: {
-              std::cout << "FIXME: STRING" << std::endl;
-              // auto const& obj = foo.get_object();
-              std::stringstream ss;
-              ss << boundary;
-              auto bar = json::parse(ss);
-              // std::string foobar(json::serialize(bar));
-              auto foobar = bar.at("features");
-
-              auto apoi = fastclip.make_geometry(boundary);
-
-              // if (foobar.is_array()) {
-              //     auto barfoo = foobar.get_array();
-              //     for (auto it = barfoo.begin(); it!= barfoo.end(); ++it) {
-              //         auto &type = it->at("type");
-              //         auto &geom = it->at("geometry");
-              //         auto &props = it->at("properties");
-              //         auto &coords = geom.at("coordinates");
-              //         // std::cout << "TYPE " << type << std::endl;
-              //         std::cout << "GEOM TYPE " << geom.at("type") << std::endl;
-              //         // std::cout << "GEOM " << coords << std::endl;
-              //         std::cout << "PROPS " << props << std::endl;
-              //         try {
-              //             std::cout << "NAME2 " << props.at("name") << std::endl;
-              //         } catch (std::exception &e) {
-              //             std::cerr << e.what() << std::endl;
-              //         }
-              //         // std::string furbar = boost::json::serialize(coords);
-              //         // boost::replace_all(furbar, "[", "");
-              //         // boost::replace_all(furbar, "]", "");
-              //         // boost::replace_all(furbar, ",", ", "); // FIXME: easir to read
-              //         // const double aarrgg[][2] = {*furbar.c_str()};
-              //         // std::cout  << "FURBAR: " << *aarrgg << std::endl;
-              //         // multipolygon_t mpoly = {furbar};
-              //         std::cout  << "FURBAR: " << coords.is_array() << std::endl;
-              //         // auto &xxx = coords.get_array();
-              //         // for (auto itt = xxx.begin(); itt!= xxx.end(); ++itt) {
-              //         //        std::string make_geometry(json::value &data) {
-              //         //     auto &yyy = itt->get_array();
-              //         //     for (auto iitt = yyy.begin(); iitt!= yyy.end(); ++iitt) {
-              //         //         // std::cout << "NO10! " << iitt->is_array() << std::endl;
-              //         //         std::cout << "FOO: " << *iitt << std::endl;
-              //         //         auto &zzz = iitt->get_array();
-              //         //         for (auto iitt2 = zzz.begin(); iitt2!= zzz.end(); ++iitt2) {
-              //         //             // std::cout << "NO11! " << iitt2->is_array() << std::endl;
-              //         //             std::cout << "NO12! " << std::setprecision(7) << std::fixed << iitt2->at(0).as_double() << " : " << iitt2->at(1).as_double() << std::endl;
-              //         //              // auto &aaa = iitt2->get_array();
-              //         //              // for (auto iitt3 = aaa.begin(); iitt3!= aaa.end(); ++iitt3) {
-
-              //         //              //     std::cout << "NO13! " << std::setprecision(15) << iitt3->as_double() * 1.0  << std::endl;
-              //         //              // }
-              //         //         }
-              //     }
-              // }
-          }
-              break;
-        }
-    }
-
-    if (vm.count("filter")) {
-        if (vm.count("infile") && vm.count("outfile")) {
-            infile = vm["infile"].as<std::string>();
-            outfile = vm["outfile"].as<std::string>();
-            fastclip.filterFile(infile, outfile);
-        }
-        exit(0);
-    }
-
-    // if (vm.count("outfile")) {
-    //     outfile = vm["outfile"].as<std::string>();
-    //     fastclip.writeOuters(outfile);
-    //     BOOST_LOG_TRIVIAL(info) << "Wrote output file " << outfile;
-    // }
-
-    // const auto mem = location_index_pos->used_memory() + location_index_neg->used_memory();
-    // m_vout << "About " << show_mbytes(mem) << " MBytes used for node location index (in main memory or on disk).\n";
-    // show_memory_used();
-    // m_vout << "Done.\n";
-
-    BOOST_LOG_TRIVIAL(warning) << "An informational warning message";
-    BOOST_LOG_TRIVIAL(error) << "An informational error message";
-    BOOST_LOG_TRIVIAL(debug) << "An informational debug message";
-
-    BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
 }
 
 // Local Variables:

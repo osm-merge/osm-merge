@@ -1,7 +1,12 @@
-site_name: OSM Merge
-site_description: Process external datasets for OSM
+name: OSM Merge
+description: Process external datasets for OSM
 # strict: true
 site_url: "https://osmmerge.org"
+
+on:
+  push:
+    branches:
+      - main
 
 theme:
   name: material
@@ -13,6 +18,7 @@ theme:
 extra_css:
   - css/extra.css
 
+  
 markdown_extensions:
   - tables
   - toc:

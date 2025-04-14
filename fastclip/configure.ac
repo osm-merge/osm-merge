@@ -28,8 +28,12 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_EXEEXT
 AC_PROG_INSTALL
+AC_ENABLE_SHARED
+AC_DISABLE_STATIC
 
 LT_INIT
+LT_LANG([C++])
+
 AX_BOOST_BASE(1.69)
 AX_BOOST_IOSTREAMS
 AX_BOOST_SYSTEM
@@ -68,7 +72,6 @@ if test x"${enable_python}" = x"yes"; then
   AC_DEFINE(USE_PYTHON, [1], [Enable Python binding])
 fi
 AM_CONDITIONAL(ENABLE_PYTHON, [ test x"${enable_python}" != x"no" ])
-
 
 AC_CONFIG_FILES([
 Makefile

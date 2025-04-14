@@ -21,6 +21,5 @@ jobs:
           EXTRA_PACKAGES: build-base
           # GITHUB_DOMAIN: github.myenterprise.com
           # REQUIREMENTS: folder/requirements.txt
-          
-plugins:
-  - git-revision-date-localized
+  plugins:
+    - git-revision-date-localized

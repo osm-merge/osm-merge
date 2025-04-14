@@ -129,28 +129,62 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = fconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libdir)"
 PROGRAMS = $(bin_PROGRAMS)
-LTLIBRARIES = $(noinst_LTLIBRARIES)
-fastclip_la_LIBADD =
-am__fastclip_la_SOURCES_DIST = python.cc
-@ENABLE_PYTHON_TRUE@am_fastclip_la_OBJECTS = python.lo
-fastclip_la_OBJECTS = $(am_fastclip_la_OBJECTS)
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
+am__DEPENDENCIES_1 =
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+@ENABLE_PYTHON_TRUE@libfastclip_la_DEPENDENCIES = libosmmerge.la \
+@ENABLE_PYTHON_TRUE@	$(am__DEPENDENCIES_2) \
+@ENABLE_PYTHON_TRUE@	$(am__DEPENDENCIES_1) \
+@ENABLE_PYTHON_TRUE@	$(am__DEPENDENCIES_1)
+am__libfastclip_la_SOURCES_DIST = python.cc
+@ENABLE_PYTHON_TRUE@am_libfastclip_la_OBJECTS = python.lo
+libfastclip_la_OBJECTS = $(am_libfastclip_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-fastclip_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(fastclip_la_LDFLAGS) $(LDFLAGS) -o $@
-@ENABLE_PYTHON_TRUE@am_fastclip_la_rpath =
-am_fastclip_OBJECTS = fastclip.$(OBJEXT)
+libfastclip_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(libfastclip_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
+@ENABLE_PYTHON_TRUE@am_libfastclip_la_rpath = -rpath $(libdir)
+libosmmerge_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_libosmmerge_la_OBJECTS = fastclip.lo
+libosmmerge_la_OBJECTS = $(am_libosmmerge_la_OBJECTS)
+am_fastclip_OBJECTS = main.$(OBJEXT)
 fastclip_OBJECTS = $(am_fastclip_OBJECTS)
-am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-fastclip_DEPENDENCIES = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1)
+fastclip_DEPENDENCIES = $(am__DEPENDENCIES_2) libosmmerge.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -166,7 +200,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/fastclip.Po ./$(DEPDIR)/python.Plo
+am__depfiles_remade = ./$(DEPDIR)/fastclip.Plo ./$(DEPDIR)/main.Po \
+	./$(DEPDIR)/python.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -204,8 +239,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(fastclip_la_SOURCES) $(fastclip_SOURCES)
-DIST_SOURCES = $(am__fastclip_la_SOURCES_DIST) $(fastclip_SOURCES)
+SOURCES = $(libfastclip_la_SOURCES) $(libosmmerge_la_SOURCES) \
+	$(fastclip_SOURCES)
+DIST_SOURCES = $(am__libfastclip_la_SOURCES_DIST) \
+	$(libosmmerge_la_SOURCES) $(fastclip_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -403,6 +440,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
+AM_LDFLAGS = $(BOOST_LIBS) -lpthread -lz
 AM_CXXFLAGS = -g -std=c++17 \
 	-D_LARGEFILE_SOURCE \
 	-DBOOST_LOG_DYN_LINK \
@@ -414,19 +452,26 @@ BOOST_LIBS = \
 	$(BOOST_LOG_LIB) \
 	$(BOOST_LOG_SETUP_LIB) \
 	$(BOOST_THREAD_LIB) \
-	$(BOOST_JSON_LIB) \
-	$(BOOST_PYTHON_LIB)
+	$(BOOST_JSON_LIB)
 
+noinst_LTLIBRARIES = libosmmerge.la
+libosmmerge_la_SOURCES = fastclip.cc fastclip.hh
+libosmmerge_la_LIBADD = $(BOOST_LIBS)
+fastclip_SOURCES = main.cc
+fastclip_LDADD = $(BOOST_LIBS) libosmmerge.la
+
+# FIXME: although this builds and imports into python, no classes
+# are shown, so doesn't work yet.
 @ENABLE_PYTHON_TRUE@EXT := $(shell python3-config --extension-suffix)
 @ENABLE_PYTHON_TRUE@DIR := $(shell python3-config --configdir)
-@ENABLE_PYTHON_TRUE@noinst_LTLIBRARIES = fastclip.la
-@ENABLE_PYTHON_TRUE@fastclip_la_SOURCES = python.cc
-@ENABLE_PYTHON_TRUE@fastclip_la_LDFADD = $(BOOST_LIBS)
-@ENABLE_PYTHON_TRUE@fastclip_la_LDFLAGS = -module -avoid-version -no-undefined $(BOOST_LIBS)
-@ENABLE_PYTHON_TRUE@PY_OBJECTS = $(fastclip_la_OBJECTS:.lo=.o)
-AM_LDFLAGS = $(BOOST_LIBS) -lpthread -lz
-fastclip_SOURCES = fastclip.cc fastclip.hh
-fastclip_LDADD = $(BOOST_LIBS) $(PYTHON_LIBS)
+@ENABLE_PYTHON_TRUE@lib_LTLIBRARIES = libfastclip.la
+@ENABLE_PYTHON_TRUE@libfastclip_la_SOURCES = python.cc
+@ENABLE_PYTHON_TRUE@libfastclip_la_LIBADD = libosmmerge.la \
+@ENABLE_PYTHON_TRUE@	$(BOOST_LIBS) \
+@ENABLE_PYTHON_TRUE@	$(PYTHON_LIBS) \
+@ENABLE_PYTHON_TRUE@	$(BOOST_PYTHON_LIB)
+
+@ENABLE_PYTHON_TRUE@libfastclip_la_LDFLAGS = -module -avoid-version -no-undefined
 all: fconfig.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -530,6 +575,41 @@ clean-binPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	list2=; for p in $$list; do \
+	  if test -f $$p; then \
+	    list2="$$list2 $$p"; \
+	  else :; fi; \
+	done; \
+	test -z "$$list2" || { \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(libdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(libdir)" || exit 1; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(libdir)'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(libdir)"; \
+	}
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	for p in $$list; do \
+	  $(am__strip_dir) \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$f'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$f"; \
+	done
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+	@list='$(lib_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
+
 clean-noinstLTLIBRARIES:
 	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
 	@list='$(noinst_LTLIBRARIES)'; \
@@ -541,8 +621,11 @@ clean-noinstLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-fastclip.la: $(fastclip_la_OBJECTS) $(fastclip_la_DEPENDENCIES) $(EXTRA_fastclip_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(fastclip_la_LINK) $(am_fastclip_la_rpath) $(fastclip_la_OBJECTS) $(fastclip_la_LIBADD) $(LIBS)
+libfastclip.la: $(libfastclip_la_OBJECTS) $(libfastclip_la_DEPENDENCIES) $(EXTRA_libfastclip_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(libfastclip_la_LINK) $(am_libfastclip_la_rpath) $(libfastclip_la_OBJECTS) $(libfastclip_la_LIBADD) $(LIBS)
+
+libosmmerge.la: $(libosmmerge_la_OBJECTS) $(libosmmerge_la_DEPENDENCIES) $(EXTRA_libosmmerge_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(CXXLINK)  $(libosmmerge_la_OBJECTS) $(libosmmerge_la_LIBADD) $(LIBS)
 
 fastclip$(EXEEXT): $(fastclip_OBJECTS) $(fastclip_DEPENDENCIES) $(EXTRA_fastclip_DEPENDENCIES) 
 	@rm -f fastclip$(EXEEXT)
@@ -554,7 +637,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fastclip.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fastclip.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/python.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -826,8 +910,10 @@ distcleancheck: distclean
 check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(LTLIBRARIES) fconfig.h
+install-binPROGRAMS: install-libLTLIBRARIES
+
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -862,12 +948,13 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool \
-	clean-noinstLTLIBRARIES mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool clean-noinstLTLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f ./$(DEPDIR)/fastclip.Po
+		-rm -f ./$(DEPDIR)/fastclip.Plo
+	-rm -f ./$(DEPDIR)/main.Po
 	-rm -f ./$(DEPDIR)/python.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -891,7 +978,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
 
 install-html: install-html-am
 
@@ -916,7 +1003,8 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f ./$(DEPDIR)/fastclip.Po
+		-rm -f ./$(DEPDIR)/fastclip.Plo
+	-rm -f ./$(DEPDIR)/main.Po
 	-rm -f ./$(DEPDIR)/python.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
@@ -934,40 +1022,44 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 
 .MAKE: all install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles am--refresh check \
 	check-am clean clean-binPROGRAMS clean-cscope clean-generic \
-	clean-libtool clean-noinstLTLIBRARIES cscope cscopelist-am \
-	ctags ctags-am dist dist-all dist-bzip2 dist-gzip dist-lzip \
-	dist-shar dist-tarZ dist-xz dist-zip dist-zstd distcheck \
-	distclean distclean-compile distclean-generic distclean-hdr \
-	distclean-libtool distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
+	clean-libLTLIBRARIES clean-libtool clean-noinstLTLIBRARIES \
+	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
+	dist-zstd distcheck distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
+	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
-@ENABLE_PYTHON_TRUE@install-python: fastclip.la
-@ENABLE_PYTHON_TRUE@	@if test x"$(prefix)" = x"/usr/lib" -a "$(shell whoami)" != "root"; then \
-@ENABLE_PYTHON_TRUE@	echo "Need to be root!"; \
-@ENABLE_PYTHON_TRUE@	else \
-@ENABLE_PYTHON_TRUE@	moddir=$(shell dirname $(DIR))/lib-dynload; \
-@ENABLE_PYTHON_TRUE@	if test ! -e $${moddir}; then \
-@ENABLE_PYTHON_TRUE@	$(MDIR_P) $${moddir}; \
-@ENABLE_PYTHON_TRUE@	fi; \
-@ENABLE_PYTHON_TRUE@	cp .libs/libfastclip.so $${moddir}/libfastclip$(EXT); \
-@ENABLE_PYTHON_TRUE@	fi
+
+# PY_OBJECTS = $(fastclip_la_OBJECTS:.lo=.o)
+# install-python: fastclip.la
+# 	if test x"$(prefix)" = x"/usr/lib" -a "$(shell whoami)" != "root"; then \
+# 	    echo "Need to be root!"; \
+# 	else \
+# 	    moddir=$(shell dirname $(DIR))/lib-dynload; \
+# 	    if test ! -e $${moddir}; then \
+# 	        $(MDIR_P) $${moddir}; \
+# 	    fi; \
+#	    cp .libs/libfastclip.so $${moddir}/libfastclip$(EXT); \
+# 	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

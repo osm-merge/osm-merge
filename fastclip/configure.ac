@@ -57,12 +57,13 @@ dnl libboost has a dependency on libbzip2
 CPPFLAGS+=" $(pkg-config --cflags bzip2)"
 LIBS+=" $(pkg-config --libs bzip2)"
 
-
 # Find the path for python modules
 AM_PATH_PYTHON([3])
 
+dnl FIXME: While this appears to build the plugin, and it import into python,
+dnl it still doesn't actually work yet.
 AC_ARG_ENABLE([python],
-  AS_HELP_STRING([--enable-python],[Enable Python binding]), [], [enable_python=yes])
+  AS_HELP_STRING([--enable-python],[Enable Python binding]), [], [enable_python=no])
 
 if test x"${enable_python}" = x"yes"; then
   LIBS+=" $(python3-config --libs)"

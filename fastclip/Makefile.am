@@ -39,15 +39,17 @@ fastclip_SOURCES = main.cc
 fastclip_LDADD = $(BOOST_LIBS) libosmmerge.la
 
 if ENABLE_PYTHON
+# FIXME: although this builds and imports into python, no classes
+# are shown, so doesn't work yet.
 EXT := $(shell python3-config --extension-suffix)
 DIR := $(shell python3-config --configdir)
 lib_LTLIBRARIES = libfastclip.la
 libfastclip_la_SOURCES = python.cc
-libfastclip_la_LIBADD = libosmmerge.la $(BOOST_LIBS)
-libfastclip_la_LDFLAGS = -module -avoid-version -no-undefined \
-	$(BOOST_LIBS)
+libfastclip_la_LIBADD = libosmmerge.la \
+	$(BOOST_LIBS) \
 	$(PYTHON_LIBS) \
 	$(BOOST_PYTHON_LIB)
+libfastclip_la_LDFLAGS = -module -avoid-version -no-undefined
 
 # PY_OBJECTS = $(fastclip_la_OBJECTS:.lo=.o)
 # install-python: fastclip.la

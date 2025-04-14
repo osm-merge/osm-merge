@@ -1483,7 +1483,7 @@ Optional Features:
   --disable-dependency-tracking
                           speeds up one-time build
   --enable-shared[=PKGS]  build shared libraries [default=yes]
-  --enable-static[=PKGS]  build static libraries [default=yes]
+  --enable-static[=PKGS]  build static libraries [default=no]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
@@ -5405,6 +5405,72 @@ fi
 
 
 
+# Check whether --enable-shared was given.
+if test ${enable_shared+y}
+then :
+  enableval=$enable_shared; p=${PACKAGE-default}
+    case $enableval in
+    yes) enable_shared=yes ;;
+    no) enable_shared=no ;;
+    *)
+      enable_shared=no
+      # Look at the argument we got.  We use all the common list separators.
+      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
+      for pkg in $enableval; do
+	IFS=$lt_save_ifs
+	if test "X$pkg" = "X$p"; then
+	  enable_shared=yes
+	fi
+      done
+      IFS=$lt_save_ifs
+      ;;
+    esac
+else case e in #(
+  e) enable_shared=yes ;;
+esac
+fi
+
+
+
+
+
+
+
+
+
+# Check whether --enable-static was given.
+if test ${enable_static+y}
+then :
+  enableval=$enable_static; p=${PACKAGE-default}
+    case $enableval in
+    yes) enable_static=yes ;;
+    no) enable_static=no ;;
+    *)
+     enable_static=no
+      # Look at the argument we got.  We use all the common list separators.
+      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
+      for pkg in $enableval; do
+	IFS=$lt_save_ifs
+	if test "X$pkg" = "X$p"; then
+	  enable_static=yes
+	fi
+      done
+      IFS=$lt_save_ifs
+      ;;
+    esac
+else case e in #(
+  e) enable_static=no ;;
+esac
+fi
+
+
+
+
+
+
+
+
+
 
 case `pwd` in
   *\ * | *\	*)
@@ -9311,70 +9377,6 @@ func_stripname_cnf ()
 
 
   enable_win32_dll=no
-
-
-            # Check whether --enable-shared was given.
-if test ${enable_shared+y}
-then :
-  enableval=$enable_shared; p=${PACKAGE-default}
-    case $enableval in
-    yes) enable_shared=yes ;;
-    no) enable_shared=no ;;
-    *)
-      enable_shared=no
-      # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
-      for pkg in $enableval; do
-	IFS=$lt_save_ifs
-	if test "X$pkg" = "X$p"; then
-	  enable_shared=yes
-	fi
-      done
-      IFS=$lt_save_ifs
-      ;;
-    esac
-else case e in #(
-  e) enable_shared=yes ;;
-esac
-fi
-
-
-
-
-
-
-
-
-
-  # Check whether --enable-static was given.
-if test ${enable_static+y}
-then :
-  enableval=$enable_static; p=${PACKAGE-default}
-    case $enableval in
-    yes) enable_static=yes ;;
-    no) enable_static=no ;;
-    *)
-     enable_static=no
-      # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
-      for pkg in $enableval; do
-	IFS=$lt_save_ifs
-	if test "X$pkg" = "X$p"; then
-	  enable_static=yes
-	fi
-      done
-      IFS=$lt_save_ifs
-      ;;
-    esac
-else case e in #(
-  e) enable_static=yes ;;
-esac
-fi
-
-
-
-
-
 
 
 
@@ -17085,6 +17087,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+
+
 # Check whether --with-boost was given.
 if test ${with_boost+y}
 then :
@@ -19616,7 +19620,6 @@ LIBS+=" $(pkg-config --libs expat)"
 CPPFLAGS+=" $(pkg-config --cflags bzip2)"
 LIBS+=" $(pkg-config --libs bzip2)"
 
-
 # Find the path for python modules
 
 
@@ -20047,7 +20050,7 @@ if test ${enable_python+y}
 then :
   enableval=$enable_python;
 else case e in #(
-  e) enable_python=yes ;;
+  e) enable_python=no ;;
 esac
 fi
 
@@ -20646,7 +20649,6 @@ else
   ENABLE_PYTHON_TRUE='#'
   ENABLE_PYTHON_FALSE=
 fi
-
 
 
 ac_config_files="$ac_config_files Makefile"
@@ -21383,10 +21385,10 @@ AMDEP_TRUE="$AMDEP_TRUE" MAKE="${MAKE-make}"
 sed_quote_subst='$sed_quote_subst'
 double_quote_subst='$double_quote_subst'
 delay_variable_subst='$delay_variable_subst'
-macro_version='`$ECHO "$macro_version" | $SED "$delay_single_quote_subst"`'
-macro_revision='`$ECHO "$macro_revision" | $SED "$delay_single_quote_subst"`'
 enable_shared='`$ECHO "$enable_shared" | $SED "$delay_single_quote_subst"`'
 enable_static='`$ECHO "$enable_static" | $SED "$delay_single_quote_subst"`'
+macro_version='`$ECHO "$macro_version" | $SED "$delay_single_quote_subst"`'
+macro_revision='`$ECHO "$macro_revision" | $SED "$delay_single_quote_subst"`'
 pic_mode='`$ECHO "$pic_mode" | $SED "$delay_single_quote_subst"`'
 enable_fast_install='`$ECHO "$enable_fast_install" | $SED "$delay_single_quote_subst"`'
 shared_archive_member_spec='`$ECHO "$shared_archive_member_spec" | $SED "$delay_single_quote_subst"`'
@@ -22512,15 +22514,15 @@ available_tags='CXX '
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Which release of libtool.m4 was used?
-macro_version=$macro_version
-macro_revision=$macro_revision
-
 # Whether or not to build shared libraries.
 build_libtool_libs=$enable_shared
 
 # Whether or not to build static libraries.
 build_old_libs=$enable_static
+
+# Which release of libtool.m4 was used?
+macro_version=$macro_version
+macro_revision=$macro_revision
 
 # What type of objects to build.
 pic_mode=$pic_mode

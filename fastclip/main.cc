@@ -95,10 +95,15 @@ main(int argc, char *argv[])
     std::string infile;
     auto fastclip = FastClip();
 
+    std::string testaoi = "MULTIPOLYGON (((-109.40323 38.69623, -109.09836 38.694086, -109.100053 38.547191, -109.404924 38.54934, -109.40323 38.69623), (-109.270021 38.504118, -109.036561 38.504118, -109.036561 38.39334, -109.270021 38.39334, -109.270021 38.504118)))";
+
+    auto result = fastclip.make_geometry(testaoi);
+    // std::cout << boost::geometry::wkt(*result) << std::endl;
+
     if (vm.count("boundary")) {
         std::string filespec = vm["boundary"].as<std::string>();
         auto boundary = fastclip.readAOI(filespec);
-        // std::cout  << foo.kind() << std::endl;        
+        // std::cout << "FOO: " << boundary.kind() << std::endl;
         switch(boundary.kind()) {
           case json::kind::object: {
               std::cout << "{\n";
@@ -135,14 +140,14 @@ main(int argc, char *argv[])
           }
           case json::kind::string: {
               std::cout << "FIXME: STRING" << std::endl;
-              // auto const& obj = foo.get_object();
+              auto const& obj = boundary.get_object();
               std::stringstream ss;
               ss << boundary;
               auto bar = json::parse(ss);
               // std::string foobar(json::serialize(bar));
               auto foobar = bar.at("features");
 
-              auto apoi = fastclip.make_geometry(boundary);
+              auto apoi = fastclip.make_geometry(obj);
 
               // if (foobar.is_array()) {
               //     auto barfoo = foobar.get_array();
@@ -188,7 +193,6 @@ main(int argc, char *argv[])
               //     }
               // }
           }
-              break;
         }
     }
 

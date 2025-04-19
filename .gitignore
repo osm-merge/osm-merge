@@ -9,6 +9,8 @@ docs/html/
 docs/*.png
 
 # output files
+fconfig.h
+stamp-h1
 *.osm
 *.txt
 *.xml

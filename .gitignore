@@ -9,6 +9,8 @@ docs/html/
 docs/*.png
 
 # output files
+*/__pycache__
+*/*/__pycache__
 fconfig.h
 stamp-h1
 *.osm

@@ -31,6 +31,7 @@
 namespace fs = std::filesystem;
 
 #include "fastclip.hh"
+#include "tqdm.h"
 
 // using index_type = osmium::index::map::SparseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
 
@@ -141,6 +142,43 @@ FastClip::make_geometry(const std::string &wkt) {
 }
 
 std::shared_ptr<multipolygon_t>
+FastClip::make_geometry(const json::value &val) {
+    auto mpoly = std::make_shared<multipolygon_t>();
+    polygon_t poly;
+    std::vector<point_t> points;
+    BOOST_LOG_TRIVIAL(debug) << "Is : "
+                             << val.is_double()
+                             << " : " << val.is_array();
+    if (val.is_array()) {
+        auto &array = val.get_array();
+        // BOOST_LOG_TRIVIAL(debug) << "SIZE: " << array.size();
+        tqdm bar;
+        init_tqdm(&bar, "Processing", false, "tasks", true, array.size(), 5);
+        for (auto it = array.begin(); it!= array.end(); ++it) {
+            update_tqdm(&bar, 1, true);
+            if (it->is_array()) {
+                if (it->at(0).is_array()) {
+                    auto array2 = it->at(0).get_array();
+                    auto foo = make_geometry(array2);
+                } else {
+                    double lat = it->at(0).as_double();
+                    double lon = it->at(1).as_double();
+                    point_t point(lat, lon);
+                    points.push_back(point);
+                }
+                boost::geometry::assign_points(poly, points);
+                mpoly->push_back(poly);
+                close_tqdm(&bar);
+            }
+        }
+    } else {
+        BOOST_LOG_TRIVIAL(error) << "Is not an array()";
+    }
+    //      }
+    return mpoly;
+}
+
+std::shared_ptr<multipolygon_t>
 FastClip::make_geometry(const json::object &obj) {
     auto mpoly = std::make_shared<multipolygon_t>();
     std::cout << "Object has " << obj.size() << " entries" << std::endl;
@@ -169,36 +207,7 @@ FastClip::make_geometry(const json::object &obj) {
       std::vector<point_t> points;
 
       auto foobar = coords.get_array();
-      for (auto itt = foobar.begin(); itt!= foobar.end(); ++itt) {
-        // std::cout << std::setprecision(7) << std::fixed << "COORDS:  " << *itt << std::endl;
-        auto &foo = itt->as_array();
-        // FIXME: it's probably an inner multipolygon, so drop it
-        if (foo.at(0).is_array()) {
-            auto bar = foo.at(0).get_array();
-            for (auto iitt = bar.begin(); iitt!= bar.end(); ++iitt) {
-                try {
-                    std::cout << "BARBY " << *iitt << std::endl;
-                    double lat = bar.at(0).as_double();
-                    double lon = bar.at(1).as_double();
-                    point_t point(lat, lon);
-                    points.push_back(point);
-                } catch (std::exception &e) {
-                    std::cout << "FOO1 " << foo << std::endl;
-                }
-                boost::geometry::assign_points(poly, points);
-                continue;
-            }
-        }
-        try {
-            double lat = foo.at(0).as_double();
-            double lon = foo.at(1).as_double();
-            point_t point(lat, lon);
-            points.push_back(point);
-        } catch (std::exception &e) {
-            std::cout << "FOO2 " << foo << std::endl;
-        }
-      }
-      boost::geometry::assign_points(poly, points);
+      auto barfoo = make_geometry(coords);
     }
 #if 0
     if (obj.is_array()) {

@@ -157,50 +157,121 @@ FastClip::make_geometry(const std::string &wkt) {
 }
 
 std::shared_ptr<multipolygon_t>
-FastClip::make_geometry(json::value &data) {
+FastClip::make_geometry(const json::object &obj) {
     auto mpoly = std::make_shared<multipolygon_t>();
-    if (data.is_array()) {
-        auto barfoo = data.get_array();
-        for (auto it = barfoo.begin(); it!= barfoo.end(); ++it) {
-            auto &type = it->at("type");
-            auto &geom = it->at("geometry");
-            auto &props = it->at("properties");
-            auto &coords = geom.at("coordinates");
-            // std::cout << "TYPE " << type << std::endl;
-            std::cout << "GEOM TYPE " << geom.at("type") << std::endl;
-            // std::cout << "GEOM " << coords << std::endl;
-            std::cout << "PROPS " << props << std::endl;
-            try {
-                std::cout << "NAME2 " << props.at("name") << std::endl;
-            } catch (std::exception &e) {
-                std::cerr << e.what() << std::endl;
-            }
-            // std::string furbar = boost::json::serialize(coords);
-            // boost::replace_all(furbar, "[", "");
-            // boost::replace_all(furbar, "]", "");
-            // boost::replace_all(furbar, ",", ", "); // FIXME: easir to read
-            // const double aarrgg[][2] = {*furbar.c_str()};
-            // std::cout  << "FURBAR: " << *aarrgg << std::endl;
-            // multipolygon_t mpoly = {furbar};
-            std::cout  << "FURBAR: " << coords.is_array() << std::endl;
-            // auto &xxx = coords.get_array();
-            // for (auto itt = xxx.begin(); itt!= xxx.end(); ++itt) {
-            //     std::cout << "NO9! " << *itt << std::endl;
-            //     auto &yyy = itt->get_array();
-            //     for (auto iitt = yyy.begin(); iitt!= yyy.end(); ++iitt) {
-            //         // std::cout << "NO10! " << iitt->is_array() << std::endl;
-            //         std::cout << "FOO: " << *iitt << std::endl;
-            //         auto &zzz = iitt->get_array();
-            //         for (auto iitt2 = zzz.begin(); iitt2!= zzz.end(); ++iitt2) {
-            //             // std::cout << "NO11! " << iitt2->is_array() << std::endl;
-            //             std::cout << "NO12! " << std::setprecision(7) << std::fixed << iitt2->at(0).as_double() << " : " << iitt2->at(1).as_double() << std::endl;            
-            //              // auto &aaa = iitt2->get_array();
-            //              // for (auto iitt3 = aaa.begin(); iitt3!= aaa.end(); ++iitt3) {
-            //              //     std::cout << "NO13! " << std::setprecision(15) << iitt3->as_double() * 1.0  << std::endl;
-            //              // }
-            //         }
-        }
+    std::cout << "Object has " << obj.size() << " entries" << std::endl;
+    if (obj.empty()) {
+      BOOST_LOG_TRIVIAL(error) << "Object has no entries!";
+      return mpoly;
     }
+    auto data = json::parse(json::serialize(obj));
+    auto foo = data.at("features");
+    auto features = foo.get_array();
+    // BOOST_LOG_TRIVIAL(debug) << "DEBUG: " << features;
+    for (auto it = features.begin(); it!= features.end(); ++it) {
+        // BOOST_LOG_TRIVIAL(debug) << it;
+      // FIXME: so far all types have been a Feature
+      // auto &type = it->at("type");
+      // std::cout << "TYPE " << type << std::endl;
+      auto &geom = it->at("geometry");
+      auto &props = it->at("properties");
+      // auto &gtype = props.at("type");
+      // std::cout << "GEOM TYPE " << gtype << std::endl;
+      auto &coords = geom.at("coordinates");//
+      std::cout << "PROPS " << props << std::endl;
+      // std::cout << "GEOM " << std::setprecision(7) << std::fixed << geom << std::endl;
+
+      polygon_t poly;
+      std::vector<point_t> points;
+
+      auto foobar = coords.get_array();
+      for (auto itt = foobar.begin(); itt!= foobar.end(); ++itt) {
+        // std::cout << std::setprecision(7) << std::fixed << "COORDS:  " << *itt << std::endl;
+        auto &foo = itt->as_array();
+        // FIXME: it's probably an inner multipolygon, so drop it
+        if (foo.at(0).is_array()) {
+            auto bar = foo.at(0).get_array();
+            for (auto iitt = bar.begin(); iitt!= bar.end(); ++iitt) {
+                try {
+                    std::cout << "BARBY " << *iitt << std::endl;
+                    double lat = bar.at(0).as_double();
+                    double lon = bar.at(1).as_double();
+                    point_t point(lat, lon);
+                    points.push_back(point);
+                } catch (std::exception &e) {
+                    std::cout << "FOO1 " << foo << std::endl;
+                }
+                boost::geometry::assign_points(poly, points);
+                continue;
+            }
+        }
+        try {
+            double lat = foo.at(0).as_double();
+            double lon = foo.at(1).as_double();
+            point_t point(lat, lon);
+            points.push_back(point);
+        } catch (std::exception &e) {
+            std::cout << "FOO2 " << foo << std::endl;
+        }
+      }
+      boost::geometry::assign_points(poly, points);
+    }
+#if 0
+    if (obj.is_array()) {
+      auto toplevel = obj.get_array();
+      for (auto it = toplevel.begin(); it!= toplevel.end(); ++it) {
+        auto &type = it->at("type");
+        auto &geom = it->at("geometry");
+        auto &props = it->at("properties");
+        // auto &gtype = props.at("type");
+        // auto &coords = geom.at("coordinates");
+        // std::cout << "TYPE " << type << std::endl;
+        // std::cout << "GEOM TYPE " << gtype << std::endl;
+        // std::cout << "GEOM " << coords << std::endl;
+        std::cout << "PROPS " << props << std::endl;
+        // try {
+        //   std::cout << "NAME2 " << props.at("name") << std::endl;
+        // } catch (std::exception &e) {
+        //   std::cerr << e.what() << std::endl;
+        // }
+        if (it->is_array()) {
+          std::cout  << "BARFUR: " << it->get_array() << std::endl;
+        }
+      }
+    }
+    // std::string furbar = boost::json::serialize(coords);
+    // boost::replace_all(furbar, "[", "");
+    // boost::replace_all(furbar, "]", "");
+    // boost::replace_all(furbar, ",", ", "); // FIXME: easir to read
+    // const double aarrgg[][2] = {*furbar.c_str()};
+    // std::cout  << "FURBAR: " << *aarrgg << std::endl;
+    // multipolygon_t mpoly = {furbar};
+    // std::cout  << "FURBAR: " << coords.is_array() << std::endl;
+    // if (coords.is_array()) {
+    //   std::cout  << "COORDS is array" << std::endl;
+    //   auto &xxx = coords.get_array();
+    //   for (auto itt = xxx.begin(); itt!= xxx.end(); ++itt) {
+    //       std::cout  << "XXX " << *itt << std::endl;
+    //   }
+    // }
+    // auto &xxx = coords.get_array();
+    // for (auto itt = xxx.begin(); itt!= xxx.end(); ++itt) {
+    //     std::cout << "NO9! " << *itt << std::endl;
+    //     auto &yyy = itt->get_array();
+    //     for (auto iitt = yyy.begin(); iitt!= yyy.end(); ++iitt) {
+    //         // std::cout << "NO10! " << iitt->is_array() << std::endl;
+    //         std::cout << "FOO: " << *iitt << std::endl;
+    //         auto &zzz = iitt->get_array();
+    //         for (auto iitt2 = zzz.begin(); iitt2!= zzz.end(); ++iitt2) {
+    //             // std::cout << "NO11! " << iitt2->is_array() << std::endl;
+    //             std::cout << "NO12! " << std::setprecision(7) << std::fixed << iitt2->at(0).as_double() << " : " << iitt2->at(1).as_double() << std::endl;
+    //              // auto &aaa = iitt2->get_array();
+    //              // for (auto iitt3 = aaa.begin(); iitt3!= aaa.end(); ++iitt3) {
+    //              //     std::cout << "NO13! " << std::setprecision(15) << iitt3->as_double() * 1.0  << std::endl;
+    //              // }
+    //         }
+#endif
+
     return mpoly;
 }
 

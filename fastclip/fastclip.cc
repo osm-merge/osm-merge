@@ -30,22 +30,6 @@
 #include <stdio.h>
 namespace fs = std::filesystem;
 
-#include <boost/geometry.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/json.hpp>
-using namespace boost;
-namespace logging = boost::log;
-namespace json = boost::json;
-
-#include <osmium/handler/node_locations_for_ways.hpp>
-#include <osmium/index/map/dense_file_array.hpp>
-#include <osmium/geom/ogr.hpp>
-#include <osmium/area/multipolygon_manager.hpp>
-
-#include <osmium/io/any_output.hpp>
-#include <osmium/index/nwr_array.hpp>
-#include <osmium/index/id_set.hpp>
-
 #include "fastclip.hh"
 
 // using index_type = osmium::index::map::SparseFileArray<osmium::unsigned_object_id_type, osmium::Location>;

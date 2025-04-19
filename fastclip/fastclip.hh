@@ -20,14 +20,18 @@
 #ifndef __FASTCLIP_HH_
 #define __FASTCLIP_HH_
 
+#include <boost/geometry.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/json.hpp>
+using namespace boost;
+namespace logging = boost::log;
+namespace json = boost::json;
+
 typedef boost::geometry::model::d2::point_xy<double> point_t;
 typedef boost::geometry::model::polygon<point_t> polygon_t;
 typedef boost::geometry::model::multi_polygon<polygon_t> multipolygon_t;
 typedef boost::geometry::model::linestring<point_t> linestring_t;
 typedef boost::geometry::model::multi_linestring<linestring_t> multilinestring_t;
-
-using index_type = osmium::index::map::DenseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
-using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 
 #include <osmium/geom/ogr.hpp>
 #include <osmium/tags/filter.hpp>
@@ -38,6 +42,16 @@ using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 #include <osmium/io/any_output.hpp>
 #include <osmium/index/id_set.hpp>
 #include <osmium/index/nwr_array.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+#include <osmium/index/map/dense_file_array.hpp>
+#include <osmium/geom/ogr.hpp>
+#include <osmium/area/multipolygon_manager.hpp>
+#include <osmium/io/any_output.hpp>
+#include <osmium/index/nwr_array.hpp>
+#include <osmium/index/id_set.hpp>
+
+using index_type = osmium::index::map::DenseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
+using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 
 class FastClip {
 private:

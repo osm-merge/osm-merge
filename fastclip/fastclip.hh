@@ -77,6 +77,7 @@ public:
     void add_nodes(const osmium::Way& way);
     std::shared_ptr<multipolygon_t> make_geometry(const std::string &wkt);
     std::shared_ptr<multipolygon_t> make_geometry(const json::object &obj);
+    std::shared_ptr<multipolygon_t> make_geometry(const json::value &val);
     bool filterFile(const std::string &infile,
                     const std::string &outfile);
     json::value readAOI(const std::string &filespec);

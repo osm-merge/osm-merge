@@ -56,7 +56,7 @@ main(int argc, char *argv[])
             ("infile,i", opts::value<std::string>(), "Input data file"
                         "The file to be processed")
             ("outfile,o", opts::value<std::string>(), "Output data file"
-                "The output boundaries MultiPolygon")
+                "The output boundaries")
             ("filter,f", "Filter for only highways")
             ("boundary,b", opts::value<std::string>(), "Boundary data file"
              "The boundary MultiPolygon to use for clipping");
@@ -67,7 +67,7 @@ main(int argc, char *argv[])
             std::cout << "Usage: options_description [options]" << std::endl;
             std::cout << desc << std::endl;
             exit(0);
-        }
+    }
         if (vm.count("help")) {
             std::cout << "Usage: options_description [options]" << std::endl;
             std::cout << desc << std::endl;
@@ -85,7 +85,6 @@ main(int argc, char *argv[])
     logging::core::get()->set_filter(
         logging::trivial::severity >= logging::trivial::debug
         );
-#include <sstream>
     if (vm.count("verbose")) {
         // Enable also displaying to the terminal
         logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
@@ -95,103 +94,26 @@ main(int argc, char *argv[])
     std::string infile;
     auto fastclip = FastClip();
 
-    std::string testaoi = "MULTIPOLYGON (((-109.40323 38.69623, -109.09836 38.694086, -109.100053 38.547191, -109.404924 38.54934, -109.40323 38.69623), (-109.270021 38.504118, -109.036561 38.504118, -109.036561 38.39334, -109.270021 38.39334, -109.270021 38.504118)))";
-
-    auto result = fastclip.make_geometry(testaoi);
-    // std::cout << boost::geometry::wkt(*result) << std::endl;
-
     if (vm.count("boundary")) {
         std::string filespec = vm["boundary"].as<std::string>();
         auto boundary = fastclip.readAOI(filespec);
-        // std::cout << "FOO: " << boundary.kind() << std::endl;
+        auto result = fastclip.make_geometry(boundary.as_object());
+        // std::cout << boost::geometry::wkt(*result) << std::endl;
         switch(boundary.kind()) {
           case json::kind::object: {
-              std::cout << "{\n";
-              // indent->append(4, ' ');
-              auto const& obj = boundary.get_object();
-              if(! obj.empty()) {
-                  auto it = obj.begin();
-                  for(;;) {
-                      // std::cout << *indent << json::serialize(it->key()) << " : ";
-                      std::cout  << "FIXME: OBJECT" << std::endl;
-                      // std::cout << it->value() << std::endl;
-                      if(++it == obj.end())
-                          break;
-                      // std::cout << ",\n";
-                  }
-              }
+              // std::cout  << "FIXME: OBJECT" << std::endl;
           }
           case json::kind::array: {
-              std::cout << "FIXME: ARRAY" << std::endl;
+              // std::cout << "FIXME: ARRAY" << std::endl;
               auto const& arr = boundary.get_object();
-              if(! arr.empty()) {
-                  // std::cout  << "FIXME: " << it[0].as_string() << std::endl;
-                  auto it = arr.begin();
-                  if(it != arr.end()) {
-                      goto arr_first;
-                      while(it != arr.end()) {
-                          // dest.push_back(',');
-                        arr_first:
-                          //to_string_test(dest, *it);
-                          ++it;
-                      }
-                  }
-              }
           }
+              // When reading in a GeoJson file containing a MultiPolygon,
+              // the first objects and an array are just the headers from
+              // the file. The actual data is in the string field.
           case json::kind::string: {
-              std::cout << "FIXME: STRING" << std::endl;
+              // std::cout << "FIXME: STRING" << std::endl;
               auto const& obj = boundary.get_object();
-              std::stringstream ss;
-              ss << boundary;
-              auto bar = json::parse(ss);
-              // std::string foobar(json::serialize(bar));
-              auto foobar = bar.at("features");
-
               auto apoi = fastclip.make_geometry(obj);
-
-              // if (foobar.is_array()) {
-              //     auto barfoo = foobar.get_array();
-              //     for (auto it = barfoo.begin(); it!= barfoo.end(); ++it) {
-              //         auto &type = it->at("type");
-              //         auto &geom = it->at("geometry");
-              //         auto &props = it->at("properties");
-              //         auto &coords = geom.at("coordinates");
-              //         // std::cout << "TYPE " << type << std::endl;
-              //         std::cout << "GEOM TYPE " << geom.at("type") << std::endl;
-              //         // std::cout << "GEOM " << coords << std::endl;
-              //         std::cout << "PROPS " << props << std::endl;
-              //         try {
-              //             std::cout << "NAME2 " << props.at("name") << std::endl;
-              //         } catch (std::exception &e) {
-              //             std::cerr << e.what() << std::endl;
-              //         }
-              //         // std::string furbar = boost::json::serialize(coords);
-              //         // boost::replace_all(furbar, "[", "");
-              //         // boost::replace_all(furbar, "]", "");
-              //         // boost::replace_all(furbar, ",", ", "); // FIXME: easir to read
-              //         // const double aarrgg[][2] = {*furbar.c_str()};
-              //         // std::cout  << "FURBAR: " << *aarrgg << std::endl;
-              //         // multipolygon_t mpoly = {furbar};
-              //         std::cout  << "FURBAR: " << coords.is_array() << std::endl;
-              //         // auto &xxx = coords.get_array();
-              //         // for (auto itt = xxx.begin(); itt!= xxx.end(); ++itt) {
-              //         //        std::string make_geometry(json::value &data) {
-              //         //     auto &yyy = itt->get_array();
-              //         //     for (auto iitt = yyy.begin(); iitt!= yyy.end(); ++iitt) {
-              //         //         // std::cout << "NO10! " << iitt->is_array() << std::endl;
-              //         //         std::cout << "FOO: " << *iitt << std::endl;
-              //         //         auto &zzz = iitt->get_array();
-              //         //         for (auto iitt2 = zzz.begin(); iitt2!= zzz.end(); ++iitt2) {
-              //         //             // std::cout << "NO11! " << iitt2->is_array() << std::endl;
-              //         //             std::cout << "NO12! " << std::setprecision(7) << std::fixed << iitt2->at(0).as_double() << " : " << iitt2->at(1).as_double() << std::endl;
-              //         //              // auto &aaa = iitt2->get_array();
-              //         //              // for (auto iitt3 = aaa.begin(); iitt3!= aaa.end(); ++iitt3) {
-
-              //         //              //     std::cout << "NO13! " << std::setprecision(15) << iitt3->as_double() * 1.0  << std::endl;
-              //         //              // }
-              //         //         }
-              //     }
-              // }
           }
         }
     }
@@ -216,9 +138,9 @@ main(int argc, char *argv[])
     // show_memory_used();
     // m_vout << "Done.\n";
 
-    BOOST_LOG_TRIVIAL(warning) << "An informational warning message";
-    BOOST_LOG_TRIVIAL(error) << "An informational error message";
-    BOOST_LOG_TRIVIAL(debug) << "An informational debug message";
+    // BOOST_LOG_TRIVIAL(warning) << "An informational warning message";
+    // BOOST_LOG_TRIVIAL(error) << "An informational error message";
+    // BOOST_LOG_TRIVIAL(debug) << "An informational debug message";
 
     BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
 }

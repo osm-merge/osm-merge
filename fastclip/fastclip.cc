@@ -33,20 +33,73 @@ namespace fs = std::filesystem;
 #include "fastclip.hh"
 #include "tqdm.h"
 
-// using index_type = osmium::index::map::SparseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
+class MyHandler : public osmium::handler::Handler {
+private:
+    std::shared_ptr<multipolygon_t> aoi;
+    osmium::geom::WKTFactory<> factory;
+public:
+    void add_aoi(const std::string &filespec) {
+        BOOST_LOG_TRIVIAL(debug) << "Adding a Area Of Interest for the data extract";
+        auto fastclip = FastClip();
+        auto boundary = fastclip.readAOI(filespec);
+        aoi = fastclip.make_geometry(boundary.as_object());
+        BOOST_LOG_TRIVIAL(debug) << boost::geometry::wkt(*aoi);
+    }
+    // The callback functions can be either static or not depending on whether
+    // you need to access any member variables of the handler.
+    void way(const osmium::Way& way) {
+        std::string highway = factory.create_linestring(way);
+        // BOOST_LOG_TRIVIAL(debug) << "way " << way.id();
+        linestring_t line;
+        boost::geometry::read_wkt(highway, line);
+        if (boost::geometry::intersects(line, *aoi)) {
+            BOOST_LOG_TRIVIAL(debug) << "Way " << way.id() << " is within the AOI";
+        } else {
+            BOOST_LOG_TRIVIAL(debug) << "Way " << way.id() << " is not within the AOI";
+        }
+        for (const auto& nr : way.nodes()) {
+            double lon = nr.location().lon();
+            double lat = nr.location().lat();
+            point_t point(lon, lat);
+            // BOOST_LOG_TRIVIAL(debug) << "  osm node " << nr.ref() << " " << boost::geometry::wkt(point) << " : " << nr.location();
+            // BOOST_LOG_TRIVIAL(debug) << "  node " << nr.ref() << " " << nr.location();
+            // for (auto it = aoi->begin(); it!= aoi->end(); ++it) {
+#if 0
+            if (boost::geometry::within(point, *aoi)) {
+                BOOST_LOG_TRIVIAL(debug) << "Node " << nr.ref() << " is within the AOI";
+                // }
+            } else {
+                BOOST_LOG_TRIVIAL(debug) << "Node " << nr.ref() << " is not within the AOI";
+            }
+#endif
+        }
+    }
+    void dump() {
+        if (boost::geometry::is_empty(*aoi)) {
+            std::cerr << "AOI is empty!" << std::endl;
+        } else  {
+            std::cerr << "AOI contains " << boost::geometry::num_geometries(*aoi) << " geometries" << std::endl;
+        }
+    }
+};
 
-// struct MyHandler : public osmium::handler::Handler {
+bool
+FastClip::create_node_cache(const std::string &infile, const std::string &cachefile) {
+    osmium::io::Reader reader{infile, osmium::osm_entity_bits::node};
+    osmium::ProgressBar progress_bar2{reader.file_size(), display_progress()};
 
-//     // The callback functions can be either static or not depending on whether
-//     // you need to access any member variables of the handler.
-//     static void way(const osmium::Way& way) {
-//         std::cout << "way " << way.id() << "\n";
-//         for (const auto& nr : way.nodes()) {
-//             std::cout << "  node " << nr.ref() << " " << nr.location() << "\n";
-//         }
-//     }
+    const int fd = ::open(cachefile.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666);
+    if (fd == -1) {
+        BOOST_LOG_TRIVIAL(error) << "Can not open location cache file '" << cachefile << "': " << std::strerror(errno);
+        return 1;
+    }
+    index_type index{fd};
+    location_handler_type location_handler{index};
+    osmium::apply(reader, location_handler);
+    reader.close();
 
-// }; // struct MyHandler
+    return true;
+}
 
 std::string
 FastClip::check_index_type(const std::string& index_type_name) {
@@ -56,24 +109,8 @@ FastClip::check_index_type(const std::string& index_type_name) {
         type.resize(pos);
     }
 
-    // const auto& map_factory = osmium::index::MapFactory<osmium::unsigned_object_id_type, osmium::Location>::instance();
-
     return index_type_name;
 }
-
-// void find_member_nodes(std::string filespec) {
-//     osmium::io::Reader reader{filespec, osmium::osm_entity_bits::relation, osmium::io::read_meta::no};
-//     while (osmium::memory::Buffer buffer = reader.read()) {
-//         for (const auto& relation : buffer.select<osmium::Relation>()) {
-//             for (const auto& member : relation.members()) {
-//                 if (member.type() == osmium::item_type::node) {
-//                     m_member_node_ids.set(member.positive_ref());
-//                 }
-//             }
-//         }
-//     }
-//     m_member_node_ids.sort_unique();
-// };
 
 void
 FastClip::add_filter(osmium::osm_entity_bits::type entities,
@@ -146,32 +183,44 @@ FastClip::make_geometry(const json::value &val) {
     auto mpoly = std::make_shared<multipolygon_t>();
     if (val.is_array()) {
         auto &array = val.get_array();
-        tqdm bar;
-        init_tqdm(&bar, "Processing", false, "tasks", true, array.size(), 5);
+        //tqdm bar;
+        //init_tqdm(&bar, "Processing", false, "tasks", true, array.size(), 5);
+        std::vector<point_t> points;
+        polygon_t poly;
         for (auto it = array.begin(); it!= array.end(); ++it) {
-            polygon_t poly;
-            std::vector<point_t> points;
-            update_tqdm(&bar, 1, true);
+            //update_tqdm(&bar, 1, true);
             if (it->is_array()) {
                 if (it->at(0).is_array()) {
                     auto array2 = it->at(0).get_array();
                     auto foo = make_geometry(array2);
-                    // FIXME: figure out how to add the polygons to mpoly
+                    BOOST_LOG_TRIVIAL(debug) << "YES: ";
+                    // BOOST_LOG_TRIVIAL(debug) << "YES: " << boost::geometry::wkt(*foo);
                     for (auto iit = foo->begin(); iit!= foo->end(); ++iit) {
+                        BOOST_LOG_TRIVIAL(debug) << "NO WAY: ";
+                        // BOOST_LOG_TRIVIAL(debug) << "NO WAY: " << boost::geometry::wkt(*iit);
+                        // auto lat = iit->x();
+                    //     // point_t point(iit.get<0>, iit.get<1>);
+                    //     points.push_back(*iit);
                         mpoly->push_back(*iit);
                     }
+                    boost::geometry::assign_points(poly, points);
+                    // mpoly->push_back(poly);
                     continue;
                 } else {
                     double lat = it->at(0).as_double();
                     double lon = it->at(1).as_double();
                     point_t point(lat, lon);
+                    BOOST_LOG_TRIVIAL(debug) << "NO: " << boost::geometry::wkt(point);
                     points.push_back(point);
                 }
-                boost::geometry::assign_points(poly, points);
-                mpoly->push_back(poly);
             }
-            close_tqdm(&bar);
         }
+        boost::geometry::assign_points(poly, points);
+        // for (auto iit = poly.begin(); iit!= poly.end(); ++iit) {
+        // BOOST_LOG_TRIVIAL(debug) << "FOO: " << boost::geometry::num_geometries(poly);
+        // }
+        mpoly->push_back(poly);
+        //close_tqdm(&bar);
     } else {
         BOOST_LOG_TRIVIAL(error) << "Is not an array()";
     }
@@ -182,7 +231,7 @@ FastClip::make_geometry(const json::value &val) {
 std::shared_ptr<multipolygon_t>
 FastClip::make_geometry(const json::object &obj) {
     auto mpoly = std::make_shared<multipolygon_t>();
-    std::cout << "Object has " << obj.size() << " entries" << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << "Object has " << obj.size() << " entries" << std::endl;
     if (obj.empty()) {
       BOOST_LOG_TRIVIAL(error) << "Object has no entries!";
       return mpoly;
@@ -198,6 +247,7 @@ FastClip::make_geometry(const json::object &obj) {
       for (auto iit = polys->begin(); iit!= polys->end(); ++iit) {
           mpoly->push_back(*iit);
       }
+      // mpoly->push_back(*polys);
     }
 
     return mpoly;
@@ -206,154 +256,135 @@ FastClip::make_geometry(const json::object &obj) {
 bool
 FastClip::filterFile(const std::string &infile,
                     const std::string &outfile) {
-        // Filter anything not a highway.
-        std::filesystem::path datafile = infile;
-        if (!std::filesystem::exists(datafile)) {
-            BOOST_LOG_TRIVIAL(error) << "File not found: " << datafile;
-            return false;
-        }
+    // Filter anything not a highway.
+    std::filesystem::path datafile = infile;
+    if (!std::filesystem::exists(datafile)) {
+        BOOST_LOG_TRIVIAL(error) << "Data file not found: " << datafile;
+        return false;
+    }
 
-        std::string informat = std::filesystem::path(infile).extension();
-        std::string outformat = std::filesystem::path(outfile).extension();
-        
-        const osmium::io::File input_file{infile, informat};
-        const osmium::io::File output_file{outfile, outformat};
+    std::string informat = std::filesystem::path(infile).extension();
+    std::string outformat = std::filesystem::path(outfile).extension();
+    const osmium::io::File input_file{infile, informat};
+    const osmium::io::File output_file{outfile, outformat};
 
-        
-        // tell it to only read nodes and ways.
-        osmium::io::Reader reader{infile, osmium::osm_entity_bits::way};
-        osmium::io::Header header = reader.header();
-        header.set("generator", "fastclip");
-        osmium::io::Writer writer{outfile, header,
-            osmium::io::overwrite::allow};
+    // tell it to only read ways.
+    osmium::io::Reader reader{infile, osmium::osm_entity_bits::way};
+    osmium::io::Header header = reader.header();
+    // Initialize location index on disk using an existing file
+    const int fd = ::open("node_cache", O_RDWR);
+    if (fd == -1) {
+        BOOST_LOG_TRIVIAL(error) << "Can not open location cache file" << std::strerror(errno);
+        return 1;
+    }
+    index_type index{fd};
+    // The handler that adds node locations from the index to the ways.
+    location_handler_type location_handler{index};
+    // Feed all ways through the location handler and then our own handler.
+    MyHandler handler;
+    handler.add_aoi("/play/MapData/Boundaries/US-States/Utah.geojson");
+    // handler.dump();
+    osmium::apply(reader, location_handler, handler);
 
-        osmium::TagsFilter hfilter{false};
-        hfilter.add_rule(true, "highway", "path");
-        hfilter.add_rule(true, "highway", "footway");
-        hfilter.add_rule(true, "highway", "track");
-        hfilter.add_rule(true, "highway", "unclassified");
-        hfilter.add_rule(true, "highway", "residential");
-        hfilter.add_rule(true, "highway", "tertiary");
-        hfilter.add_rule(true, "highway", "primary");
-        hfilter.add_rule(true, "highway", "secondary");
+    header.set("generator", "fastclip");
+    osmium::io::Writer writer{outfile, header, osmium::io::overwrite::allow};
 
-        // Get all ways matching the highway filter
-        osmium::ProgressBar progress_bar1{reader.file_size(), display_progress()};
+    osmium::TagsFilter hfilter{false};
+    hfilter.add_rule(true, "highway", "path");
+    hfilter.add_rule(true, "highway", "footway");
+    hfilter.add_rule(true, "highway", "track");
+    hfilter.add_rule(true, "highway", "unclassified");
+    hfilter.add_rule(true, "highway", "residential");
+    hfilter.add_rule(true, "highway", "tertiary");
+    hfilter.add_rule(true, "highway", "primary");
+    hfilter.add_rule(true, "highway", "secondary");
+
+    // Get all ways matching the highway filter
+    // osmium::ProgressBar progress_bar1{reader.file_size(), display_progress()};
+    // tqdm handles the progress monitor now
+    try {
         while (osmium::memory::Buffer buffer = reader.read()) {
-            progress_bar1.update(reader.offset());
-            // for (const auto& object : buffer.select<osmium::OSMObject>()) {
-            for (const auto& way : buffer.select<osmium::Way>()) {
-                if (osmium::tags::match_any_of(way.tags(), hfilter)) {
+            BOOST_LOG_TRIVIAL(debug) << reader.offset();
+            // progress_bar1.update(reader.offset());
+            for (const auto& object : buffer.select<osmium::OSMObject>()) {
+            // for (const auto& way : buffer.select<osmium::Way>()) {
+                if (osmium::tags::match_any_of(object.tags(), hfilter)) {
                     // Cache the node refs
-                    add_nodes(way);
-                    writer(way);
+                    // add_nodes(way);
+                    // writer(way);
+                    writer(object);
                 }
             }
+            // if (reader.eof()) {
+            //     break;
+            // }
         }
-        // writer.close();
-        // FIXME: I'm not sure if we can reuse the reader
-        // reader.close();
-        progress_bar1.done();
+    } catch (const osmium::io_error& e) {
+        // All exceptions used by the Osmium library derive from std::exception.
+        BOOST_LOG_TRIVIAL(error) << e.what();
+        return 1;
+    }
 
-        std::string pos_name = "dense_file_array";
-        std::string neg_name = "dense_file_array";
+    // progress_bar1.done();
+    writer.close();
+    reader.close();
+    BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
+#if 0
+std::string pos_name = "dense_file_array";
+    std::string neg_name = "dense_file_array";
 
-        // Now get the nodes that are referenced by the ways.
-        osmium::ProgressBar progress_bar2{reader.file_size(), display_progress()};
-        const auto& map_factory = osmium::index::MapFactory<osmium::unsigned_object_id_type, osmium::Location>::instance();
-        auto location_index_pos = map_factory.create_map(pos_name);
-        auto location_index_neg = map_factory.create_map(neg_name);
-#if 1
-        index_type index;
-        location_handler_type location_handler{index};
-        // location_handler_type location_handler{*location_index_pos, *location_index_neg};
-
-        // std::string default_index_type{ map_factory.has_map_type("sparse_mmap_array") ? "sparse_mmap_array" : "sparse_mem_array" };
-
-        // osmium::io::Reader reader2{"foobar.osm", osmium::osm_entity_bits::way};
-        // const int fd = ::open(infile.c_str(), O_RDWR);
-        const int fd = ::open(infile.c_str(), O_RDWR);
-        if (fd == -1) {
-            BOOST_LOG_TRIVIAL(error) << "Can not open location cache file '" << infile << "': " << std::strerror(errno);
-            return 1;
-        }
-
-        // osmium::io::Reader reader{m_input_files[0]};
-        // osmium::io::Header header{reader.header()};
-        // setup_header(header);
-        osmium::ProgressBar progress_bar{reader.file_size(), display_progress()};
-        copy_data(progress_bar, reader, writer, location_handler);
-        progress_bar.done();
-
-        writer.close();
-        reader.close();
+    // Now get the nodes that are referenced by the ways.
+    osmium::ProgressBar progress_bar2{reader.file_size(), display_progress()};
+    const auto& map_factory = osmium::index::MapFactory<osmium::unsigned_object_id_type, osmium::Location>::instance();
+    // auto location_index_pos = map_factory.create_map(pos_name);
+    // auto location_index_neg = map_factory.create_map(neg_name);
+    index_type index;
+    location_handler_type location_handler{index};
+    // location_handler_type location_handler{*location_index_pos, *location_index_neg};
+    // std::string default_index_type{ map_factory.has_map_type("sparse_mmap_array") ? "sparse_mmap_array" : "sparse_mem_array" };
+    // osmium::io::Reader reader2{"foobar.osm", osmium::osm_entity_bits::way};
+    // const int fd = ::open(infile.c_str(), O_RDWR);
+    const int fd = ::open(infile.c_str(), O_RDWR);
+    if (fd == -1) {
+        BOOST_LOG_TRIVIAL(error) << "Can not open location cache file '" << infile << "': " << std::strerror(errno);
+        return 1;
+    }
+    // osmium::io::Reader reader{m_input_files[0]};
+    // osmium::io::Header header{reader.header()};
+    // setup_header(header);
+    osmium::ProgressBar progress_bar{reader.file_size(), display_progress()};
+    // copy_data(progress_bar, reader, writer, location_handler);
+    progress_bar.done();
+    writer.close();
+    reader.close();
 #endif
 #if 0
-            osmium::io::Reader nreader{outfile, osmium::osm_entity_bits::node};
-            while (osmium::memory::Buffer buffer = nreader.read()) {
-                progress_bar2.update(nreader.offset());
-                for (const auto& object : buffer.select<osmium::OSMObject>()) {
-                    if (m_ids(object.type()).get(object.positive_id())) {
-                        writer(object);
-                    }
-                }
+    osmium::io::Reader nreader{outfile, osmium::osm_entity_bits::node};
+    while (osmium::memory::Buffer buffer = nreader.read()) {
+        progress_bar2.update(nreader.offset());
+        for (const auto& object : buffer.select<osmium::OSMObject>()) {
+            if (m_ids(object.type()).get(object.positive_id())) {
+                writer(object);
             }
-            progress_bar2.done();
+        }
+    }
+    progress_bar2.done();
 #endif
 #if 0
-            BOOST_LOG_TRIVIAL(debug) << "Copying input file '" << infile << "'\n";
-            osmium::io::Reader reader{infile};
-            osmium::io::Header header{reader.header()};
-            setup_header(header);
-            
-            osmium::ProgressBar progress_bar{reader.file_size(), display_progress()};
-            copy_data(progress_bar2, reader, writer, location_handler);
-            progress_bar2.done();
+    BOOST_LOG_TRIVIAL(debug) << "Copying input file '" << infile << "'\n";
+    osmium::io::Reader reader{infile};
+    osmium::io::Header header{reader.header()};
+    setup_header(header);
+    osmium::ProgressBar progress_bar{reader.file_size(), display_progress()};
+    copy_data(progress_bar2, reader, writer, location_handler);
+    progress_bar2.done();
 
 #endif
-            writer.close();
-            reader.close();
-            BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
-
-        return true;
-    };
-
-#if 0
-bool
-FastClip::writeOuters(const std::string &filespec) {
-    BOOST_LOG_TRIVIAL(debug) << "There are " <<  outers.size() << " outer boundaries" ;
-    // Set the SRS to avoid problems later.
-    OGRSpatialReference* poSRS = new OGRSpatialReference();
-    poSRS->importFromEPSG(4326);
-    GDALDriver *driver = (GDALDriver *)GDALGetDriverByName("GeoJson");
-    // auto poDS = (GDALDataset*) GDALOpenEx( "point.geojson", GDAL_OF_VECTOR, NULL, NULL, NULL );
-    fs::path foo(filespec);
-    // GDAL can't overwrite GeoJson files.
-    if (std::filesystem::exists(filespec)) {
-        std::filesystem::remove(filespec);
-    }
-    GDALDataset *poDS = driver->Create(filespec.c_str(), 0, 0, 0, GDT_Unknown, NULL );
-    auto layer = poDS->CreateLayer( "boundaries", NULL, wkbMultiPolygon, NULL );
-    // The only field is the
-    OGRFieldDefn oField("Name", OFTString);
-    oField.SetWidth(128);
-    layer->CreateField(&oField);
-    // Each entry
-    for (auto it = outers.begin(); it!= outers.end(); ++it) {
-        OGRFeature *feature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-        feature->SetField("name", it->first.c_str());
-        int result = layer->CreateFeature(feature);
-        // BOOST_LOG_TRIVIAL(debug) << "Regions: " << it->second.getGeometryName();
-        // feature->SetSpatialRef(poSRS);
-        // Clean to avoid memory leaks
-        OGRFeature::DestroyFeature(feature);
-    }
-    // Clean to avoid memory leaks
-    poSRS->Release();
-    poDS->Close();
+    // writer.close();
+    // reader.close();
+    BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
     return true;
 }
-#endif
 
 // CPLSetConfigOption( "OGR_GEOJSON_MAX_OBJ_SIZE", "0" );
 json::value

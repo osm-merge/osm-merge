@@ -44,22 +44,22 @@ typedef boost::geometry::model::multi_linestring<linestring_t> multilinestring_t
 #include <osmium/index/nwr_array.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
 #include <osmium/index/map/dense_file_array.hpp>
+#include <osmium/index/map/sparse_file_array.hpp>
+// #include <osmium/index/map/flex_mem.hpp>
 #include <osmium/geom/ogr.hpp>
 #include <osmium/area/multipolygon_manager.hpp>
-#include <osmium/io/any_output.hpp>
 #include <osmium/index/nwr_array.hpp>
 #include <osmium/index/id_set.hpp>
+#include <osmium/geom/wkt.hpp>
+#include <osmium/handler/dump.hpp>
+#include <osmium/visitor.hpp>
 
-using index_type = osmium::index::map::DenseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
+// using index_type = osmium::index::map::DenseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
+using index_type = osmium::index::map::SparseFileArray<osmium::unsigned_object_id_type, osmium::Location>;
 using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 
 class FastClip {
 private:
-    // FIXME: these should really be shared pointers
-    // Only keep the outer polygons.
-    std::map<std::string, const OGRGeometry *> outers;
-    // std::shared_ptr<const OGRGeometry> boundaries;
-    OGRMultiPolygon boundaries;
     osmium::nwr_array<osmium::TagsFilter> m_filters;
     osmium::nwr_array<osmium::index::IdSetDense<osmium::unsigned_object_id_type>> m_ids;
     // bool m_invert_match = false;
@@ -69,9 +69,9 @@ private:
                    osmium::io::Writer& writer,
                    location_handler_type& location_handler);
     std::string check_index_type(const std::string& index_type_name);
-    // bool writeOuters(const std::string &filespec);
     bool display_progress() const;
 public:
+    bool create_node_cache(const std::string &infile, const std::string &cachefile);
     void add_filter(osmium::osm_entity_bits::type entities,
                     const osmium::TagMatcher& matcher);
     void add_nodes(const osmium::Way& way);

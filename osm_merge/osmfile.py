@@ -25,6 +25,8 @@ import html
 from geojson import Point, Feature, FeatureCollection, dump, Polygon, load, LineString
 import geojson
 import xmltodict
+from progress.bar import Bar, PixelBar
+from shapely.geometry import Polygon, shape
 
 # Instantiate logger
 log = logging.getLogger(__name__)
@@ -219,12 +221,19 @@ class OsmFile(object):
             data (list): The list of GeoJson features
         """
         negid = -100
-        id = -1
         out = str()
         newmvum = list()
+        nodes = str()
+        ways = str()
         self.file = open(filespec, "w")
         self.header()
-        for entry in data:
+        if type(data) == FeatureCollection:
+            indata = data["features"]
+        else:
+            indata = data
+        spin = Bar('Processing output file...', max=len(indata))
+        for entry in indata:
+            spin.next()
             version = 1
             tags = entry["properties"]
             if "osm_id" in tags:
@@ -233,33 +242,51 @@ class OsmFile(object):
                 id = tags["id"]
             elif "id" not in tags:
                 # There is no id or version for non OSM features
-                id -= 1
+                self.osmid -= 1
             if "version" in entry["properties"]:
                 version = int(entry["properties"]["version"])
                 version += 1
-            # if id == 814085818:
-            #    breakpoint()
-            attrs = {"id": id, "version": version}
+            attrs = {"id": self.osmid, "version": version}
             # These are OSM attributes, not tags
             if "id" in tags:
                 del tags["id"]
             if "version" in tags:
                 del tags["version"]
             item = {"attrs": attrs, "tags": tags}
-            # if entry["geometry"]["type"] == "LineString" or entry["geometry"]["type"] == "Polygon":
+            if "timestamp" in item["tags"]:
+                item["attrs"]["timestamp"] = item["tags"]["timestamp"]
+                del item["tags"]["timestamp"]
             # print(entry)
             out = str()
-            if entry["geometry"] is not None and entry["geometry"]["type"] == "Point":
+            if entry["geometry"] is not None:
                 # It's a node referenced by a way
-                item["attrs"]["lon"] = entry["geometry"]["coordinates"][0]
-                item["attrs"]["lat"] = entry["geometry"]["coordinates"][1]
-                if "timestamp" in item["tags"]:
-                    item["attrs"]["timestamp"] = item["tags"]["timestamp"]
-                    del item["tags"]["timestamp"]
-                # referenced nodes should have no tags
-                # del item["tags"]
-                # FIXME: determine if we need to write nodes
-                out = self.createNode(item, False)
+                # coords = entry["geometry"]["coordinates"]
+                # gtype = entry["geometry"]["type"]
+                nodes, refs = self.geom_to_nodes(entry)
+                # if len(coords) == 2:
+                #     # it's a point
+                #     item["attrs"]["lon"] = coords[0]
+                #     item["attrs"]["lat"] = coords[1]
+                #     nodes += self.createNode(item, False)
+                #     self.osmid -= 1
+                # else:
+                #     # breakpoint()
+                #     refs = list()
+                #     for node in coords:
+                #         nitem = {"attrs": dict(), "tags": dict(), "refs": list()}
+                #         refs.append(self.osmid)
+                #         nitem["attrs"]["id"] = self.osmid
+                #         nitem["attrs"]["version"] = 1
+                #         nitem["attrs"]["lon"] = node[0]
+                #         nitem["attrs"]["lat"] = node[1]
+                #         if "tags" in nitem:
+                #             del nitem["tags"]
+                #         nodes += self.createNode(nitem, False) + '\n'
+                #         self.osmid -= 1
+                #     item["refs"] = refs
+                # breakpoint()
+                item["refs"] = refs
+                ways += self.createWay(item, True) + '\n'
             else:
                 # OSM ways don't have a geometry, just references to node IDs.
                 # The OSM XML file won't have any nodes, so at first won't
@@ -271,15 +298,21 @@ class OsmFile(object):
                     # an external dataset, because that would be an import.
                     newmvum.append(entry)
                     continue
-                if len(tags['refs']) > 0:
+                if len(tags['refs']) > 0 or type(entry) == 'Feature':
                     if type(tags["refs"]) != list:
                         item["refs"] = eval(tags["refs"])
                     else:
                         item["refs"] = tags["refs"]
                     del tags["refs"]
-                    out = self.createWay(item, True)
-            if len(out) > 0:
-                self.file.write(out + "\n")
+                    del tags["lat"]
+                    del tags["lon"]
+                    ways += self.createWay(item, True)
+            if len(nodes) == 0 and len(ways) == 0:
+                logging.error(f"")
+                quit()
+            # OSM prefers all the nodes are first in the file
+            self.file.write(nodes + "\n")
+            self.file.write(ways + "\n")
         self.footer()
 
     def createWay(
@@ -530,6 +563,39 @@ class OsmFile(object):
                     fields.append(key)
         # print(fields)
 
+    def geom_to_nodes(self,
+                    feature: Feature,
+                    ):
+        """
+        Convert the geometry from a GeoJson Feature to OSM XML.
+        """
+        gtype = feature["geometry"]["type"]
+        logging.debug(f"GEOM TYPE: {gtype}")
+        out = str()
+        refs = list()
+        if gtype == "Point":
+            out =  self.createNode(item, False) + '\n'
+        elif gtype == "LineString":
+            coords = feature["geometry"]["coordinates"]
+            for node in coords:
+                item = {"attrs": dict(), "tags": dict(), "refs": list()}
+                refs.append(self.osmid)
+                item["attrs"]["id"] = self.osmid
+                item["attrs"]["version"] = 1
+                item["attrs"]["lon"] = node[0]
+                item["attrs"]["lat"] = node[1]
+                if "tags" in item:
+                    del item["tags"]
+                    out += self.createNode(item, False) + '\n'
+                self.osmid -= 1
+        elif gtype == "MultiLineString":
+            # breakpoint()
+            for line in feature["geometry"]["coordinates"]:
+                # coords = line["coordinates"]
+                segment = LineString(line)
+                result = self.geom_to_nodes(Feature(geometry=segment))
+                out += result[0]
+        return out, refs
 
 if __name__ == "__main__":
     """This is just a hook so this file can be run standlone during development."""

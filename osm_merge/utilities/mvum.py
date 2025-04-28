@@ -27,7 +27,7 @@ import sys
 import os
 import re
 from sys import argv
-from osm_fieldwork.osmfile import OsmFile
+from osm_merge.osmfile import OsmFile
 from geojson import Point, Feature, FeatureCollection, dump, Polygon, load
 import geojson
 from shapely.geometry import shape, LineString, Polygon, mapping
@@ -99,7 +99,7 @@ class MVUM(object):
 
         data = geojson.load(file)
 
-        spin = Bar('Processing...', max=len(data['features']))
+        spin = Bar('Processing input file...', max=len(data['features']))
 
         highways = list()
         config = self.yaml.getEntries()
@@ -122,7 +122,7 @@ class MVUM(object):
             if "ID" in entry["properties"]:
                 id = f"FR {entry['properties']['ID']}"
                 # For consistency, capitalize the last character
-                props["ref:usfs"] = id.upper()
+                props["ref"] = id.upper()
             if "NAME" in entry["properties"] and entry["properties"]["NAME"] is not None:
                 title = entry["properties"]["NAME"].title()
                 name = str()
@@ -193,12 +193,12 @@ class MVUM(object):
                 symbol = config["tags"]["symbol"][field]
                 pair = symbol.split('=')
                 props[pair[0]] = pair[1]
-                if len(props["ref:usfs"].split()) <= 1:
+                if len(props["ref"].split()) <= 1:
                     continue
-                ref = props["ref:usfs"].split()[1].replace(' ', '')
+                ref = props["ref"].split()[1].replace(' ', '')
                 if ref.isnumeric():
                     if len(ref) == 5 and ref.find('.') < 0:
-                        props["ref:usfs"] = f"FR {ref[2:]}"
+                        props["ref"] = f"FR {ref[2:]}"
                         props["note"] = f"Validate this changed ref!"
 
             if format == "MVUM":
@@ -267,9 +267,15 @@ good to avoid any highway with a smoothness of "very bad" or worse.
     mvum = MVUM()
     if args.convert and args.convert:
         data = mvum.convert(args.infile)
-
-        file = open(args.outfile, "w")
-        geojson.dump(data, file, indent=4)
+        path = Path(args.outfile)
+        if path.suffix == ".geojson":
+            file = open(args.outfile, "w")
+            geojson.dump(data, file, indent=4)
+        elif path.suffix == ".osm":
+            osm = OsmFile()
+            osm.header()
+            osm.writeOSM(data, args.outfile)
+            osm.footer()
         log.info(f"Wrote {args.outfile}")
         
 if __name__ == "__main__":

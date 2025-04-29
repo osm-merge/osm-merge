@@ -89,6 +89,7 @@ class MVUM(object):
 
     def convert(self,
                 filespec: str = None,
+                fixref: bool = True,
                 ) -> list:
 
         # FIXME: read in the whole file for now
@@ -196,10 +197,44 @@ class MVUM(object):
                 if len(props["ref"].split()) <= 1:
                     continue
                 ref = props["ref"].split()[1].replace(' ', '')
-                if ref.isnumeric():
-                    if len(ref) == 5 and ref.find('.') < 0:
-                        props["ref"] = f"FR {ref[2:]}"
-                        props["note"] = f"Validate this changed ref!"
+                minor = ref.find('.') > 0
+                if ref.isnumeric() and fixref and len(ref) == 5:
+                    # FIXME: this fixes multiple forests in Utah and Colorado,
+                    # don't know if any other states use a 5 digit reference
+                    # number
+                    props["ref:orig"] = f"FR {ref}"
+                    props["ref"] = f"FR {ref[1:]}"
+                    props["note"] = f"Validate this changed ref!"
+                    logging.debug(f"Converted {ref} to {props["ref"]}")
+                elif ref.isalnum() and fixref and len(ref) == 5:
+                    # breakpoint()
+                    pat = re.compile("[0-9]+")
+                    result = re.match(pat, ref)
+                    # There are other patterns, like M21 for example
+                    if not result:
+                        props["ref"] = f"FR {ref}"
+                        continue
+
+                    num = result.group()
+                    if len(num) == 5:
+                        # FIXME: Same here, but need to validate if 5 digit
+                        # reference nunbers are used by some forests.
+                        num = num[1:]
+                    if minor:
+                        result = ref.split('.')
+                        newref = f"FR ${num}.${result[1]}"
+                    else:
+                        alpha = ref[len(num):]
+                        newref = f"FR {num}{alpha}"
+
+                    props["ref:orig"] = f"FR {ref}"
+                    props["ref"] = f"FR {newref}"
+                    props["note"] = f"Validate this changed ref!"
+                    # if newref != f"FR {ref}":
+                    logging.debug(f"Converted {ref} to {newref}")
+                else:
+                    logging.debug(f"No conversion of FR {ref} needed")
+                    props["ref"] = f"FR {ref}"
 
             if format == "MVUM":
                 keyword = "HIGHCLEARANCEVEHICLE"

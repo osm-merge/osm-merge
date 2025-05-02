@@ -28,8 +28,9 @@ import os
 import re
 from sys import argv
 from osm_merge.osmfile import OsmFile
+from osm_merge.yamlfile import YamlFile
 from geojson import Point, Feature, FeatureCollection, dump, Polygon, load
-import geojson
+# import geojson
 from shapely.geometry import shape, LineString, Polygon, mapping
 import shapely
 from shapely.ops import transform
@@ -44,7 +45,10 @@ from pathlib import Path
 from tqdm import tqdm
 import tqdm.asyncio
 from progress.bar import Bar, PixelBar
-from osm_merge.yamlfile import YamlFile
+import yaml
+import fiona
+import concurrent.futures
+from datetime import datetime
 
 import osm_merge as om
 rootdir = om.__path__[0]
@@ -59,6 +63,154 @@ cores = info['count']
 # shut off warnings from pyproj
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
+# shut off verbose messages from fiona
+logging.getLogger("fiona").setLevel(logging.WARNING)
+
+def parse_opening_hours(datesopen: str) -> str:
+    months = {1: "Jan",
+              2: "Feb",
+              3: "Mar",
+              4: "Apr",
+              5: "May",
+              6: "Jun",
+              7: "Jul",
+              8: "Aug",
+              9: "Sep",
+              10: "Oct",
+              11: "Nov",
+              12: "Dec",
+              }
+    opening_hours = str()
+    # it's seasonal=no
+    if not datesopen or datesopen == "01/01-12/31" or len(datesopen) < 11:
+        return str()
+
+    # Date ranges start with the first of the month, and end with
+    # the last day of the month.
+    dates = datesopen.split('-')
+    start = dates[0].split('/')[0]
+    try:
+        end = dates[1].split('/')[0]
+    except:
+        breakpoint()
+    try:
+        opening_hours = f"{months[int(start)]}-{months[int(end)]}"
+    except:
+        breakpoint()
+    return opening_hours
+
+def processDataThread(config: dict,
+                      # filespec: str,
+                      data: list,
+                      fixref: bool = True,
+                      ) -> FeatureCollection:
+    """
+    Convert the Feature from the USFS schema to OSM syntax.
+
+    """
+    spin = Bar('Processing input data...', max=len(data))
+    highways = list()
+
+    for entry in data:
+        spin.next()
+        geom = entry["geometry"]
+        props = dict()
+        if geom is None:
+            continue
+
+        # unclassified, as we don't know what it is.
+        #        if "highway" not in props:
+        props["highway"] = "unclassified"
+
+        for key, value in entry["properties"].items():
+            # print(f"FIXME: \'{key}\' = {value}")
+            if key in config["tags"]["vehicle"]:
+                props[key.lower()] = "designated"
+
+            if key[-9:] == "DATESOPEN":
+                if "opening_hours" not in props:
+                    hours = parse_opening_hours(value)
+                    if len(hours) > 0:
+                        props["opening_hours"] = hours
+                    else:
+                        if "seasonal" not in props:
+                            props["seasonal"] = "no"
+            if key not in config["tags"]:
+                continue
+            if config["tags"][key] == "name":
+                if value:
+                    #   NAME (String) = FR 3773 SPUR A
+                    props["name"] = value.title()
+            if config["tags"][key] == "smoothness":
+                if value is None:
+                    continue
+                if value[:1].isnumeric():
+                    # breakpoint()
+                    if "smoothness" not in props:
+                        for k, v in config["tags"]["smoothness"].items():
+                            if k == value[:1]:
+                                props["smoothness"] = v
+
+                if len(value.strip()) == 0:
+                    continue
+                index = int(value[:1])
+                if index >= 2:
+                    props["4wd_only"] = "yes"
+                for i in config["tags"]["smoothness"]:
+                    if int(i) == index:
+                        props["smoothness"] = config["tags"]["smoothness"][i]
+            if config["tags"][key] == "seasonal":
+                if value in config["tags"]["seasonal"]:
+                    if bool(value):
+                        props["seasonal"] = "no"
+                    else:
+                        props["seasonal"] = "yes"
+            elif config["tags"][key] == "ref":
+                # print(f"FIXME: \'{key}\' = {value}")
+                # breakpoint()
+                if value is None:
+                    continue
+                if value.isnumeric() and fixref and len(value) == 5:
+                    # FIXME: this fixes multiple forests in Utah and Colorado,
+                    # don't know if any other states use a 5 digit reference
+                    # number
+                    props["ref:orig"] = f"FR {value}"
+                    props["ref"] = f"FR {value[1:]}"
+                    # props["note"] = f"Validate this changed ref!"
+                    # logging.debug(f"Converted {value} to {props["ref"]}")
+                elif value.isalnum() and fixref and len(value) == 5:
+                    # breakpoint()
+                    pat = re.compile("[0-9]+")
+                    result = re.match(pat, value)
+                    # There are other patterns, like M21 for example
+                    if not result:
+                        props["ref"] = f"FR {value}"
+                        continue
+
+                    num = result.group()
+                    if len(num) == 5:
+                        # FIXME: Same here, but need to validate if 5 digit
+                        # reference nunbers are used by some forests.
+                        num = num[1:]
+                    minor = value.find('.') > 0
+                    if minor:
+                        result = value.split('.')
+                        newref = f"FR ${num}.${result[1]}"
+                    else:
+                        alpha = value[len(num):]
+                        newref = f"FR {num}{alpha}"
+
+                    props["ref:orig"] = f"FR {value}"
+                    props["ref"] = f"FR {newref}"
+                    props["note"] = f"Validate this changed ref!"
+                props["ref"] = value
+
+        if geom is not None:
+            props["highway"] = "unclassified"
+            highways.append(Feature(geometry=geom, properties=props))
+        # print(props)
+
+    return FeatureCollection(highways)
 
 class MVUM(object):
     def __init__(self,
@@ -79,185 +231,121 @@ class MVUM(object):
         if dataspec is not None:
             self.file = open(dataspec, "r")
 
-        yaml = f"{rootdir}/{yamlspec}"
-        if not os.path.exists(yaml):
-            log.error(f"{yaml} does not exist!")
+        filespec = f"{rootdir}/{yamlspec}"
+        if not os.path.exists(filespec):
+            log.error(f"{yamlspec} does not exist!")
             quit()
-        
-        file = open(yaml, "r")
-        self.yaml = YamlFile(f"{yaml}")
 
-    def convert(self,
-                filespec: str = None,
-                fixref: bool = True,
-                ) -> list:
+        yaml = YamlFile(filespec)
+        # yaml.dump()
+        self.config = yaml.getEntries()
 
-        # FIXME: read in the whole file for now
-        if filespec is not None:
-            file = open(filespec, "r")
-        else:
-            file = self.file
+    def count_lines(self, filespec: str) -> int:
+        """
+        Count the records in the data file.
 
-        data = geojson.load(file)
+        Args:
+            filespec (str): The input data file name
 
-        spin = Bar('Processing input file...', max=len(data['features']))
+        Returns:
+            (int): The number of lines in the file
+        """
+        if not os.path.exists(filespec):
+            logging.error(f"{filespec} doesn't exist!")
+            return -1
 
-        highways = list()
-        config = self.yaml.getEntries()
-        for entry in data["features"]:
-            spin.next()
-            geom = entry["geometry"]
-            id = 0
-            sym = 0
-            op = None
-            surface = str()
-            name = str()
-            props = dict()
-            if "OPER_MAINT_LEVEL" in entry["properties"]:
-                format = "RoadCore"
-            else:
-                format = "MVUM"
-            # print(entry["properties"])
-            if entry["properties"] is None or entry is None:
-                continue
-            if "ID" in entry["properties"]:
-                id = f"FR {entry['properties']['ID']}"
-                # For consistency, capitalize the last character
-                props["ref"] = id.upper()
-            if "NAME" in entry["properties"] and entry["properties"]["NAME"] is not None:
-                title = entry["properties"]["NAME"].title()
-                name = str()
-                # Fix some common abbreviations
-                for word in title.split():
-                    category = config["columns"]["NAME"]
-                    if word in config[category]:
-                        name += config[category][word]
-                    else:
-                        name += f" {word} "
-                if len(name) == 0:
-                    name = title.title()
-                newname = str()
-                if name.find(" Road") <= 0:
-                    newname = f"{name} Road".replace('  ', ' ').strip()
-                else:
-                    newname = name.replace('  ', ' ').strip()
-                # the < causes osmium to choke...
-                props["name"] = newname.replace("<50", "&lt;50")
+        # data = fiona.open(filespec, "r")
+        with fiona.open(filespec, 'r') as fp:
+            for count, line in enumerate(fp):
+                pass
+            fp.close()
+            return count
 
-            if format == "MVUM":
-                keyword = "OPERATIONALMAINTLEVEL"
-            else:
-                keyword = "OPER_MAINT_LEVEL"
-            # https://www.fs.usda.gov/Internet/FSE_DOCUMENTS/stelprd3793545.pdf
-            if keyword in entry["properties"] and entry["properties"][keyword] is not None:
-                if len(entry["properties"][keyword]) <= 1:
-                    continue
-                field = entry["properties"][keyword].split()[0]
-                if field != "NA":
-                    smoothness = config["tags"]["smoothness"][int(field)]
-                    pair = smoothness.split('=')
-                    props[pair[0]] = pair[1]
-                    # High Clearance vehicles only
-                    if int(field) == 2:
-                        props["4wd_only"] = "yes"
+    def process_data(self,
+                     filespec: str,
+                     overwrite: bool,
+                     usemem: bool = True,
+                     tmpdir: str = "/tmp") -> list():
+        """
+        Read a large file in chunks so python stops core dumping.
 
-            if "PRIMARY_MAINTAINER" in entry["properties"] and entry["properties"]["PRIMARY_MAINTAINER"]:
-                field = entry["properties"]["PRIMARY_MAINTAINER"].split()[0]
-                if field in config["tags"]["operator"]:
-                    operator = config["tags"]["operator"][field]
-                    props["operator"] = operator
-                    # props["operator:type"] = "government"
-            else:
-                props["operator"] = "US Forest Service"
+        Args:
+            filespec (str): The input data file name
 
-            if format == "MVUM":
-                keyword = "SURFACETYPE"
-            else:
-                keyword = "SURFACE_TYPE"
-            if keyword in entry["properties"] and entry["properties"][keyword]:
-                if "surface" not in props:
-                    # Only add a value for surface if it doesn't exist
-                    if entry["properties"][keyword] == " ":
-                        continue
-                    field = entry["properties"][keyword].split()[0]
-                    if field in config["tags"]["surface"]:
-                        surface = config["tags"]["surface"][field]
-                        pair = surface.split('=')
-                        props[pair[0]] = pair[1]
+        Returns:
+            (list): The lines of data from the file
+        """
 
-            if format == "MVUM":
-                keyword = "SBS_SYMBOL_NAME"
-            else:
-                keyword = "SYMBOL_NAME"
-            if keyword in entry["properties"] and entry["properties"][keyword]:
-                field = entry["properties"][keyword][:4]
-                symbol = config["tags"]["symbol"][field]
-                pair = symbol.split('=')
-                props[pair[0]] = pair[1]
-                if len(props["ref"].split()) <= 1:
-                    continue
-                ref = props["ref"].split()[1].replace(' ', '')
-                minor = ref.find('.') > 0
-                if ref.isnumeric() and fixref and len(ref) == 5:
-                    # FIXME: this fixes multiple forests in Utah and Colorado,
-                    # don't know if any other states use a 5 digit reference
-                    # number
-                    props["ref:orig"] = f"FR {ref}"
-                    props["ref"] = f"FR {ref[1:]}"
-                    props["note"] = f"Validate this changed ref!"
-                    logging.debug(f"Converted {ref} to {props["ref"]}")
-                elif ref.isalnum() and fixref and len(ref) == 5:
-                    # breakpoint()
-                    pat = re.compile("[0-9]+")
-                    result = re.match(pat, ref)
-                    # There are other patterns, like M21 for example
-                    if not result:
-                        props["ref"] = f"FR {ref}"
-                        continue
+        path = Path(filespec)
+        lines = self.count_lines(path)
+        if lines < 0:
+            # logging.error(f"")
+            return list()
 
-                    num = result.group()
-                    if len(num) == 5:
-                        # FIXME: Same here, but need to validate if 5 digit
-                        # reference nunbers are used by some forests.
-                        num = num[1:]
-                    if minor:
-                        result = ref.split('.')
-                        newref = f"FR ${num}.${result[1]}"
-                    else:
-                        alpha = ref[len(num):]
-                        newref = f"FR {num}{alpha}"
+        # Split the files into smaller chunks, one for each core.
+        # FIXME: I hate tmp files, but disk space is better till
+        # python stops core dumping on large files as the geojson
+        # module loads the entire file into memory.
+        size = round(lines / cores)
 
-                    props["ref:orig"] = f"FR {ref}"
-                    props["ref"] = f"FR {newref}"
-                    props["note"] = f"Validate this changed ref!"
-                    # if newref != f"FR {ref}":
-                    logging.debug(f"Converted {ref} to {newref}")
-                else:
-                    logging.debug(f"No conversion of FR {ref} needed")
-                    props["ref"] = f"FR {ref}"
+        data = fiona.open(filespec, "r")
+        meta = data.meta
+        files = list()
+        single = True           # FIXME: debug only
+        if not single:
+            # with concurrent.futures.ProcessPoolExecutor(max_workers=cores) as executor:
+            #     for block in range(0, size, chunk):
+            #         data = list()
+            #         future = executor.submit(processDataThread, self.conf,            )
+            #         futures.append(future)
+            #     #for thread in concurrent.futures.wait(futures, return_when='ALL_COMPLETED'):
+            #     for future in concurrent.futures.as_completed(futures):
+            #         res = future.result()
+            #         # log.debug(f"Waiting for thread to complete..,")
+            #         data.extend(res[0])
+            #         # newdata.extend(res[1])
+            #     alldata = [data, newdata]
+            # return
+            pass
 
-            if format == "MVUM":
-                keyword = "HIGHCLEARANCEVEHICLE"
-            else:
-                keyword = "HIGH_CLEARANCE_VEHICLE"
-            if keyword in entry["properties"] and entry["properties"][keyword]:
-                if entry["properties"][keyword] is not None:
-                    props["4wd_only"] = "yes"
+        # single threaded for debugging
+        if single:
+            osmdata = processDataThread(self.config, list(data))
 
-            if "SEASONAL" in entry["properties"] and entry["properties"]["SEASONAL"]:
-                    field = entry["properties"]["SEASONAL"]
-                    if field in config["tags"]["seasonal"]:
-                        seasonal = config["tags"]["seasonal"][field]
-                        pair = seasonal.split('=')
-                        props[pair[0]] = pair[1]
+        # osmdata = list()
+        # for i in range(0, lines, size):
+        #     # Ignore the first output record, it's empty
+        #     if i == 0:
+        #         continue
+        #     chunk = list()
+        #     # dataout = f"{tmpdir}/{path.stem}_{i}.geojson"
+        #     # files.append(dataout)
+        #     # if os.path.exists(dataout):
+        #     #    continue
+        #     for record in iter(data):
+        #         chunk.append(record)
+        #         if len(chunk) == i:
+        #             # for feature in chunk:
+        #             #    alldata.append(feature)
+        #             if not usemem:
+        #                 dataout = f"{tmpdir}/{path.stem}_{i}.geojson"
+        #                 out = fiona.open(dataout, 'w', **meta)
+        #                 out.writerecords(chunk)
+        #                 out.close()
+        #                 logging.debug(f"Wrote tmp file {dataout}...")
+        #             else:
+        #                 if single:
+        #                     osmdata.apppend(processDataThread(self.config, chunk))
 
-            if geom is not None:
-                props["highway"] = "unclassified"
-                highways.append(Feature(geometry=geom, properties=props))
-            # print(props)
+        return osmdata
 
-        return FeatureCollection(highways)
-    
+    def dump(self):
+        """
+        Dump internal variables for debugging.
+        """
+        for key, values in self.config:
+            print(f"\t{k} = {values}")
+
 def main():
     """This main function lets this class be run standalone by a bash script"""
     parser = argparse.ArgumentParser(
@@ -300,11 +388,15 @@ good to avoid any highway with a smoothness of "very bad" or worse.
     )
 
     mvum = MVUM()
+
     if args.convert and args.convert:
-        data = mvum.convert(args.infile)
+        data = mvum.process_data(args.infile, False)
+        # data = mvum.convert(args.infile)
         path = Path(args.outfile)
         if path.suffix == ".geojson":
-            file = open(args.outfile, "w")
+            file = open(args.outfile, "w", encoding='utf-8',)
+            # FIXME: should use fiona
+            import geojson
             geojson.dump(data, file, indent=4)
         elif path.suffix == ".osm":
             osm = OsmFile()

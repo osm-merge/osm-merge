@@ -31,24 +31,27 @@
 
 - tags:
   - seasonal:
-    - yearlong: seasonal=no
-    - "yes": seasonal=yes
-    - "no": seasonal=no
+    - seasonal: yes
+    - yearlong: no
+    - yes: yes
+    - no: no
 
   - smoothness:
-    - 0: access=unknown
-    - 1: access=no
-    - 2: smoothness=very_bad
-    - 3: smoothness=good
-    - 4: smoothness=bad
-    - 5: smoothness=excellent
+    # - 0: access=unknown
+    # access=no
+    - 2: very_bad
+    - 3: good
+    - 4: bad
+    - 5: excellent
+    # - C: fixme="convert use"
+    # - D: fixme="decommisioned"
 
   - symbol:
-    - Road: smoothness=very_bad
-    - Pave: smoothness=good
-    - High: smoothness=excellent
-    - Dirt: surface=dirt
-    - Grav: surface=gravel
+    - Road: very_bad
+    - Pave: good
+    - High: excellent
+    # - Dirt: surface=dirt
+    # - Grav: surface=gravel
 
   - surface:
     - NAT: surface=dirt
@@ -58,6 +61,43 @@
     - IMP: surface=compacted
     - CSOIL: surface=compacted
 
+  # These are the primary fields converted to OSM
+  - NAME: name
+  - ID: ref
+  - PRIMARY_MAINTAINER: operator
+  - JURISDICTION: operator
+  - SURFACETYPE: surface
+  - SURFACE_TYPE: surface
+  - OPERATIONALMAINTLEVEL: smoothness
+  - OPER_MAINT_LEVEL: smoothness
+  - SBS_SYMBOL_NAME: symbol
+  - SYMBOL_NAME: symbol
+  - SEASONAL: seasonal
+
+  - vehicle:
+    - TRUCK: designated
+    - BUS: designated
+    - MOTORHOME: designated
+    - ATV: designated
+    - MOTORCYCLE: designated
+    - OTHERWHEELED_OHV: designated
+    # FIXME: I'm not sure these make sense for OSM. Some
+    # suggest adding width=1.37m, but for now I'll'
+    # ignore these as overkill.
+    # - OTHER_OHV_LT50INCHES: designated
+    # - OTHER_OHV_GT50INCHES: designated
+    # - FOURWD_GT50INCHES: designated
+    # - TWOWD_GT50INCHES: designated
+    # FIXME: I have no idea what the equivalant tag value would
+    # be for these.
+    # - PASSENGERVEHICLE
+    # - HIGHCLEARANCEVEHICLE
+    # - TRACKED_OHV_GT50INCHES: designated
+    # - TRACKED_OHV_LT50INCHES: designated
+  # All MVUM seem to be tagged as high clearance only, so useless
+  # - HIGHCLEARANCEVEHICLE: 4wd_onlyyes
+  # - HIGH_CLEARANCE_VEHICLE: 4wd_only=yes
+
   # There's a bunch of other values for the PRIMARY_MAINTAINER field
   # in the MVUM dataset, but those really fit in operator:type
   # instead. Since we're focused on remote trails and highways, there
@@ -66,7 +106,13 @@
     - BLM: Bureau Of Land Management
     - FS: Forest Service
 
-# FIXME: These the data fields to convert, currentl;y unsupport for
+# - fix:
+#     - "Medicine Bow National Forest"
+#     - "MantiLa-Sal National Forest"
+#     - "Dixie National Forest"
+#     - "Fishlake National Forest"
+
+# FIXME: These the data fields to convert, currently unsupport for
 # now.
 - columns:
     - NAME: abbreviations

@@ -80,7 +80,7 @@
     - MOTORHOME: designated
     - ATV: designated
     - MOTORCYCLE: designated
-    - OTHERWHEELED_OHV: designated
+    # - OTHERWHEELED_OHV: designated
     # FIXME: I'm not sure these make sense for OSM. Some
     # suggest adding width=1.37m, but for now I'll'
     # ignore these as overkill.

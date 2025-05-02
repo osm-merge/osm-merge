@@ -67,6 +67,15 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 logging.getLogger("fiona").setLevel(logging.WARNING)
 
 def parse_opening_hours(datesopen: str) -> str:
+    """
+    Parse the string from the external dataset to OSM format.
+
+    Args:
+        datesopen (str): The string from the external dataset
+
+    Returns:
+        (str): The formatted string for OSM
+    """
     months = {1: "Jan",
               2: "Feb",
               3: "Mar",
@@ -118,6 +127,7 @@ def processDataThread(config: dict,
         if geom is None:
             continue
 
+        exists = ["Drive", "Road", "Lane", "Circle"]
         # unclassified, as we don't know what it is.
         #        if "highway" not in props:
         props["highway"] = "unclassified"
@@ -130,17 +140,29 @@ def processDataThread(config: dict,
             if key[-9:] == "DATESOPEN":
                 if "opening_hours" not in props:
                     hours = parse_opening_hours(value)
+                    # print(f"FIXME: {value} : {len(hours)}")
                     if len(hours) > 0:
                         props["opening_hours"] = hours
-                    else:
-                        if "seasonal" not in props:
-                            props["seasonal"] = "no"
+                        props["seasonal"] = "yes"
+                    elif "opening_hours" in props:
+                        props["seasonal"] = "no"
             if key not in config["tags"]:
                 continue
             if config["tags"][key] == "name":
                 if value:
-                    #   NAME (String) = FR 3773 SPUR A
-                    props["name"] = value.title()
+                    newname = value.title()
+                    words = newname.split(' ')
+                    for word in words:
+                        if word in config["abbreviations"]:
+                            newname = newname.replace(word, config["abbreviations"][word])
+                    # the ref is often duplicated in the name.
+                    if "refs" in props and "name" in props:
+                        if props["ref"] == props["name"]:
+                            del props["name"]
+                    # most of the names lack "Road" OSM prefers
+                    if newname.find("Road") <= 0:
+                        newname += " Road"
+                    props["name"] = newname.title()
             if config["tags"][key] == "smoothness":
                 if value is None:
                     continue
@@ -178,7 +200,7 @@ def processDataThread(config: dict,
                     props["ref"] = f"FR {value[1:]}"
                     # props["note"] = f"Validate this changed ref!"
                     # logging.debug(f"Converted {value} to {props["ref"]}")
-                elif value.isalnum() and fixref and len(value) == 5:
+                elif value.isalnum() and fixref:
                     # breakpoint()
                     pat = re.compile("[0-9]+")
                     result = re.match(pat, value)
@@ -195,15 +217,16 @@ def processDataThread(config: dict,
                     minor = value.find('.') > 0
                     if minor:
                         result = value.split('.')
-                        newref = f"FR ${num}.${result[1]}"
+                        newref = f"${num}.${result[1]}"
                     else:
                         alpha = value[len(num):]
-                        newref = f"FR {num}{alpha}"
+                        newref = f"{num}{alpha}"
 
                     props["ref:orig"] = f"FR {value}"
                     props["ref"] = f"FR {newref}"
-                    props["note"] = f"Validate this changed ref!"
-                props["ref"] = value
+                    props["note"] = "Validate this changed ref!"
+                else:
+                    props["ref"] = f"FR {value}"
 
         if geom is not None:
             props["highway"] = "unclassified"

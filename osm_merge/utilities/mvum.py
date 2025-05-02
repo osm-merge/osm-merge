@@ -126,6 +126,7 @@ def processDataThread(config: dict,
         props = dict()
         if geom is None:
             continue
+        # FIXME: simplify the geometry with shapely.simplify
 
         exists = ["Drive", "Road", "Lane", "Circle"]
         # unclassified, as we don't know what it is.
@@ -150,6 +151,7 @@ def processDataThread(config: dict,
                 continue
             if config["tags"][key] == "name":
                 if value:
+                    # print(f"FIXME: \'{props}\' = {value.title()}")
                     newname = value.title()
                     words = newname.split(' ')
                     for word in words:
@@ -160,8 +162,6 @@ def processDataThread(config: dict,
                         if props["ref"] == props["name"]:
                             del props["name"]
                     # most of the names lack "Road" OSM prefers
-                    if newname.find("Road") <= 0:
-                        newname += " Road"
                     props["name"] = newname.title()
             if config["tags"][key] == "smoothness":
                 if value is None:
@@ -188,15 +188,13 @@ def processDataThread(config: dict,
                     else:
                         props["seasonal"] = "yes"
             elif config["tags"][key] == "ref":
-                # print(f"FIXME: \'{key}\' = {value}")
-                # breakpoint()
                 if value is None:
                     continue
                 if value.isnumeric() and fixref and len(value) == 5:
                     # FIXME: this fixes multiple forests in Utah and Colorado,
                     # don't know if any other states use a 5 digit reference
                     # number
-                    props["ref:orig"] = f"FR {value}"
+                    # props["ref:orig"] = f"FR {value}"
                     props["ref"] = f"FR {value[1:]}"
                     # props["note"] = f"Validate this changed ref!"
                     # logging.debug(f"Converted {value} to {props["ref"]}")
@@ -222,12 +220,14 @@ def processDataThread(config: dict,
                         alpha = value[len(num):]
                         newref = f"{num}{alpha}"
 
-                    props["ref:orig"] = f"FR {value}"
+                    # props["ref:orig"] = f"FR {value}"
                     props["ref"] = f"FR {newref}"
-                    props["note"] = "Validate this changed ref!"
+                    # props["note"] = "Validate this changed ref!"
                 else:
                     props["ref"] = f"FR {value}"
 
+        if "name" in props and props["name"].find("Road") <= 0:
+            props["name"] += " Road"
         if geom is not None:
             props["highway"] = "unclassified"
             highways.append(Feature(geometry=geom, properties=props))

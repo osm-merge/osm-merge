@@ -191,4 +191,4 @@ this example, there is no _doctor_ value in the _healthcare_
 selection in the choices sheet. If you use the data filtering utility
 program mentioned above, you'll never see this error.
 
-![XPath Error](xlsimages/image1.jpg){width=500}
+![XPath Error](assets/image1.jpg){width=500}

@@ -418,7 +418,7 @@ conflict with other names in the XForm.
 There is a much more detailed document on using OSM data extracts in
 this [Dealing with External Data in ODK](externaldata.md) document.
 
-![Placement Map](xlsimages/image2.jpg)
+![Placement Map](assets/image2.jpg)
 
 # Converting from OMK to ODK
 

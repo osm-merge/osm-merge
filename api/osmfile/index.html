@@ -998,27 +998,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../basemapper/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    basemapper
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../convert/" class="md-nav__link">
         
   
@@ -1220,6 +1199,15 @@
   <a href="#osm_merge.osmfile.OsmFile.getFields" class="md-nav__link">
     <span class="md-ellipsis">
       getFields
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osm_merge.osmfile.OsmFile.geom_to_nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      geom_to_nodes
     </span>
   </a>
   
@@ -1512,6 +1500,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#osm_merge.osmfile.OsmFile.geom_to_nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      geom_to_nodes
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1639,9 +1636,7 @@
 
                   <details class="quote">
                     <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
@@ -1708,10 +1703,9 @@
     <span class="c1"># Open the OSM output file</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">filespec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filespec</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filespec</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
         <span class="c1"># self.file = open(filespec + &quot;.osm&quot;, &#39;w&#39;)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Opened output file: &quot;</span> <span class="o">+</span> <span class="n">filespec</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Opened input file: &quot;</span> <span class="o">+</span> <span class="n">filespec</span><span class="p">)</span>
     <span class="c1"># logging.error(&quot;Couldn&#39;t open %s for writing!&quot; % filespec)</span>
 
     <span class="c1"># This is the file that contains all the filtering data</span>
@@ -1721,7 +1715,6 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">full</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># decrement the ID</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="c1"># path = xlsforms_path.replace(&quot;xlsforms&quot;, &quot;&quot;)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -2042,8 +2035,7 @@
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">loadFile</span><span class="p">(</span>
+<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">loadFile</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">osmfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -2095,8 +2087,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">properties</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">][</span><span class="s2">&quot;@k&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">][</span><span class="s2">&quot;@v&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                 <span class="c1"># continue</span>
-        <span class="k">if</span> <span class="s2">&quot;@lon&quot;</span> <span class="ow">in</span> <span class="n">node</span> <span class="ow">and</span> <span class="s2">&quot;@lat&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
-            <span class="n">geom</span> <span class="o">=</span> <span class="n">Point</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;@lon&quot;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;@lat&quot;</span><span class="p">])))</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">Point</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;@lon&quot;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;@lat&quot;</span><span class="p">])))</span>
         <span class="c1"># cache the nodes so we can dereference the refs into</span>
         <span class="c1"># coordinates, but we don&#39;t need them in GeoJson format.</span>
         <span class="n">nodes</span><span class="p">[</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">geom</span>
@@ -2198,7 +2189,8 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
+<span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
 <span class="normal">215</span>
@@ -2270,7 +2262,20 @@
 <span class="normal">281</span>
 <span class="normal">282</span>
 <span class="normal">283</span>
-<span class="normal">284</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">writeOSM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">writeOSM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
              <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
              <span class="n">filespec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
              <span class="p">):</span>
@@ -2281,47 +2286,55 @@
 <span class="sd">        data (list): The list of GeoJson features</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">negid</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">out</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
-    <span class="n">newmvum</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="c1">#newmvum = list()</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+    <span class="n">ways</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filespec</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">FeatureCollection</span><span class="p">:</span>
+        <span class="n">indata</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">indata</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">spin</span> <span class="o">=</span> <span class="n">Bar</span><span class="p">(</span><span class="s1">&#39;Processing output file...&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">indata</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">spin</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
         <span class="n">version</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;ref&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+            <span class="c1"># FIXME: from GeoJson file</span>
+            <span class="k">pass</span>
+        <span class="c1"># elif &quot;id&quot; not in tags:</span>
+        <span class="c1">#else:</span>
+            <span class="c1"># There is no id or version for non OSM features</span>
+        <span class="c1">#     self.osmid -= 1</span>
+        <span class="k">if</span> <span class="s2">&quot;version&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;version&quot;</span><span class="p">])</span>
+            <span class="n">version</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="s2">&quot;osm_id&quot;</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
             <span class="nb">id</span> <span class="o">=</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;osm_id&quot;</span><span class="p">]</span>
         <span class="k">elif</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
             <span class="nb">id</span> <span class="o">=</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="s2">&quot;id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
-            <span class="c1"># There is no id or version for non OSM features</span>
-            <span class="nb">id</span> <span class="o">-=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="s2">&quot;version&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]:</span>
-            <span class="n">version</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;version&quot;</span><span class="p">])</span>
-            <span class="n">version</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="c1"># if id == 814085818:</span>
-        <span class="c1">#    breakpoint()</span>
-        <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osmid</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">}</span>
         <span class="c1"># These are OSM attributes, not tags</span>
         <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;version&quot;</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
         <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;attrs&quot;</span><span class="p">:</span> <span class="n">attrs</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="n">tags</span><span class="p">}</span>
-        <span class="c1"># if entry[&quot;geometry&quot;][&quot;type&quot;] == &quot;LineString&quot; or entry[&quot;geometry&quot;][&quot;type&quot;] == &quot;Polygon&quot;:</span>
+        <span class="k">if</span> <span class="s2">&quot;timestamp&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]:</span>
+            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">][</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">][</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span>
         <span class="c1"># print(entry)</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Point&quot;</span><span class="p">:</span>
-            <span class="c1"># It&#39;s a node referenced by a way</span>
-            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;coordinates&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;coordinates&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;timestamp&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]:</span>
-                <span class="n">item</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">][</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span>
-                <span class="k">del</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">][</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span>
-            <span class="c1"># referenced nodes should have no tags</span>
-            <span class="c1"># del item[&quot;tags&quot;]</span>
-            <span class="c1"># FIXME: determine if we need to write nodes</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># out = str()</span>
+        <span class="c1"># GeoJson input files have a geometry.</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">refnodes</span><span class="p">,</span> <span class="n">refs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom_to_nodes</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+            <span class="n">nodes</span> <span class="o">+=</span> <span class="n">refnodes</span>
+            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">refs</span>
+            <span class="n">ways</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createWay</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># OSM ways don&#39;t have a geometry, just references to node IDs.</span>
             <span class="c1"># The OSM XML file won&#39;t have any nodes, so at first won&#39;t</span>
@@ -2331,17 +2344,23 @@
                 <span class="c1"># tags[&quot;fixme&quot;] = &quot;New road from MVUM, don&#39;t add!&quot;</span>
                 <span class="c1"># FIXME: for now we don&#39;t do anything with new roads from</span>
                 <span class="c1"># an external dataset, because that would be an import.</span>
-                <span class="n">newmvum</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="c1"># newmvum.append(entry)</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Feature&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
                     <span class="n">item</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">item</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">]</span>
                 <span class="k">del</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;refs&quot;</span><span class="p">]</span>
-                <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createWay</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">tags</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span>
+                <span class="n">ways</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createWay</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ways</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">quit</span><span class="p">()</span>
+        <span class="c1"># OSM prefers all the nodes are first in the file</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">nodes</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ways</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">footer</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2436,20 +2455,7 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">299</span>
 <span class="normal">300</span>
 <span class="normal">301</span>
 <span class="normal">302</span>
@@ -2531,7 +2537,21 @@
 <span class="normal">378</span>
 <span class="normal">379</span>
 <span class="normal">380</span>
-<span class="normal">381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">createWay</span><span class="p">(</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">createWay</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">way</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">modified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -2549,6 +2569,7 @@
     <span class="n">osm</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># Add default attributes</span>
+    <span class="c1"># breakpoint()</span>
     <span class="k">if</span> <span class="n">modified</span><span class="p">:</span>
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;modify&quot;</span>
     <span class="k">if</span> <span class="s2">&quot;osm_way_id&quot;</span> <span class="ow">in</span> <span class="n">way</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]:</span>
@@ -2558,8 +2579,8 @@
     <span class="k">elif</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">way</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]:</span>
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">way</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osmid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">osmid</span> <span class="o">-=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="s2">&quot;version&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">way</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]:</span>
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">else</span><span class="p">:</span>
@@ -2704,21 +2725,7 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">397</span>
 <span class="normal">398</span>
 <span class="normal">399</span>
 <span class="normal">400</span>
@@ -2730,7 +2737,21 @@
 <span class="normal">406</span>
 <span class="normal">407</span>
 <span class="normal">408</span>
-<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">featureToNode</span><span class="p">(</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">featureToNode</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">feature</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
 <span class="p">):</span>
@@ -2850,21 +2871,7 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">425</span>
 <span class="normal">426</span>
 <span class="normal">427</span>
 <span class="normal">428</span>
@@ -2908,7 +2915,21 @@
 <span class="normal">466</span>
 <span class="normal">467</span>
 <span class="normal">468</span>
-<span class="normal">469</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">createNode</span><span class="p">(</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">createNode</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">node</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">modified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -2930,8 +2951,8 @@
     <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]:</span>
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osmid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">osmid</span> <span class="o">-=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="s2">&quot;version&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]:</span>
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
     <span class="k">else</span><span class="p">:</span>
@@ -3060,21 +3081,7 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">471</span>
-<span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
-<span class="normal">476</span>
-<span class="normal">477</span>
-<span class="normal">478</span>
-<span class="normal">479</span>
-<span class="normal">480</span>
-<span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">485</span>
 <span class="normal">486</span>
 <span class="normal">487</span>
 <span class="normal">488</span>
@@ -3087,7 +3094,21 @@
 <span class="normal">495</span>
 <span class="normal">496</span>
 <span class="normal">497</span>
-<span class="normal">498</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">createTag</span><span class="p">(</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">createTag</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -3138,15 +3159,15 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">500</span>
-<span class="normal">501</span>
-<span class="normal">502</span>
-<span class="normal">503</span>
-<span class="normal">504</span>
-<span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span>
-<span class="normal">508</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dump internal data structures, for debugging purposes only.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Point&#39;</span><span class="p">:</span>
@@ -3232,19 +3253,19 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span>
-<span class="normal">514</span>
-<span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span>
-<span class="normal">518</span>
-<span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getFeature</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getFeature</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">):</span>
@@ -3280,14 +3301,14 @@
 
             <details class="quote">
               <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">524</span>
-<span class="normal">525</span>
-<span class="normal">526</span>
-<span class="normal">527</span>
-<span class="normal">528</span>
-<span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getFields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">getFields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract all the tags used in this file.&quot;&quot;&quot;</span>
     <span class="n">fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3295,6 +3316,174 @@
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
                 <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="osm_merge.osmfile.OsmFile.geom_to_nodes" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">geom_to_nodes</span>
+
+
+<a href="#osm_merge.osmfile.OsmFile.geom_to_nodes" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">geom_to_nodes</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert the geometry from a GeoJson Feature to OSM XML.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>feature</code>
+            </td>
+            <td>
+                  <code><span title="geojson.Feature">Feature</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The GeoJson feature to get the geometry from</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>out</code></td>            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The OSM XML output for this Feature</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>refs</code></td>            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The list of node references</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>osm_merge/osmfile.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span>
+<span class="normal">570</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">geom_to_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">feature</span><span class="p">:</span> <span class="n">Feature</span><span class="p">,</span>
+                <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert the geometry from a GeoJson Feature to OSM XML.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        feature (Feature):  The GeoJson feature to get the geometry from</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        out (str): The OSM XML output for this Feature</span>
+<span class="sd">        refs (list): The list of node references</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gtype</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+    <span class="c1"># logging.debug(f&quot;GEOM TYPE: {gtype}&quot;)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+    <span class="n">refs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">gtype</span> <span class="o">==</span> <span class="s2">&quot;Point&quot;</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="k">elif</span> <span class="n">gtype</span> <span class="o">==</span> <span class="s2">&quot;LineString&quot;</span><span class="p">:</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;coordinates&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;attrs&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span> <span class="s2">&quot;refs&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">()}</span>
+            <span class="n">refs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">osmid</span><span class="p">)</span>
+            <span class="c1"># item[&quot;attrs&quot;][&quot;id&quot;] = self.osmid</span>
+            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">][</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;tags&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span>
+            <span class="n">out</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="c1"># self.osmid -= 1</span>
+    <span class="k">elif</span> <span class="n">gtype</span> <span class="o">==</span> <span class="s2">&quot;MultiLineString&quot;</span><span class="p">:</span>
+        <span class="c1"># breakpoint()</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;coordinates&quot;</span><span class="p">]:</span>
+            <span class="c1"># coords = line[&quot;coordinates&quot;]</span>
+            <span class="n">segment</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom_to_nodes</span><span class="p">(</span><span class="n">Feature</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">segment</span><span class="p">))</span>
+            <span class="n">refs</span> <span class="o">+=</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">out</span> <span class="o">+=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">refs</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

@@ -10,26 +10,24 @@
       
       
       
-        <link rel="canonical" href="https://osmmerge.org/">
+        <link rel="canonical" href="https://osmmerge.org/externaldata/">
       
       
       
-        <link rel="next" href="about/">
       
-      
-      <link rel="icon" href="assets/favicon.png">
+      <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>osm-merge</title>
+        <title>Dealing with External Data in ODK - osm-merge</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,11 +46,11 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="css/extra.css">
+      <link rel="stylesheet" href="../css/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#osm-merge-a-community-project-of-openstreetmap-us" class="md-skip">
+        <a href="#dealing-with-external-data-in-odk" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +90,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
+    <a href=".." title="osm-merge" class="md-header__button md-logo" aria-label="osm-merge" data-md-component="logo">
       
-  <img src="assets/osmus-logo.svg" alt="logo">
+  <img src="../assets/osmus-logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Dealing with External Data in ODK
             
           </span>
         </div>
@@ -198,9 +196,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
+    <a href=".." title="osm-merge" class="md-nav__button md-logo" aria-label="osm-merge" data-md-component="logo">
       
-  <img src="assets/osmus-logo.svg" alt="logo">
+  <img src="../assets/osmus-logo.svg" alt="logo">
 
     </a>
     osm-merge
@@ -224,30 +222,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Home
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -256,121 +234,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="Page contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Page contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#background" class="md-nav__link">
-    <span class="md-ellipsis">
-      Background
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#external-datasets" class="md-nav__link">
-    <span class="md-ellipsis">
-      External Datasets
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="External Datasets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#us-forest-service-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      US Forest Service data
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#us-park-service-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      US Park Service data
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-openstreetmap" class="md-nav__link">
-    <span class="md-ellipsis">
-      For OpenStreetMap
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#programs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Programs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Programs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#utilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Utilities
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#conflator-program" class="md-nav__link">
-    <span class="md-ellipsis">
-      Conflator Program
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -417,7 +280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="about/" class="md-nav__link">
+      <a href="../about/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -438,7 +301,7 @@
   
   
     <li class="md-nav__item">
-      <a href="LICENSE/" class="md-nav__link">
+      <a href="../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -459,7 +322,7 @@
   
   
     <li class="md-nav__item">
-      <a href="CHANGELOG/" class="md-nav__link">
+      <a href="../CHANGELOG/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -529,7 +392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="dataflow/" class="md-nav__link">
+      <a href="../dataflow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -549,7 +412,7 @@
   
   
     <li class="md-nav__item">
-      <a href="setup/" class="md-nav__link">
+      <a href="../setup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -604,7 +467,7 @@
   
   
     <li class="md-nav__item">
-      <a href="conflation/" class="md-nav__link">
+      <a href="../conflation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -625,7 +488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="odkconflation/" class="md-nav__link">
+      <a href="../odkconflation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -646,7 +509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="highways/" class="md-nav__link">
+      <a href="../highways/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -667,7 +530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="calculations/" class="md-nav__link">
+      <a href="../calculations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -688,7 +551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="validating/" class="md-nav__link">
+      <a href="../validating/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -709,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="boundaries/" class="md-nav__link">
+      <a href="../boundaries/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -730,7 +593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="details/" class="md-nav__link">
+      <a href="../details/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -793,7 +656,7 @@
   
   
     <li class="md-nav__item">
-      <a href="utilities/" class="md-nav__link">
+      <a href="../utilities/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -814,7 +677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osm-merge/" class="md-nav__link">
+      <a href="../osm-merge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -835,7 +698,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tm-splitter/" class="md-nav__link">
+      <a href="../tm-splitter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -856,7 +719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="basemapper/" class="md-nav__link">
+      <a href="../basemapper/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -877,7 +740,7 @@
   
   
     <li class="md-nav__item">
-      <a href="odk2osm/" class="md-nav__link">
+      <a href="../odk2osm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -898,7 +761,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osm2favorites/" class="md-nav__link">
+      <a href="../osm2favorites/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -919,7 +782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="dbextract/" class="md-nav__link">
+      <a href="../dbextract/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -940,7 +803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="local-roads/" class="md-nav__link">
+      <a href="../local-roads/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1003,7 +866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="formats/" class="md-nav__link">
+      <a href="../formats/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1024,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="mvum/" class="md-nav__link">
+      <a href="../mvum/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1045,7 +908,7 @@
   
   
     <li class="md-nav__item">
-      <a href="trails/" class="md-nav__link">
+      <a href="../trails/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1066,7 +929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="osmhighways/" class="md-nav__link">
+      <a href="../osmhighways/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1129,7 +992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/convert/" class="md-nav__link">
+      <a href="../api/convert/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1150,7 +1013,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/sqlite/" class="md-nav__link">
+      <a href="../api/sqlite/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1171,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/osmfile/" class="md-nav__link">
+      <a href="../api/osmfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1192,7 +1055,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/yamlfile/" class="md-nav__link">
+      <a href="../api/yamlfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1213,7 +1076,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/filter_data/" class="md-nav__link">
+      <a href="../api/filter_data/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1234,7 +1097,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/odk2osm/" class="md-nav__link">
+      <a href="../api/odk2osm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1255,7 +1118,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/parsers/" class="md-nav__link">
+      <a href="../api/parsers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1276,7 +1139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/dbextract/" class="md-nav__link">
+      <a href="../api/dbextract/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1297,7 +1160,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/conflator/" class="md-nav__link">
+      <a href="../api/conflator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1347,46 +1210,73 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#background" class="md-nav__link">
-    <span class="md-ellipsis">
-      Background
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#external-datasets" class="md-nav__link">
     <span class="md-ellipsis">
       External Datasets
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="External Datasets">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-the-geojson-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating the GeoJson file
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#naming-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Naming Conflicts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data filtering
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-select_from-file-with-geojson" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging select_from file with GeoJson
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging select_from file with GeoJson">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#us-forest-service-data" class="md-nav__link">
+  <a href="#disable-the-map-appearance" class="md-nav__link">
     <span class="md-ellipsis">
-      US Forest Service data
+      Disable the map appearance
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#us-park-service-data" class="md-nav__link">
+  <a href="#display-calculated-values" class="md-nav__link">
     <span class="md-ellipsis">
-      US Park Service data
+      Display calculated values
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-openstreetmap" class="md-nav__link">
+  <a href="#error-dialog" class="md-nav__link">
     <span class="md-ellipsis">
-      For OpenStreetMap
+      Error Dialog
     </span>
   </a>
   
@@ -1394,48 +1284,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#programs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Programs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Programs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#utilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Utilities
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#conflator-program" class="md-nav__link">
-    <span class="md-ellipsis">
-      Conflator Program
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
-    </span>
-  </a>
   
 </li>
       
@@ -1457,135 +1305,300 @@
   
 
 
-<h1 id="osm-merge-a-community-project-of-openstreetmap-us">OSM Merge, a Community Project of OpenStreetMap US<a class="headerlink" href="#osm-merge-a-community-project-of-openstreetmap-us" title="Permanent link">&para;</a></h1>
-<p>📖 <strong>Documentation</strong>: <a href="https://osm-merge.github.io/osm-merge/" target="_blank">https://osm-merge.github.io/osm-merge/</a></p>
-<p>🖥️ <strong>Source Code</strong>: <a href="https://github.com/osm-merge/osm-merge" target="_blank">https://github.com/osm-merge/osm-merge</a></p>
-<hr />
-<h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h2>
-<p>This is a project for conflating external map datasets with
-OpenStreetMap with the ultimate goal of importing it into
-<a href="https://www.openstreetmap.org">OpenStreetMap</a>. It
-is oriented towards processing non OSM external datasets and supports
-conflation of field data collection using
-<a href="https://opendatakit.org/software/">OpenDataKit</a>, as well as other
-external datasets.</p>
-<p>The goal of this project is focused on improving remote highway and
-trail metadata to assist with emergency and recreational access in
-remote areas. This project uses several data sources to improve the
-existing highway features in OpenStreetMap. The current data in
-OpenStreetMap was often imported complete with bugs in the 
-original dataset, or the only details are <em>highway=track</em>. All of
-these have a US forest service reference number and name. Adding those
-makes it much easier to identify where you are and to communicate a
-location over a radio or phone.</p>
-<p>There is also access information in the datasets that is useful. This
-includes access for vehicle types, horses, public/private, etc... that
-is useful for OpenStreetMap.</p>
-<p><img alt="Way up Rollins Pass" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/small-rollinspass.png" /></p>
-<p>The other goal of this project is to support field data collection
-using OpenDataKit. The
-<a href="https://hotosm.github.io/osm-fieldwork/">osm-fieldwork</a> project can
-be used to convert the ODK data files into
-<a href="https://geojson.org/">GeoJson</a> and <a href="https://wiki.openstreetmap.org/wiki/OSM_XML">OSM
-XML</a>. This
-project then supports conflating that field collected data with
-current OpenStreetMap. Otherwise this is a time-consuming process to
-do manually. This can be used with the <a href="https://fmtm.hotosm.org">Field Mapping Tasking Manager (FMTM)</a> to process the collected data for validation
-and uploading to OpenStreetMap.</p>
-<p><img alt="Women field mapping" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/small-zanzibar.jpg" /></p>
+<h1 id="dealing-with-external-data-in-odk">Dealing with External Data in ODK<a class="headerlink" href="#dealing-with-external-data-in-odk" title="Permanent link">&para;</a></h1>
 <h2 id="external-datasets">External Datasets<a class="headerlink" href="#external-datasets" title="Permanent link">&para;</a></h2>
-<p>I'm working on a website for all the converted and processed data
-files that covers every national park or forest for the entire US.
-From the US forest service there are several datasets with a good
-license for OpenStreetMap. Warning, these are large files, so hard to
-work with at first. This project uses a huge amount of data (and disk
-space) if you start from the original nation wide datasets, which are
-too large to edit. There is a contrib script in the git sources I use
-to start breaking down the huge files into managable pieces.</p>
-<p>The MVUM data hasn't changed in years, so splitting everything up is a
-one-time task. For OpenStreetMap extracts all the data extracts of
-highways can be regenerated in a few hours, so it's possible to stay
-closely in sync with upstream. The original files are available from
-these sources.</p>
-<h3 id="us-forest-service-data">US Forest Service data<a class="headerlink" href="#us-forest-service-data" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Motor Vehicle Use Maps <a href="https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.Road_MVUM.zip">(MVUM)</a></li>
-<li><a href="https://data.fs.usda.gov/geodata/edw/edw_resources/shp/S_USA.TrailNFS_Publish.zip">USFS Trail maps</a></li>
-</ul>
-<h3 id="us-park-service-data">US Park Service data<a class="headerlink" href="#us-park-service-data" title="Permanent link">&para;</a></h3>
-<ul>
-<li><a href="https://public-nps.opendata.arcgis.com/search?collection=Dataset&amp;q=trail">NPS Trails</a></li>
-</ul>
-<h3 id="for-openstreetmap">For OpenStreetMap<a class="headerlink" href="#for-openstreetmap" title="Permanent link">&para;</a></h3>
-<ul>
-<li><a href="http://download.geofabrik.de/north-america.html">Geofabrik</a></li>
-</ul>
-<p>Much of the process of conflation is splitting huge datasets into
-managable sized files for data processing. I have that process <a href="https://github.com/hotosm/osm-merge/tree/main/contrib">mostly
-automated</a> so I
-can easily regenerate data extracts any time I make improvements to the
-conversion process. Currently there isn't any conflated data yet, just the
-convered data files chopped into manageable sized files. The processed
-map data is available <a href="http://5.78.72.214/osm-merge/">from
-here</a>. Please note the website is work
-in progress. Feedback on the data conversion to OpenStreetMap tagging
-is appreciated.</p>
-<p><img alt="Skipped highway segments" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/skippedsegments.png" /></p>
-<h2 id="programs">Programs<a class="headerlink" href="#programs" title="Permanent link">&para;</a></h2>
-<p>This project comprises of a main program, and multiple utilities. The
-utilities are used to prepare the datasets for conflating by fixing
-known bugs. It is very difficult to conflate datasets with wildly
-different data schemas, so making all the data use a consistent schema
-is important so tags can be compared.</p>
-<h3 id="utilities">Utilities<a class="headerlink" href="#utilities" title="Permanent link">&para;</a></h3>
-<p>The utility programs are used for all data cleaning and other tasks
-needed to conflate the data files. Known bugs in the datasets are
-fixed where possible, for example, expanding abbreviations so <em>Rd</em>
-becomes <em>Road</em>, etc... and also drops all the extraneous fields that
-aren't for OpenStreetMap. The fields we are most interested in are the
-name, the official reference number, and the access values.</p>
-<ul>
-<li>tm-splitter.py<ul>
-<li>Generate task grids for the Tasking Manager</li>
-</ul>
-</li>
-<li>mvum.py<ul>
-<li>Convert forest service MVUM datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>trails.py<ul>
-<li>Convert forest service datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>usgs.py<ul>
-<li>Convert USGS topographical datasets to OpenStreetMap</li>
-</ul>
-</li>
-<li>osmhighways.py<ul>
-<li>Data janitor for OpenStreetMap, delete <em>tiger:</em>, etc...</li>
-</ul>
-</li>
-</ul>
-<h3 id="conflator-program">Conflator Program<a class="headerlink" href="#conflator-program" title="Permanent link">&para;</a></h3>
-<p>This program doesn't require a database, unlike the other conflation
-programs in this project, although adding database support is on the
-TODO list. It is focused on conflating <a href="highways/">rural highways</a>
-and <a href="trails/">hiking trails</a>. It can also <a href="odkconflation/">conflate
-OpenDataKit</a> with OpenStreetMap.</p>
-<p>It supports conflating any two datasets in either GeoJson or OSM
-format. While this is currently under heavy development and
-debugging. I've been processing large amounts of data to track down
-all the obscure bugs in the original datasets, or the conflation
-process.</p>
-<p><img alt="MVUM Signs" src="https://github.com/osm-merge/osm-merge/blob/main/docs/assets/20210913_113539.jpg" /></p>
-<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<p>Anyone motivated is welcome to contribute to both the software, or
-just using these tools and the data for your own map
-improvements. This is a huge amount of data, as the original
-source files are nationwide. I'm just focused on my part of the
-western US. Help improving OpenStreetMap accuracy in remote areas
-of your own state is a good idea, and can save lives in an
-emergency. Be a data janitor!</p>
+<p><a href="https://www.getodk.org">ODK Collect</a> has recently gained the ability
+to load an external data file in GeoJson format of existing data. It's
+now possible to select existing data and then import its values into
+the XForm as default values. This lets the mapper use the XForm to
+change the existing data, or add to it. Any changes will need to be
+conflated later, that'll be another document.</p>
+<p><strong>Why do I want to use ODK Collect to edit map data?</strong> Much of what is
+currently in <a href="https:www.openstreetmap.org">OpenStreetMap</a> is lacking
+metadata, or the data has changed, like when a restaurant changes
+owners and gets a new name. Also most all remote mapping using
+satellite imagery lacks tags beyond <em>building=yes</em>. When we are doing
+a ground data collection project, we want to add useful tags like the
+building material, or whether it's a cafe or a hospital.</p>
+<p>Old imports also bring in problems, for example the infamous <a href="https://wiki.openstreetmap.org/wiki/TIGER">TIGER
+import</a>. Mappers have been
+cleaning that mess in North America up for over a decade. But an old
+import may have a weird value for an OSM tag, and it's usually better
+to update to a more community approved data model. The beauty and the
+curse of OSM data is its wonderful flexibility. People do invent new
+tags for a specific mapping campaign or import that doesn't get
+reviewed. Sometimes values have embedded quote marks or weird
+capitalization, and other strange formatting worth correcting.</p>
+<h2 id="creating-the-geojson-file">Creating the GeoJson file<a class="headerlink" href="#creating-the-geojson-file" title="Permanent link">&para;</a></h2>
+<p>When working with OSM data, there are multiple sources to obtain the
+required data. One option is to download a daily database dump from
+<a href="http://download.geofabrik.de/index.html">GeoFabrik</a>, which can be
+used as a flat file or imported into a database. The <a href="https://www.hotosm.org">Humanitarian
+OpenStreetMap Team(HOT)</a> maintains two
+projects that can also be used for data extracts. The primary one has
+a web based user interface, and is called the <a href="https://export.hotosm.org/en/v3/">HOT Export
+Tool</a>. The other option runs in a
+terminal and is part of <a href="https://github.com/hotosm/osm-fieldwork/wiki">OSM
+Fieldwork</a> project, and
+is also used as part of the <a href="https://github.com/hotosm/fmtm/wiki">Field Mapping Tasking
+Manager</a> backend. That program is
+<a href="https://github.com/hotosm/osm-fieldwork/blob/main/osm_fieldwork/make_data_extract.py">available
+here</a>. Alternatively,
+<a href="https://overpass-turbo.eu/">Overpass Turbo</a> can also be used to query
+the data but you have to understand the Overpass query syntax.</p>
+<p>It's important to keep in mind that there is a translation between
+the column names obtained from querying the data and how ODK Collect
+views it. There is also a translation from ODK to OSM, and it's
+important to ensure that all translations work together seamlessly for
+a smooth data flow. To maintain clarity, it's best to keep all tags
+and values as similar as possible, with unique names. When using
+<a href="https://gdal.org/programs/ogr2ogr.html">ogr2ogr</a> for data extraction
+from a Postgres database, there is more control than when using
+Overpass, and larger datasets can be processed. You can clean up all
+the tag names later if you add a custom config file for the
+conversion.</p>
+<p>As the GeoJson file gets turned into an XPATH components when
+converted to an XForm, the actual filename without the suffix becomes
+a node in the XPATH, so you can't have a survey question using the
+same name as the filename. It is prefered to have the name using the
+actual OSM tag instead of the file. If you get this error, you need to
+rename the GeoJson file.</p>
+<div class="highlight"><pre><span></span><code>Duplicate type: &#39;choice&#39;, Duplicate URI: &#39;None&#39;, Duplicate context: &#39;survey&#39;.
+</code></pre></div>
+<h2 id="naming-conflicts">Naming Conflicts<a class="headerlink" href="#naming-conflicts" title="Permanent link">&para;</a></h2>
+<p>If you do want to use an OSM tag name in a calculate field, a
+technique for maintaining consistency is to prefix an <em>x</em> to the start
+of each column name, so <em>healthcare</em> becomes <em>xhealthcare</em>. Then, in
+the XLSForm, <em>healthcare</em> can be used for the instance, and
+<em>xhealthcare</em> can be used for the value in the calculation column in
+the survey sheet. The name column in the survey sheet can then be just
+<em>healthcare</em>, which will translate directly into its OSM tag
+equivalent. For this example note that the GeoJson file must not be
+named healthcare.geojson, because it'll conflict with
+_<em>healthcare</em>. You can also avoid this by having the calculation in
+the same row as the survey question and avoiding the variable. If you
+do that, add a trigger for the geojson file, and it'll populate the
+default value for the question.</p>
+<p>It's possible to support almost any value using a text type in the
+XLSForm, but it's better to have an approved value for tag validation
+and completeness. If using a data model, the list of choices for a tag
+is defined, and anything outside of that will cause an
+error. Therefore, it's important to adhere to validated data models to
+avoid introducing errors or inconsistencies into the dataset. If the
+SQL query returns columns that aren't compatible with the XLSForm,
+XPATH errors will occur in ODK Collect.</p>
+<p>Something else to consider is the frequency of the tags and
+values. Since almost anything can be added to OSM, there are a lot of
+obscure ones. It's strongly suggested to use more common tags and
+values. A resource for this is the
+<a href="https://taginfo.openstreetmap.org/">Taginfo</a> website, which lists
+everything every used in OSM. There are two columns of interest, one
+is whether the tag is on the <a href="https://wiki.openstreetmap.org/wiki/Map_features">OSM
+wiki</a>, and the other
+is how many times that tag is used. I try to use tags that are on the
+wiki whenever possible, or at least have high frequency counts.</p>
+<h2 id="data-filtering">Data filtering<a class="headerlink" href="#data-filtering" title="Permanent link">&para;</a></h2>
+<p>For the external file to load properly in ODK Collect, any tags and
+values in the data extract must be in the choices sheet. Otherwise ODK
+Collect will fail to launch. The <a href="https://github.com/hotosm/osm-fieldwork/wiki">OSM
+Fieldwork</a> project has a
+<a href="https://github.com/hotosm/osm-fieldwork/blob/main/osm_fieldwork/filter_data.py">utility
+program</a>
+which can be imported into other python programs that scans the
+XLSForm choices sheet, and removes anything in the data extract that
+isn't supported as a choice.</p>
+<h2 id="debugging-select_from-file-with-geojson">Debugging select_from file with GeoJson<a class="headerlink" href="#debugging-select_from-file-with-geojson" title="Permanent link">&para;</a></h2>
+<p>Debugging complex interactions between the XLSForm, external data
+files, and ODK Collect can be a challenging task. Here are a few
+tricks to help debug what is going on. I strongly suggest developing
+your XLSForm initially without the data extracts. That way you can use
+<a href="https://enketo.org/">Enketo</a>, which you can access using the
+<strong>Preview</strong> button in ODK Central. Get all the survey questions,
+grouping, conditional, etc... so it's easy to test with
+Enketo. Enketo doesn't work with the GeoJson based data extract. Then
+add the data extract, and the calculation column entries to use the
+OSM data to set the survey question default value.</p>
+<h3 id="disable-the-map-appearance">Disable the map appearance<a class="headerlink" href="#disable-the-map-appearance" title="Permanent link">&para;</a></h3>
+<p>When working with external data, the <em>map value</em> in the <em>appearance</em>
+column of the survey sheet is often used. However, this can slow down
+the debugging process. To make it more efficient, you can turn off the
+map values and use the select menu instead. That works especially well
+if you have a small data file for testing, because then it's easy to
+cycle between them.</p>
+<p>To use the placement map, here's an example.</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>name</th>
+<th>label</th>
+<th>appearance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>select_one_from_file <strong>camp_sites.geojson</strong></td>
+<td>existing</td>
+<td>Existing Campsites</td>
+<td>map</td>
+</tr>
+</tbody>
+</table>
+<p>And an example where the values in the data file are an inline select
+menu instead.</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>name</th>
+<th>label</th>
+<th>appearance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>select_one_from_file <strong>camp_sites.geojson</strong></td>
+<td>existing</td>
+<td>Existing Campsites</td>
+<td>minimal</td>
+</tr>
+</tbody>
+</table>
+<h3 id="display-calculated-values">Display calculated values<a class="headerlink" href="#display-calculated-values" title="Permanent link">&para;</a></h3>
+<p>Often the bug you are trying to find is obscure, and you may not see
+any of the data file values being propagated into ODK Collect, even if
+it was working previously. In such cases, you can add a text survey
+question to display any of the values. Here's an example:</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>name</th>
+<th>label</th>
+<th>calculation</th>
+<th>trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>calculate</td>
+<td>xid</td>
+<td>OSM ID</td>
+<td>instance(“camp_sites”)/root/item[id=${existing}]/id</td>
+<td></td>
+</tr>
+<tr>
+<td>calculate</td>
+<td>xlabel</td>
+<td>Get the label</td>
+<td>instance(“camp_sites”)/root/item[id=${existing}]/title</td>
+<td></td>
+</tr>
+<tr>
+<td>calculate</td>
+<td>xref</td>
+<td>Reference number</td>
+<td>instance(“camp_sites”)/root/item[id=${existing}]/ref</td>
+<td></td>
+</tr>
+<tr>
+<td>calculate</td>
+<td>xlocation</td>
+<td>Location</td>
+<td>instance(“camp_sites”)/root/item[id=${existing}]/geometry</td>
+<td></td>
+</tr>
+<tr>
+<td>calculate</td>
+<td>xtourism</td>
+<td>camping type</td>
+<td>instance(“camp_sites”)/root/item[id=${existing}]/tourism</td>
+<td></td>
+</tr>
+<tr>
+<td>calculate</td>
+<td>xleisure</td>
+<td>leisure type</td>
+<td>instance(“camp_sites”)/root/item[id=${existing}]/leisure</td>
+<td></td>
+</tr>
+<tr>
+<td>text</td>
+<td>debug1</td>
+<td>Leisure</td>
+<td>${<span style="color:red">xleisure}</td>
+<td>${existing}</td>
+</tr>
+<tr>
+<td>text</td>
+<td>debug2</td>
+<td>OSM ID</td>
+<td>${<span style="color:red">xid</span>}</td>
+<td>${existing}</td>
+</tr>
+<tr>
+<td>text</td>
+<td>debug3</td>
+<td>Ref number</td>
+<td>${<span style="color:red">xref</span>}</td>
+<td>${existing}</td>
+</tr>
+<tr>
+<td>text</td>
+<td>debug4</td>
+<td>Tourism</td>
+<td>${<span style="color:red">xtourism</span>}</td>
+<td>${existing}</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>text</td>
+<td>name</td>
+<td>Business Name</td>
+<td>${<span style="color:red">xlabel</span>}</td>
+<td>${existing}</td>
+</tr>
+</tbody>
+</table>
+<p>For a value that is only used once to set the default value in
+Collect, you can also reference it in the same row. This saves
+potential naming conflicts, although is why I use an <strong>x</strong> prefix for
+gobal values.</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>name</th>
+<th>label</th>
+<th>calculation</th>
+<th>trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>text</td>
+<td>name</td>
+<td>Business Name</td>
+<td>instance(“camp_sites”)/root/item[id=${existing}]/name</td>
+<td>${existing}</td>
+</tr>
+</tbody>
+</table>
+<h3 id="error-dialog">Error Dialog<a class="headerlink" href="#error-dialog" title="Permanent link">&para;</a></h3>
+<p>Assuming xls2xform is happy, sometimes you get this error message in
+ODK Collect when switching screens. You'll see this when you have a
+value in your data file for a <em>select_one</em> survey question, but that
+value is not in the list of values in the choices sheet for that tag. In
+this example, there is no <em>doctor</em> value in the <em>healthcare</em>
+selection in the choices sheet. If you use the data filtering utility
+program mentioned above, you'll never see this error.</p>
+<p><img alt="XPath Error" src="../assets/image1.jpg" width="500" /></p>
 
 
 
@@ -1606,7 +1619,7 @@ emergency. Be a data janitor!</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 19, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 3, 2025</span>
   </span>
 
     
@@ -1679,10 +1692,10 @@ emergency. Be a data janitor!</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>

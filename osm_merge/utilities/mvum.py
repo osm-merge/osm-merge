@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2021, 2022, 2023, 2024 OpenStreetMap US
+# Copyright (c) 2021, 2022, 2023, 2024, 2025 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #
-# This program proccesses the National Forest Service MVUM dataset. That
+# This program proccesses the National Forest Service datasets. That
 # processing includes deleting unnecessary tags, and converting the
 # tags to an OSM standard for conflation.
 #
@@ -153,6 +153,9 @@ def processDataThread(config: dict,
                 if value:
                     # print(f"FIXME: \'{props}\' = {value.title()}")
                     newname = value.title()
+                    # Some names are just spaces
+                    if len(value.strip()) == 0 or newname == "Un-Named":
+                        continue
                     words = newname.split(' ')
                     for word in words:
                         if word in config["abbreviations"]:
@@ -425,7 +428,7 @@ good to avoid any highway with a smoothness of "very bad" or worse.
             osm = OsmFile()
             osm.header()
             osm.writeOSM(data, args.outfile)
-            osm.footer()
+            # osm.footer()
         log.info(f"Wrote {args.outfile}")
         
 if __name__ == "__main__":

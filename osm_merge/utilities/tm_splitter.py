@@ -71,6 +71,9 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 # Shapely.distance doesn't like duplicate points
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
 
+# shut off verbose messages from fiona
+logging.getLogger("fiona").setLevel(logging.WARNING)
+
 # Instantiate logger
 log = logging.getLogger(__name__)
 
@@ -152,7 +155,7 @@ class TM_Splitter(object):
 
         tasks = list()
         index = 1
-        # JOSM can't display epsg:3857, so convert back to epsg:4326 before writing
+        # JOSM can't display EPSG:3857, so convert back to EPSG:4326 before writing
         # the geometry.
         newproj = pyproj.Transformer.from_proj(
             pyproj.Proj(init='epsg:3857'),
@@ -323,28 +326,38 @@ class TM_Splitter(object):
                     for poly in task.geometry.coordinates:
                         polys.append(Polygon(poly[0]))
 
-        logging.debug(f"There are {len(polys)} in the boundary AOI")
+        logging.debug(f"There are {len(polys)} polygons in the boundary AOI")
         # input data
         data = fiona.open(datain)
 
         # output file
         meta = data.meta
-        foo = fiona.open(dataout, 'w', **meta)
+        outfiles = dict()
+        index = 0
+        spin = Spinner('Processing input data...')
+        for poly in polys:
+            dataout = f"MVUM_Highways_Task_{index}.geojson"
+            # else: dataout = 
+            outfiles[index] = {"task": index, "outfile": fiona.open(dataout, 'w', **meta), "geometry": poly}
+            index += 1
 
         for feature in data:
+            spin.next()
             if feature["geometry"] is None:
                 continue
             if feature["geometry"]["type"] == "LineString":
                 geom = LineString(feature["geometry"]["coordinates"])
-                for task in polys:
-                    if geom.within(task) or geom.intersects(task):
-                        foo.write(feature)
+                for task, metadata in outfiles.items():
+                    if geom.within(metadata["geometry"]) or geom.intersects(metadata["geometry"]):
+                        # breakpoint()
+                        metadata["outfile"].write(feature)
             elif feature["geometry"]["type"] == "MultiLineString":
                 geom = MultiLineString(feature["geometry"]["coordinates"])
                 for segment in geom.geoms:
-                    for task in polys:
-                        if geom.within(segment):
-                            foo.write(feature)
+                    for task, metadata in outfiles.items():
+                        if geom.within(metadata["geometry"]):
+                            # breakpoint()
+                            metadata["outfile"].write(feature)
 
     def extract_osm(self,
              infile: str,
@@ -450,7 +463,7 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
                         help="Generate the task grid")
     parser.add_argument("-s", "--split", default=False, action="store_true",
                         help="Split Multipolygon")
-    parser.add_argument("-o", "--outfile", default="out.osm",
+    parser.add_argument("-o", "--outfile", default="out.geojson",
                         help="Output filename template")
     parser.add_argument("-m", "--meters", default=50000, type=int,
                         help="Grid size in kilometers")

@@ -18,12 +18,14 @@ dnl     along with Underpass.  If not, see <https:dnlwww.gnu.org/licenses/>.
 dnl
 
 AC_PREREQ(2.59c)
-AC_INIT(fastclip, 1.0dev)
-AM_INIT_AUTOMAKE
+AC_INIT(osmmerge, 1.0dev)
+dnl AM_INIT_AUTOMAKE([subdir-objects])
+AM_INIT_AUTOMAKE()
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([fastclip.cc])
-AC_CONFIG_HEADERS([fconfig.h])
-
+AC_CONFIG_SRCDIR([fastclip/fastclip.cc])
+AC_CONFIG_HEADERS([osmconfig.h])
+dnl only configure in the top level directory
+dnl AC_CONFIG_SUBDIRS
 AC_PROG_CC
 AC_PROG_CXX
 AC_EXEEXT
@@ -75,7 +77,8 @@ fi
 AM_CONDITIONAL(ENABLE_PYTHON, [ test x"${enable_python}" != x"no" ])
 
 AC_CONFIG_FILES([
-Makefile
+fastclip/Makefile
+libosm/Makefile
 ])
 
 AC_OUTPUT

@@ -7,8 +7,15 @@ docs/NOTES
 *~
 docs/html/
 docs/*.png
+README
+autom4te.cache/
+.deps/
+
 
 # output files
+osmconfig.h.in
+osmconfig.h
+libosm-test
 */__pycache__
 */*/__pycache__
 fconfig.h

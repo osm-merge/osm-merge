@@ -15,10 +15,9 @@
 
 AUTOMAKE_OPTIONS = dejagnu subdir-objects
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = fastclip libosm
+PROJECTS = fastclip libosm
 
 all:
-	for dir in $(SUBDIRS); do \
-		pushd $${dir}/ && make ; \
-		popd; \
+	for dir in $(PROJECTS); do \
+		pushd $${dir}/ && make && popd; \
 	done

@@ -314,7 +314,9 @@ class TM_Splitter(object):
         aoi = fiona.open(self.aoi, 'r')
         polys = list()
         # Convert the boundary AOI to a clean list of Polygons
+        spin = Spinner('Processing Task MultiPolygon file...')
         for task in aoi:
+            spin.next()
             if task['geometry']['coordinates']:
                 if task.geometry.type == "Polygon":
                     try:
@@ -335,8 +337,9 @@ class TM_Splitter(object):
         outfiles = dict()
         index = 0
         spin = Spinner('Processing input data...')
+        dir = os.path.dirname(dataout)
         for poly in polys:
-            dataout = f"MVUM_Highways_Task_{index}.geojson"
+            dataout = f"{dir}/MVUM_Highways_Task_{index}.geojson"
             # else: dataout = 
             outfiles[index] = {"task": index, "outfile": fiona.open(dataout, 'w', **meta), "geometry": poly}
             index += 1

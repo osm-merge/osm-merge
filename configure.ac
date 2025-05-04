@@ -76,6 +76,15 @@ if test x"${enable_python}" = x"yes"; then
 fi
 AM_CONDITIONAL(ENABLE_PYTHON, [ test x"${enable_python}" != x"no" ])
 
+$(pkg-config --exists libxml++-3.0)
+if test $? -gt 0 ; then
+   CPPFLAGS+=" $(pkg-config --cflags libxml++-2.6)"
+   LIBS+=" $(pkg-config --libs libxml++-2.6)"
+else
+  CPPFLAGS+=" $(pkg-config --cflags libxml++-3.0)"
+  LIBS+=" $(pkg-config --libs libxml++-3.0)"
+fi
+
 AC_CONFIG_FILES([
 fastclip/Makefile
 libosm/Makefile

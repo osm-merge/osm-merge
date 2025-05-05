@@ -24,8 +24,29 @@
 #include <algorithm>
 #include <filesystem>
 
-#include "libosm.hh"
+#include "osmobjects.hh"
 using namespace osmobjects;
+#include "osmxml.hh"
+
+namespace osmxml {
+
+std::string &
+OSMXML::createOSM(OsmNode) const
+{
+    BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmNode) called";
+}
+
+std::string &
+OSMXML::createOSM(OsmWay) const
+{
+    BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmWay) called";
+}
+
+std::string &
+OSMXML::createOSM(OsmRelation) const
+{
+    BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmRelation) called";
+}
 
 // Called by libxml++ for each element of the XML file
 void
@@ -165,6 +186,8 @@ XML_Parser::readXML(std::istream &xml)
     return true;
 }
 
+} // end of osmxml namespace
+ 
 // Local Variables:
 // mode: C++
 // indent-tabs-mode: nil

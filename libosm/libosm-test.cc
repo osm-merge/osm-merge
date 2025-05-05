@@ -25,22 +25,19 @@
 #include <boost/program_options.hpp>
 #include <boost/geometry.hpp>
 #include <boost/json.hpp>
-#include <boost/log/trivial.hpp>
 #include <boost/log/core/core.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <filesystem>
+
 namespace logging = boost::log;
 using namespace boost;
 namespace opts = boost::program_options;
 
-#include <osmium/index/map/dense_file_array.hpp>
-#include <osmium/osm/object.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
-#include <libxml++/libxml++.h>
-
-#include "libosm.hh"
+#include "osmxml.hh"
+#include "osmpbf.hh"
+#include "geojson.hh"
 
 int
 main(int argc, char *argv[])
@@ -104,14 +101,14 @@ main(int argc, char *argv[])
     }
 
     if (infile.extension() == ".osm") {
-        auto xml = XML_Parser();
+        auto xml = osmxml::XML_Parser();
         std::ifstream indata;
         indata.open(infile, std::ifstream::in);
         xml.readXML(indata);
         BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
     } else if (infile.extension() == ".pbf") {
-        auto pbf = PBF_Parser();
-        read_osm_pbf(infile, pbf);
+        // auto pbf = PBF_Parser();
+        //read_osm_pbf(infile, pbf);
     } else {
         BOOST_LOG_TRIVIAL(error) << "Must be an OSM XML or PBF file!";
     }

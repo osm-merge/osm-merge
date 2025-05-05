@@ -23,14 +23,21 @@
 #include "osmconfig.h"
 #endif
 
-#include <string>
-#include <map>
+#include "osmobjects.hh"
+using namespace osmobjects;
 
-#include <boost/log/trivial.hpp>
+namespace geojson {
 
-#include "osmxml.hh"
-#include "osmpbf.hh"
-#include "geojson.hh"
+class GeoJson {
+private:
+    
+public:
+    std::string &createGeoJson(OsmNode) const;
+    std::string &createGeoJson(OsmWay) const;
+    std::string &createGeoJson(OsmRelation) const;
+};
+
+} // end of geojson namespace
 #endif
 
 // Local Variables:

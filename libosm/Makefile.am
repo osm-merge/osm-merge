@@ -30,7 +30,10 @@ BOOST_LIBS = \
 	$(BOOST_JSON_LIB)
 
 noinst_LTLIBRARIES = libosm.la
-libosm_la_SOURCES = libosm.cc libosm.hh osmobjects.cc osmobjects.hh
+libosm_la_SOURCES = osmobjects.cc osmobjects.hh \
+	osmxml.cc osmxml.hh \
+	osmpbf.cc osmpbf.hh \
+	geojson.cc geojson.hh
 libosm_la_LIBADD = $(BOOST_LIBS)
 
 # An executable for debugging convienince

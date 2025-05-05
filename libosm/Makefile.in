@@ -138,7 +138,7 @@ am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 libosm_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
-am_libosm_la_OBJECTS = libosm.lo osmobjects.lo
+am_libosm_la_OBJECTS = osmobjects.lo osmxml.lo osmpbf.lo geojson.lo
 libosm_la_OBJECTS = $(am_libosm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -162,8 +162,9 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/libosm-test.Po \
-	./$(DEPDIR)/libosm.Plo ./$(DEPDIR)/osmobjects.Plo
+am__depfiles_remade = ./$(DEPDIR)/geojson.Plo \
+	./$(DEPDIR)/libosm-test.Po ./$(DEPDIR)/osmobjects.Plo \
+	./$(DEPDIR)/osmpbf.Plo ./$(DEPDIR)/osmxml.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -400,7 +401,11 @@ BOOST_LIBS = \
 	$(BOOST_JSON_LIB)
 
 noinst_LTLIBRARIES = libosm.la
-libosm_la_SOURCES = libosm.cc libosm.hh osmobjects.cc osmobjects.hh
+libosm_la_SOURCES = osmobjects.cc osmobjects.hh \
+	osmxml.cc osmxml.hh \
+	osmpbf.cc osmpbf.hh \
+	geojson.cc geojson.hh
+
 libosm_la_LIBADD = $(BOOST_LIBS)
 libosm_test_SOURCES = libosm-test.cc
 libosm_test_LDADD = $(BOOST_LIBS) libosm.la
@@ -504,9 +509,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/geojson.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libosm-test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libosm.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osmobjects.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osmpbf.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osmxml.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -712,9 +719,11 @@ clean-am: clean-binPROGRAMS clean-generic clean-libtool \
 	clean-noinstLTLIBRARIES mostlyclean-am
 
 distclean: distclean-am
+	-rm -f ./$(DEPDIR)/geojson.Plo
 	-rm -f ./$(DEPDIR)/libosm-test.Po
-	-rm -f ./$(DEPDIR)/libosm.Plo
 	-rm -f ./$(DEPDIR)/osmobjects.Plo
+	-rm -f ./$(DEPDIR)/osmpbf.Plo
+	-rm -f ./$(DEPDIR)/osmxml.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-DEJAGNU distclean-compile \
 	distclean-generic distclean-tags
@@ -760,9 +769,11 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -f ./$(DEPDIR)/geojson.Plo
 	-rm -f ./$(DEPDIR)/libosm-test.Po
-	-rm -f ./$(DEPDIR)/libosm.Plo
 	-rm -f ./$(DEPDIR)/osmobjects.Plo
+	-rm -f ./$(DEPDIR)/osmpbf.Plo
+	-rm -f ./$(DEPDIR)/osmxml.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

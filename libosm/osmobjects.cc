@@ -58,24 +58,13 @@ OsmObject::dump(void) const
    BOOST_LOG_TRIVIAL(debug) << "\tID: " << std::to_string(id);
    BOOST_LOG_TRIVIAL(debug) << "\tVersion: " << std::to_string(version);
    BOOST_LOG_TRIVIAL(debug) << "\tTimestamp: " << to_simple_string(timestamp);
-   if (uid > 0) {
-       BOOST_LOG_TRIVIAL(debug) << "\tUID: " << std::to_string(uid);
-   }
-
-   if (user.size() > 0) {
-       BOOST_LOG_TRIVIAL(debug) << "\tUser: " << user;
-   }
-   if (changeset > 0) {
-       BOOST_LOG_TRIVIAL(debug) << "\tChange ID: " << std::to_string(changeset);
-   }
-#if 0
-    if (attributes.size() > 0) {
+   if (attributes.size() > 0) {
        BOOST_LOG_TRIVIAL(debug) << "\tAttributes: " << attributes.size();
         for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
            BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->first << ": " << it->second;
         }
     }
-#endif
+
     if (tags.size() > 0) {
        BOOST_LOG_TRIVIAL(debug) << "\tTags: " << tags.size();
         for (auto it = std::begin(tags); it != std::end(tags); ++it) {

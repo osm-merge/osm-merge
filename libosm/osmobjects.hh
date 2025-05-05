@@ -84,21 +84,17 @@ class OsmObject {
     };
 #endif
     void setAction(action_t act) { action = act; };
-    void setUID(long val) { uid = val; };
-    void setChangeID(long val) { changeset = val; };
 
     action_t action = none;  ///< the action that contains this object
     osmtype_t type = empty;  ///< The type of this object, node, way, or relation
     long int id = 0;             ///< The object ID within OSM
     int version = 0;         ///< The version of this object
     ptime timestamp;         ///< The timestamp of this object's creation or modification
-    long int uid = 0;            ///< The User ID of the mapper of this object
-    std::string user;        ///< The User name  of the mapper of this object
-    long int changeset = 0;      ///< The changeset ID this object is contained in
-    // std::map<std::string, std::string> attributes; ///< OSM metadata attributes
+    std::map<std::string, std::string> attributes; ///< OSM metadata attributes
+    std::string getAttribute(const std::string &key) { return tags[key] ; };
     std::map<std::string, std::string> tags; ///< OSM metadata tags
 
-    std::string getTagValue(const std::string &key) { return tags[key] ; };
+    std::string getTag(const std::string &key) { return tags[key] ; };
     bool containsKey(const std::string &key) { return tags.count(key); };
     bool containsValue(const std::string &key, const std::string &value)
     {

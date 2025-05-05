@@ -138,7 +138,7 @@ am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 libosm_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
-am_libosm_la_OBJECTS = libosm.lo
+am_libosm_la_OBJECTS = libosm.lo osmobjects.lo
 libosm_la_OBJECTS = $(am_libosm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -163,7 +163,7 @@ DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/libosm-test.Po \
-	./$(DEPDIR)/libosm.Plo
+	./$(DEPDIR)/libosm.Plo ./$(DEPDIR)/osmobjects.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -252,14 +252,14 @@ BOOST_SYSTEM_LIB = -lboost_system
 BOOST_THREAD_LIB = -lboost_thread -lpthread
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
-CPPFLAGS =  -I/usr/include  
+CFLAGS = -g -O0
+CPPFLAGS =  -I/usr/include/gdal   -I/usr/include/libxml++-3.0 -I/usr/lib64/libxml++-3.0/include -I/usr/include/libxml2 -DWITH_GZFILEOP -I/usr/include/glibmm-2.4 -I/usr/lib64/glibmm-2.4/include -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/sysprof-6 -pthread -I/usr/include/sigc++-2.0 -I/usr/lib64/sigc++-2.0/include
 CSCOPE = cscope
 CTAGS = ctags
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2
+CXXFLAGS = -g -O0
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -283,7 +283,7 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBOBJS = 
-LIBS =  -lgdal -lexpat -lbz2
+LIBS =  -lgdal -lexpat -lbz2 -lxml++-3.0 -lxml2 -lglibmm-2.4 -lgobject-2.0 -lglib-2.0 -lsigc-2.0
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
@@ -400,7 +400,7 @@ BOOST_LIBS = \
 	$(BOOST_JSON_LIB)
 
 noinst_LTLIBRARIES = libosm.la
-libosm_la_SOURCES = libosm.cc libosm.hh
+libosm_la_SOURCES = libosm.cc libosm.hh osmobjects.cc osmobjects.hh
 libosm_la_LIBADD = $(BOOST_LIBS)
 libosm_test_SOURCES = libosm-test.cc
 libosm_test_LDADD = $(BOOST_LIBS) libosm.la
@@ -506,6 +506,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/libosm-test.Po # am--include-marker
 include ./$(DEPDIR)/libosm.Plo # am--include-marker
+include ./$(DEPDIR)/osmobjects.Plo # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -713,6 +714,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-libtool \
 distclean: distclean-am
 	-rm -f ./$(DEPDIR)/libosm-test.Po
 	-rm -f ./$(DEPDIR)/libosm.Plo
+	-rm -f ./$(DEPDIR)/osmobjects.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-DEJAGNU distclean-compile \
 	distclean-generic distclean-tags
@@ -760,6 +762,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/libosm-test.Po
 	-rm -f ./$(DEPDIR)/libosm.Plo
+	-rm -f ./$(DEPDIR)/osmobjects.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

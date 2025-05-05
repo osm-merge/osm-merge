@@ -54,12 +54,18 @@ public:
     std::string &createOSM(OsmRelation) const;
 };
 
-/// This class implements a SAX parser for OSM XML
+/// This class implements a SAX parser for libxml++. A SAX parser is
+/// better for large files.
 class XML_Parser : public xmlpp::SaxParser {
 private:
     std::map<long int, OsmNode> node_cache;
-    std::map<long int, OsmWay> way_cache;
+    std::map<long int, std::shared_ptr<OsmWay>> way_cache;
     std::map<long int, OsmRelation> relation_cache;
+    // Nodes are handled in the on_start_element callback
+    std::shared_ptr<OsmWay> way;
+    // OsmRelation relation;
+
+
 public:
     XML_Parser(void){};
         /// Called by libxml++ for each element of the XML file

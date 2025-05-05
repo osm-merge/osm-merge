@@ -54,6 +54,9 @@ XML_Parser::on_start_element(const Glib::ustring &name,
                              const AttributeList &attributes)
 {
     // BOOST_LOG_TRIVIAL(debug) << "::on_start_element() called: " << name;
+    if (name == "osm" || name == "bounds") {
+        return;
+    }
     if (name == "node") {
         // Nodes are easy, everything is in the attributes.
         long int id = 0;
@@ -83,50 +86,66 @@ XML_Parser::on_start_element(const Glib::ustring &name,
             }
         }
         node.setPoint(lat, lon);
-        node_cache[id] = node;
         // node.dump();
+        node_cache[id] = node;
     } else if (name == "relation") {
-        BOOST_LOG_TRIVIAL(debug) << "\t\tFIXME";
+        BOOST_LOG_TRIVIAL(debug) << "\t\tFIXME: relations";
     } else if (name == "way") {
-        auto way = osmobjects::OsmWay();
+        way = std::make_shared<OsmWay>();
         long int id = 0;
         for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-            BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-            for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-                // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-                if (it->name == "id") {
-                    long int id = std::stol(it->value);
-                    way.id = id ;
-                }
-                if (it->name == "version") {
-                    int version = std::stoi(it->value);
-                    way.version = version;
-                }
-                if (it->name == "timestamp") {
-                    // The trailing Z needs to be dropped to be an ISO string
-                    std::string foo = it->value.substr(0, 16);
-                    way.timestamp = boost::posix_time::from_iso_extended_string(foo);
-                }
+            // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
+            if (it->name == "id") {
+                long int id = std::stol(it->value);
+                way->id = id ;
+            }
+            if (it->name == "version") {
+                int version = std::stoi(it->value);
+                way->version = version;
+            }
+            if (it->name == "timestamp") {
+                // The trailing Z needs to be dropped to be an ISO string
+                std::string foo = it->value.substr(0, 16);
+                way->timestamp = boost::posix_time::from_iso_extended_string(foo);
             }
         }
-        way_cache[id] = way;
-        way.dump();
     } else if (name == "nd") {
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-            BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-        }
+        // there is only  a single attribute, which is the ref value
+        way->addRef(std::stol(attributes.at(0).value));
     } else if (name == "tag") {
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-            BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-        }
+        // There are always only two entries, the first one is the tag name,
+        // the second the tag value.
+        auto key = attributes.at(0).value;
+        auto value = attributes.at(1).value;
+        way->addTag(key, value);
     }
 }
 
 void
 XML_Parser::on_end_element(const Glib::ustring& name)
 {
-    if (name != "node") {
-        BOOST_LOG_TRIVIAL(debug) << "::on_end_element() called: " << name;
+    if (name == "osm" || name == "bounds") {
+        return;
+    }
+    // These can be ignored as the data is grabbed at the start
+    // if (name != "node") {
+    //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(node) called: " << name;
+    // }
+    // if (name != "nd") {
+    //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(nd) called: " << name;
+    // }
+    // if (name != "tag") {
+    //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(tag) called: " << name;
+    // }
+    if (name == "way") {
+        // Create a spatial geometry from the refs for clipping purposes later
+        for (auto it = std::begin(way->refs); it != std::end(way->refs); ++it) {
+            auto node = node_cache.at(*it);
+            // BOOST_LOG_TRIVIAL(debug) << "::on_end_element(way) called: " << boost::geometry::wkt(node.getPoint());
+            boost::geometry::append(way->linestring, node.getPoint());
+        }
+        // way->dump();
+        way_cache[way->id] = way;
     }
 }
 

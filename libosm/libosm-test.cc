@@ -30,6 +30,7 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/file.hpp>
+#include <filesystem>
 namespace logging = boost::log;
 using namespace boost;
 namespace opts = boost::program_options;
@@ -37,6 +38,7 @@ namespace opts = boost::program_options;
 #include <osmium/index/map/dense_file_array.hpp>
 #include <osmium/osm/object.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
+#include <libxml++/libxml++.h>
 
 #include "libosm.hh"
 
@@ -77,18 +79,42 @@ main(int argc, char *argv[])
     opts::store(opts::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
     opts::notify(vm);
 
-    // By default, write everything to the log file
-    logging::core::get()->set_filter(
-        logging::trivial::severity >= logging::trivial::debug
-        );
-    if (vm.count("verbose")) {
-        // Enable also displaying to the terminal
-        logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
+    // Input data in OSM XML or PBF format
+    if (! vm.count("infile")) {
+            std::cout << "Usage: options_description [options]" << std::endl;
+            std::cout << desc << std::endl;
+            exit(0);
+    }
+    std::filesystem::path infile(vm["infile"].as<std::string>());
+
+    // Output file, default to the same format as the input file
+    std::string outfile("testout");
+    outfile += infile.extension();
+    if (! vm.count("infile")) {
+        outfile = vm["outfile"].as<std::string>();
     }
 
-    std::string outfile;
-    std::string infile;
-    BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
+    // By default only disp[lay informational messages
+    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
+
+    if (vm.count("verbose")) {
+        // Display debugging messages
+        logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
+        // logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
+    }
+
+    if (infile.extension() == ".osm") {
+        auto xml = XML_Parser();
+        std::ifstream indata;
+        indata.open(infile, std::ifstream::in);
+        xml.readXML(indata);
+        BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
+    } else if (infile.extension() == ".pbf") {
+        auto pbf = PBF_Parser();
+        read_osm_pbf(infile, pbf);
+    } else {
+        BOOST_LOG_TRIVIAL(error) << "Must be an OSM XML or PBF file!";
+    }
 }
 
 // Local Variables:

@@ -85,6 +85,20 @@ else
   LIBS+=" $(pkg-config --libs libxml++-3.0)"
 fi
 
+AC_CHECK_FILE([/usr/lib64/libosmpbf.so], [has_osmpbf=yes], [has_osmpbf=yes])
+if test "${has_osmpbf}" == "yes"; then
+   LIBS+=" -losmpbf"
+else
+  AC_MSG_ERROR([You need to install libosmpbf!])
+fi
+AC_CHECK_FILE([/usr/lib64/libprotobuf.so], [has_protobuf=yes], [has_protobuf=yes])
+if test "${has_protobuf}" == "yes"; then
+   LIBS+=" -lprotobuf"
+else
+  AC_MSG_ERROR([You need to install libprotobuf!])
+fi
+
+dnl protobuf, osmpbf
 AC_CONFIG_FILES([
 fastclip/Makefile
 libosm/Makefile

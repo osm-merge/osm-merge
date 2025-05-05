@@ -21914,6 +21914,67 @@ else
   LIBS+=" $(pkg-config --libs libxml++-3.0)"
 fi
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /usr/lib64/libosmpbf.so" >&5
+printf %s "checking for /usr/lib64/libosmpbf.so... " >&6; }
+if test ${ac_cv_file__usr_lib64_libosmpbf_so+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/lib64/libosmpbf.so"; then
+  ac_cv_file__usr_lib64_libosmpbf_so=yes
+else
+  ac_cv_file__usr_lib64_libosmpbf_so=no
+fi ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_lib64_libosmpbf_so" >&5
+printf "%s\n" "$ac_cv_file__usr_lib64_libosmpbf_so" >&6; }
+if test "x$ac_cv_file__usr_lib64_libosmpbf_so" = xyes
+then :
+  has_osmpbf=yes
+else case e in #(
+  e) has_osmpbf=yes ;;
+esac
+fi
+
+if test "${has_osmpbf}" == "yes"; then
+   LIBS+=" -losmpbf"
+else
+  as_fn_error $? "You need to install libosmpbf!" "$LINENO" 5
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /usr/lib64/libprotobuf.so" >&5
+printf %s "checking for /usr/lib64/libprotobuf.so... " >&6; }
+if test ${ac_cv_file__usr_lib64_libprotobuf_so+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/lib64/libprotobuf.so"; then
+  ac_cv_file__usr_lib64_libprotobuf_so=yes
+else
+  ac_cv_file__usr_lib64_libprotobuf_so=no
+fi ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_lib64_libprotobuf_so" >&5
+printf "%s\n" "$ac_cv_file__usr_lib64_libprotobuf_so" >&6; }
+if test "x$ac_cv_file__usr_lib64_libprotobuf_so" = xyes
+then :
+  has_protobuf=yes
+else case e in #(
+  e) has_protobuf=yes ;;
+esac
+fi
+
+if test "${has_protobuf}" == "yes"; then
+   LIBS+=" -lprotobuf"
+else
+  as_fn_error $? "You need to install libprotobuf!" "$LINENO" 5
+fi
+
 ac_config_files="$ac_config_files fastclip/Makefile libosm/Makefile"
 
 

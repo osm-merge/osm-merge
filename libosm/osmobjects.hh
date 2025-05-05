@@ -27,6 +27,7 @@
 #include <iostream>
 #include <boost/geometry.hpp>
 #include <boost/date_time.hpp>
+#include <libxml++/libxml++.h>
 #include "boost/date_time/posix_time/posix_time.hpp"
 using namespace boost::posix_time;
 using namespace boost::gregorian;
@@ -68,23 +69,35 @@ class OsmObject {
         tags[key] = value;
     };
 
+#if 0
+    void addAttribute(const std::string &key, const std::string &value) {
+        attributes[key] = value;
+    };
+    void addAttribute(const std::string &key, const float &value) {
+        attributes[key] = value;
+    };
+    void addAttribute(const std::string &key, const long int &value) {
+        attributes[key] = value;
+    };
+    void addAttribute(const std::string &key, const double &value) {
+        attributes[key] = value;
+    };
+#endif
     void setAction(action_t act) { action = act; };
     void setUID(long val) { uid = val; };
     void setChangeID(long val) { changeset = val; };
 
-    action_t action = none;                  ///< the action that contains this object
-    osmtype_t type = empty;                  ///< The type of this object, node, way, or relation
-    long id = 0;                             ///< The object ID within OSM
-    int version = 0;                         ///< The version of this object
-    ptime timestamp;                         ///< The timestamp of this object's creation or modification
-    long uid = 0;                            ///< The User ID of the mapper of this object
-    std::string user;                        ///< The User name  of the mapper of this object
-    long changeset = 0;                      ///< The changeset ID this object is contained in
+    action_t action = none;  ///< the action that contains this object
+    osmtype_t type = empty;  ///< The type of this object, node, way, or relation
+    long int id = 0;             ///< The object ID within OSM
+    int version = 0;         ///< The version of this object
+    ptime timestamp;         ///< The timestamp of this object's creation or modification
+    long int uid = 0;            ///< The User ID of the mapper of this object
+    std::string user;        ///< The User name  of the mapper of this object
+    long int changeset = 0;      ///< The changeset ID this object is contained in
+    // std::map<std::string, std::string> attributes; ///< OSM metadata attributes
     std::map<std::string, std::string> tags; ///< OSM metadata tags
 
-    bool priority = false; ///< Whether it's in the priority area
-    /// Dump internal data to the terminal, only for debugging
-    void dump(void) const;
     std::string getTagValue(const std::string &key) { return tags[key] ; };
     bool containsKey(const std::string &key) { return tags.count(key); };
     bool containsValue(const std::string &key, const std::string &value)
@@ -100,6 +113,8 @@ class OsmObject {
         }
         return false;
     };
+    /// Dump internal data to the terminal, only for debugging
+    void dump(void) const;
 };
 
 /// \class OsmNode
@@ -109,7 +124,6 @@ class OsmObject {
 class OsmNode : public OsmObject {
   public:
     OsmNode(long nid) { id = nid; };
-    point_t point; ///< The location of this node
     OsmNode(void) { type = node; };
     OsmNode(double lat, double lon)
     {
@@ -138,6 +152,7 @@ class OsmNode : public OsmObject {
     void setZ_order(int newZ_order);
 
   private:
+    point_t point; ///< The location of this node
     int z_order = 0;
 };
 

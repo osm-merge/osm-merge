@@ -30,23 +30,6 @@ using namespace osmobjects;
 
 namespace osmxml {
 
-std::string &
-OSMXML::createOSM(OsmNode) const
-{
-  BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmNode) called";
-}
-
-std::string &
-OSMXML::createOSM(OsmWay) const
-{
-  BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmWay) called";
-}
-
-std::string &
-OSMXML::createOSM(OsmRelation) const
-{
-  BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmRelation) called";
-}
 
 // Called by libxml++ for each element of the XML file
 void

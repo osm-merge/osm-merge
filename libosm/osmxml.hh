@@ -37,49 +37,35 @@ namespace logging = boost::log;
 #include "boost/date_time/posix_time/posix_time.hpp"
 using namespace boost::posix_time;
 using namespace boost::gregorian;
-using namespace osmpbfreader;
+// using namespace osmpbfreader;
 
 #include "osmobjects.hh"
 using namespace osmobjects;
 
-namespace osmxml {
+#include "parsers.hh"
+using namespace parsers;
 
-class OSMXML {
-private:
-    
-public:
-    OSMXML(){};
-    std::string &createOSM(OsmNode) const;
-    std::string &createOSM(OsmWay) const;
-    std::string &createOSM(OsmRelation) const;
-};
+namespace osmxml {
 
 /// This class implements a SAX parser for libxml++. A SAX parser is
 /// better for large files.
-class XML_Parser : public xmlpp::SaxParser {
+  class XML_Parser : public Parsers, public xmlpp::SaxParser {
 private:
-    std::map<long int, OsmNode> node_cache;
-    std::map<long int, std::shared_ptr<OsmWay>> way_cache;
-    std::map<long int, OsmRelation> relation_cache;
-    // Nodes are handled in the on_start_element callback
-    std::shared_ptr<OsmWay> way;
-    // OsmRelation relation;
-
+  std::shared_ptr<OsmWay> way;
 
 public:
-    XML_Parser(void){};
-        /// Called by libxml++ for each element of the XML file
-    /// Read an istream of the data and parse the XML
-    bool readXML(std::istream &xml);
+  /// Called by libxml++ for each element of the XML file
+  /// Read an istream of the data and parse the XML
+  bool readXML(std::istream &xml);
 
-    // These are the callbacks for libxml++
-    void on_start_element(const Glib::ustring &name,
-                          const AttributeList &properties);
-    void on_end_element(const Glib::ustring& name);
-    void on_comment(const Glib::ustring& text);
-    void on_warning(const Glib::ustring& text);
-    void on_error(const Glib::ustring& text);
-    void on_fatal_error(const Glib::ustring& text);
+  // These are the callbacks for libxml++
+  void on_start_element(const Glib::ustring &name,
+                        const AttributeList &properties);
+  void on_end_element(const Glib::ustring& name);
+  void on_comment(const Glib::ustring& text);
+  void on_warning(const Glib::ustring& text);
+  void on_error(const Glib::ustring& text);
+  void on_fatal_error(const Glib::ustring& text);
 };
 
 } // end of osmxml namespace

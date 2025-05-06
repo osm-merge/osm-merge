@@ -137,7 +137,7 @@ OsmWay::as_osmxml() const
 {
     auto out = std::make_shared<std::string>();
     // std::string attributes("id=\"%1%\" lat=\"%2%\" lon=\"%3%\" version=\"%4%\" timestamp=\"%5%\">");
-    std::string attributes("<way id=\"%1%\" version=\"%2%\" timestamp=\"%3%\"/>");
+    std::string attributes("<way id=\"%1%\" version=\"%2%\" timestamp=\"%3%\">");
     auto attrs = boost::format(attributes) % id % version % timestring;
     *out += attrs.str();
 
@@ -147,12 +147,12 @@ OsmWay::as_osmxml() const
         auto nd = boost::format(ndfmt) % *it;
         *out += nd.str();
     }
-    std::string tagfmt("\n\t<k=\"%1%\" v=\"%2%\"/>");
+    std::string tagfmt("\n\t<tag k=\"%1%\" v=\"%2%\"/>");
     for (auto it = std::begin(tags); it != std::end(tags); ++it) {
         auto tag = boost::format(tagfmt) % it->first % it->second;
         *out += tag.str();
     }
-    *out += "\n</way>";
+    *out += "\n  </way>";
 
     return out;
 }

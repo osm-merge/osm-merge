@@ -94,10 +94,10 @@ public:
 
   action_t action = none;  ///< the action that contains this object
   osmtype_t type = empty;  ///< The type of this object, node, way, or relation
-  long int id = 0;             ///< The object ID within OSM
+  long int id = 0;         ///< The object ID within OSM
   int version = 0;         ///< The version of this object
   ptime timestamp;         ///< The timestamp of this object's creation or modification
-  std::string timestring;     ///< String representation from the input file
+  std::string timestring;  ///< String representation from the input file
 
   std::map<std::string, std::string> attributes; ///< OSM metadata attributes
   std::string getAttribute(const std::string &key) { return tags[key] ; };

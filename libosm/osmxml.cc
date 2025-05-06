@@ -33,19 +33,19 @@ namespace osmxml {
 std::string &
 OSMXML::createOSM(OsmNode) const
 {
-    BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmNode) called";
+  BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmNode) called";
 }
 
 std::string &
 OSMXML::createOSM(OsmWay) const
 {
-    BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmWay) called";
+  BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmWay) called";
 }
 
 std::string &
 OSMXML::createOSM(OsmRelation) const
 {
-    BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmRelation) called";
+  BOOST_LOG_TRIVIAL(debug) << "OSMXML::createOSM(OsmRelation) called";
 }
 
 // Called by libxml++ for each element of the XML file
@@ -53,100 +53,110 @@ void
 XML_Parser::on_start_element(const Glib::ustring &name,
                              const AttributeList &attributes)
 {
-    // BOOST_LOG_TRIVIAL(debug) << "::on_start_element() called: " << name;
-    if (name == "osm" || name == "bounds") {
-        return;
+  // BOOST_LOG_TRIVIAL(debug) << "::on_start_element() called: " << name;
+  if (name == "osm" || name == "bounds") {
+    return;
+  }
+
+  if (name == "node") {
+    // Nodes are easy, everything is in the attributes.
+    long int id = 0;
+    float lat = 0.0, lon = 0.0;
+    int version = 0;
+    auto node = osmobjects::OsmNode();
+    for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
+      // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
+      if (it->name == "id") {
+        id = std::stol(it->value);
+        node.id = id ;
+      }
+      if (it->name == "lat") {
+        lat = std::stod(it->value);
+      }
+      if (it->name == "lon") {
+        lon = std::stod(it->value);
+      }
+      if (it->name == "version") {
+        version = std::stoi(it->value);
+        node.version = version;
+      }
+      if (it->name == "timestamp") {
+        // The trailing Z needs to be dropped to be an ISO string
+        std::string fixed = it->value.substr(0, 16);
+        node.timestamp = boost::posix_time::from_iso_extended_string(fixed);
+        node.timestring = it->value;
+      }
     }
-    if (name == "node") {
-        // Nodes are easy, everything is in the attributes.
-        long int id = 0;
-        float lat = 0.0, lon = 0.0;
-        int version = 0;
-        auto node = osmobjects::OsmNode();
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-            // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-            if (it->name == "id") {
-                id = std::stol(it->value);
-                node.id = id ;
-            }
-            if (it->name == "lat") {
-                lat = std::stod(it->value);
-            }
-            if (it->name == "lon") {
-                lon = std::stod(it->value);
-            }
-            if (it->name == "version") {
-                version = std::stoi(it->value);
-                node.version = version;
-            }
-            if (it->name == "timestamp") {
-                // The trailing Z needs to be dropped to be an ISO string
-                std::string foo = it->value.substr(0, 16);
-                node.timestamp = boost::posix_time::from_iso_extended_string(foo);
-            }
-        }
-        node.setPoint(lat, lon);
-        // node.dump();
-        node_cache[id] = node;
-    } else if (name == "relation") {
-        BOOST_LOG_TRIVIAL(debug) << "\t\tFIXME: relations";
-    } else if (name == "way") {
-        way = std::make_shared<OsmWay>();
-        long int id = 0;
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-            // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-            if (it->name == "id") {
-                long int id = std::stol(it->value);
-                way->id = id ;
-            }
-            if (it->name == "version") {
-                int version = std::stoi(it->value);
-                way->version = version;
-            }
-            if (it->name == "timestamp") {
-                // The trailing Z needs to be dropped to be an ISO string
-                std::string foo = it->value.substr(0, 16);
-                way->timestamp = boost::posix_time::from_iso_extended_string(foo);
-            }
-        }
-    } else if (name == "nd") {
-        // there is only  a single attribute, which is the ref value
-        way->addRef(std::stol(attributes.at(0).value));
-    } else if (name == "tag") {
-        // There are always only two entries, the first one is the tag name,
-        // the second the tag value.
-        auto key = attributes.at(0).value;
-        auto value = attributes.at(1).value;
-        way->addTag(key, value);
+    node.setPoint(lat, lon);
+    BOOST_LOG_TRIVIAL(debug) << *node.as_osmxml();
+    node_cache[id] = node;
+  } else if (name == "relation") {
+    BOOST_LOG_TRIVIAL(debug) << "\t\tFIXME: relations";
+  } else if (name == "way") {
+    way = std::make_shared<OsmWay>();
+    long int id = 0;
+    for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
+      // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
+      if (it->name == "id") {
+        long int id = std::stol(it->value);
+        way->id = id ;
+      }
+      if (it->name == "version") {
+        int version = std::stoi(it->value);
+        way->version = version;
+      }
+      if (it->name == "timestamp") {
+        // The trailing Z needs to be dropped to be an ISO string
+        std::string fixed = it->value.substr(0, 16);
+        way->timestamp = boost::posix_time::from_iso_extended_string(fixed);
+        way->timestring = it->value;
+      }
     }
+  } else if (name == "nd") {
+    // there is only  a single attribute, which is the ref value
+    way->addRef(std::stol(attributes.at(0).value));
+  } else if (name == "tag") {
+    // If way isn't set, it's a tag on a node. highway geometry nodes have no tags
+    // so these can be ignored.
+    if (way == 0) {
+      return;
+    }
+    // There are always only two entries, the first one is the tag name,
+    // the second the tag value.
+    auto key = attributes.at(0).value;
+    auto value = attributes.at(1).value;
+    way->addTag(key, value);
+  }
 }
 
 void
 XML_Parser::on_end_element(const Glib::ustring& name)
 {
-    if (name == "osm" || name == "bounds") {
-        return;
+  if (name == "osm" || name == "bounds") {
+    return;
+  }
+  // These can be ignored as the data is grabbed at the start
+  // if (name != "node") {
+  //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(node) called: " << name;
+  // }
+  // if (name != "nd") {
+  //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(nd) called: " << name;
+  // }
+  // if (name != "tag") {
+  //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(tag) called: " << name;
+  // }
+  if (name == "way") {
+    // Create a spatial geometry from the refs for clipping purposes later
+    for (auto it = std::begin(way->refs); it != std::end(way->refs); ++it) {
+      auto node = node_cache.at(*it);
+      // BOOST_LOG_TRIVIAL(debug) << "::on_end_element(way) called: " << boost::geometry::wkt(node.getPoint());
+      boost::geometry::append(way->linestring, node.getPoint());
     }
-    // These can be ignored as the data is grabbed at the start
-    // if (name != "node") {
-    //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(node) called: " << name;
-    // }
-    // if (name != "nd") {
-    //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(nd) called: " << name;
-    // }
-    // if (name != "tag") {
-    //     BOOST_LOG_TRIVIAL(debug) << "::on_end_element(tag) called: " << name;
-    // }
-    if (name == "way") {
-        // Create a spatial geometry from the refs for clipping purposes later
-        for (auto it = std::begin(way->refs); it != std::end(way->refs); ++it) {
-            auto node = node_cache.at(*it);
-            // BOOST_LOG_TRIVIAL(debug) << "::on_end_element(way) called: " << boost::geometry::wkt(node.getPoint());
-            boost::geometry::append(way->linestring, node.getPoint());
-        }
-        // way->dump();
-        way_cache[way->id] = way;
-    }
+    // way->dump();
+    way_cache[way->id] = way;
+    BOOST_LOG_TRIVIAL(debug) << *way->as_osmxml();
+    BOOST_LOG_TRIVIAL(debug) << *way->as_geojson();
+  }
 }
 
 // void
@@ -182,27 +192,27 @@ bool
 XML_Parser::readXML(std::istream &xml)
 {
  #ifdef TIMING_DEBUG
-    boost::timer::auto_cpu_timer timer("XML_Parser::readXML: took %w seconds\n");
+  boost::timer::auto_cpu_timer timer("XML_Parser::readXML: took %w seconds\n");
 #endif
 
-    setlocale(LC_NUMERIC, "C");
-    std::ofstream myfile;
+  setlocale(LC_NUMERIC, "C");
+  std::ofstream myfile;
 
-    // libxml calls on_element_start for each node, using a SAX parser,
-    // and works well for large files.
-    try {
-        set_substitute_entities(true);
-        parse_stream(xml);
-    } catch (const xmlpp::exception &ex) {
-        // FIXME: files downloaded seem to be missing a trailing \n,
-        // so produce an error, but we can ignore this as the file is
-        // processed correctly.
-        BOOST_LOG_TRIVIAL(error) << "libxml++ exception: " << ex.what();
-        // log_debug(xml.rdbuf());
-        int return_code = EXIT_FAILURE;
-    }
+  // libxml calls on_element_start for each node, using a SAX parser,
+  // and works well for large files.
+  try {
+    set_substitute_entities(true);
+    parse_stream(xml);
+  } catch (const xmlpp::exception &ex) {
+    // FIXME: files downloaded seem to be missing a trailing \n,
+    // so produce an error, but we can ignore this as the file is
+    // processed correctly.
+    BOOST_LOG_TRIVIAL(error) << "libxml++ exception: " << ex.what();
+    // log_debug(xml.rdbuf());
+    int return_code = EXIT_FAILURE;
+  }
 
-    return true;
+  return true;
 }
 
 } // end of osmxml namespace

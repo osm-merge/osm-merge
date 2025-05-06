@@ -62,83 +62,107 @@ typedef enum { empty, node, way, relation, member } osmtype_t;
 /// \class OsmObject
 /// \brief This is the base class for the common data fields used by all OSM objects
 class OsmObject {
-  public:
-    /// Add a metadata tag to an OSM object
-    void addTag(const std::string &key, const std::string &value) {
-        tags[key] = value;
-    };
-
+public:
+  /// Add a metadata tag to an OSM object
+  void addTag(const std::string &key, const std::string &value) {
+    tags[key] = value;
+  };
 #if 0
-    void addAttribute(const std::string &key, const std::string &value) {
-        attributes[key] = value;
-    };
-    void addAttribute(const std::string &key, const float &value) {
-        attributes[key] = value;
-    };
-    void addAttribute(const std::string &key, const long int &value) {
-        attributes[key] = value;
-    };
-    void addAttribute(const std::string &key, const double &value) {
-        attributes[key] = value;
-    };
+  void addTag(const std::string &key, const float &value) {
+    tags[key] = std::to_string(value);
+  };
+  void addTag(const std::string &key, const double &value) {
+    tags[key] = std::to_string(value);
+  };
+  void addTag(const std::string &key, const long int &value) {
+    tags[key] = std::to_string(value);
+  };
+  void addAttribute(const std::string &key, const float &value) {
+    attributes[key] = value;
+  };
+  void addAttribute(const std::string &key, const long int &value) {
+    attributes[key] = value;
+  };
+  void addAttribute(const std::string &key, const double &value) {
+    attributes[key] = value;
+  };
 #endif
-    void setAction(action_t act) { action = act; };
+  void addAttribute(const std::string &key, const std::string &value) {
+    attributes[key] = value;
+  };
+  void setAction(action_t act) { action = act; };
 
-    action_t action = none;  ///< the action that contains this object
-    osmtype_t type = empty;  ///< The type of this object, node, way, or relation
-    long int id = 0;             ///< The object ID within OSM
-    int version = 0;         ///< The version of this object
-    ptime timestamp;         ///< The timestamp of this object's creation or modification
-    std::map<std::string, std::string> attributes; ///< OSM metadata attributes
-    std::string getAttribute(const std::string &key) { return tags[key] ; };
-    std::map<std::string, std::string> tags; ///< OSM metadata tags
+  action_t action = none;  ///< the action that contains this object
+  osmtype_t type = empty;  ///< The type of this object, node, way, or relation
+  long int id = 0;             ///< The object ID within OSM
+  int version = 0;         ///< The version of this object
+  ptime timestamp;         ///< The timestamp of this object's creation or modification
+  std::string timestring;     ///< String representation from the input file
 
-    std::string getTag(const std::string &key) { return tags[key] ; };
-    bool containsKey(const std::string &key) { return tags.count(key); };
-    bool containsValue(const std::string &key, const std::string &value)
-    {
-        std::string lower = boost::algorithm::to_lower_copy(value);
-        if (tags[key].size() == 0) {
-            return true;
-        }
-        for (auto it = tags.begin(); it != tags.end(); ++it) {
-            if (it->second == value) {
-                return true;
-            }
-        }
-        return false;
-    };
-    /// Dump internal data to the terminal, only for debugging
-    void dump(void) const;
+  std::map<std::string, std::string> attributes; ///< OSM metadata attributes
+  std::string getAttribute(const std::string &key) { return tags[key] ; };
+  std::map<std::string, std::string> tags; ///< OSM metadata tags
+
+  std::string getTag(const std::string &key) { return tags[key] ; };
+  bool containsKey(const std::string &key) { return tags.count(key); };
+  bool containsValue(const std::string &key, const std::string &value)
+  {
+    std::string lower = boost::algorithm::to_lower_copy(value);
+    if (tags[key].size() == 0) {
+      return true;
+    }
+    for (auto it = tags.begin(); it != tags.end(); ++it) {
+      if (it->second == value) {
+        return true;
+      }
+    }
+    return false;
+  };
+  /// Dump internal data to the terminal, only for debugging
+  void dump(void) const;
 };
 
-/// \class OsmNode
-/// \brief This represents an OSM node.
-///
-/// A node has point coordinates, and may contain tags if it's a POI.
-class OsmNode : public OsmObject {
+  /// \class OsmNode
+  /// \brief This represents an OSM node.
+  ///
+  /// A node has point coordinates, and may contain tags if it's a POI.
+  class OsmNode : public OsmObject {
   public:
     OsmNode(long nid) { id = nid; };
     OsmNode(void) { type = node; };
     OsmNode(double lat, double lon)
     {
-        setPoint(lat, lon);
-        type = node;
+      setPoint(lat, lon);
+      type = node;
     };
     /// Set the latitude of this node
     void setLatitude(double lat) {
-        point.set<1>(lat);
+      point.set<1>(lat);
+    };
+    double getLatitude() {
+      return point.get<1>();
     };
     /// Set the longitude of this node
     void setLongitude(double lon) {
-        point.set<0>(lon);
+      point.set<0>(lon);
+    };
+    double getLongitude() {
+      return point.get<0>();
     };
     /// Set the location of this node
     void setPoint(double lat, double lon)
     {
-        point.set<1>(lat);
-        point.set<0>(lon);
+      point.set<1>(lat);
+      point.set<0>(lon);
     };
+    /// Set the location of this node
+    point_t getPoint(void)
+    {
+      return point;
+    };
+
+    std::shared_ptr<std::string> as_osmxml() const;
+    std::shared_ptr<std::string> as_geojson() const;
 
     /// Dump internal data to the terminal, only for debugging
     void dump(void) const { OsmObject::dump(); };
@@ -149,7 +173,7 @@ class OsmNode : public OsmObject {
   private:
     point_t point; ///< The location of this node
     int z_order = 0;
-};
+  };
 
 /// \class OsmWay
 /// \brief This represents an OSM way.
@@ -187,6 +211,9 @@ class OsmWay : public OsmObject {
     {
         return boost::geometry::length(linestring, boost::geometry::strategy::distance::haversine<float>(6371.0));
     };
+
+    std::shared_ptr<std::string> as_osmxml() const;
+    std::shared_ptr<std::string> as_geojson() const;
 
     /// Dump internal data to the terminal, only for debugging
     void dump(void) const;
@@ -252,3 +279,8 @@ class OsmRelation : public OsmObject {
 // EOF namespace osmobjects
 
 #endif //  __OSMOBJECTS_HH__
+
+// Local Variables:
+// mode: C++
+// indent-tabs-mode: nil
+// End:

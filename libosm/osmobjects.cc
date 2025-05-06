@@ -26,14 +26,44 @@
 #include <iostream>
 #include <boost/log/trivial.hpp>
 #include <boost/date_time.hpp>
+#include <boost/format.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/local_time/local_time.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
+
 using namespace boost::posix_time;
 using namespace boost::gregorian;
+using namespace boost::local_time;
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
 
 #include "osmobjects.hh"
 
 namespace osmobjects {
+
+std::shared_ptr<std::string>
+OsmNode::as_osmxml() const
+{
+  std::string attributes("<node id=\"%1%\" version=\"%2%\" timestamp=\"%3%\" lat=\"%4%\" lon=\"%5%\"/>");
+  auto xmlout = boost::format(attributes) % id % version % timestring % point.get<1>() % point.get<0>();
+
+  return std::make_shared<std::string>(xmlout.str());
+}
+
+std::shared_ptr<std::string>
+OsmNode::as_geojson() const
+{
+  // GeoJson doesn't have nodes, the points are part of the geometry
+  // or the OSM way.
+#if 0
+  bool pretty = "\n";
+  // Process the attributes first
+  std::string attributes("\"type\": \"Feature\",\n\t \"properties\": {\n\t\t\"id\": \"%1%\",\n\t\t\"version\": \"%2%\"\n\t}\n}");
+  auto jsonout = boost::format(attributes) % id % version;
+  BOOST_LOG_TRIVIAL(debug) << boost::geometry::wkt(point);
+
+#endif
+  return std::make_shared<std::string>();
+}
 
 void
 OsmObject::dump(void) const
@@ -93,15 +123,61 @@ OsmWay::dump(void) const
         for (auto const& [key, val] : tags)
         {
            BOOST_LOG_TRIVIAL(debug) << key
-                    << ':'
+                    << ": "
                     << val
                     << ", ";
         }
-       BOOST_LOG_TRIVIAL(debug);
     } else {
        BOOST_LOG_TRIVIAL(debug) << "No tags.";
     }
 };
+
+std::shared_ptr<std::string>
+OsmWay::as_osmxml() const
+{
+    auto out = std::make_shared<std::string>();
+    // std::string attributes("id=\"%1%\" lat=\"%2%\" lon=\"%3%\" version=\"%4%\" timestamp=\"%5%\">");
+    std::string attributes("<way id=\"%1%\" version=\"%2%\" timestamp=\"%3%\"/>");
+    auto attrs = boost::format(attributes) % id % version % timestring;
+    *out += attrs.str();
+
+    std::vector<std::string> waytags;
+    std::string ndfmt("\n\t<nd ref=\"%1%\"/>");
+    for (auto it = std::begin(refs); it != std::end(refs); ++it) {
+        auto nd = boost::format(ndfmt) % *it;
+        *out += nd.str();
+    }
+    std::string tagfmt("\n\t<k=\"%1%\" v=\"%2%\"/>");
+    for (auto it = std::begin(tags); it != std::end(tags); ++it) {
+        auto tag = boost::format(tagfmt) % it->first % it->second;
+        *out += tag.str();
+    }
+    *out += "\n</way>";
+
+    return out;
+}
+
+std::shared_ptr<std::string>
+OsmWay::as_geojson() const
+{
+    auto out = std::make_shared<std::string>();
+
+    std::string attributes("\ttype\": \"Feature\",\n\t \"properties\": {\n\t\t\"id\": \"%1%\",\n\t\t\"version\": \"%2%\"\n");
+    auto jsonout = boost::format(attributes) % id % version;
+    //  BOOST_LOG_TRIVIAL(debug) << boost::geometry::wkt(jsonout.str());
+    *out += jsonout.str();
+    std::string propfmt("\t\t\"%1%\": \"%2%\"\n");
+    for (auto it = std::begin(tags); it != std::end(tags); ++it) {
+        auto tag = boost::format(propfmt) % it->first % it->second;
+        *out += tag.str();
+    }
+    *out += "\n\t},\n\tgeometry\": {\n\t\t\"type\": \"LineString\".\n\t\t\"coordinates\" [";
+    //for (auto it = std::begin(node_cache); it != std::end(node_cache); ++it) {
+    // }
+    *out += "\n\t\t]\n\t\t]\n\t}\n\t}\n";
+
+    return out;
+}
 
 void
 OsmRelation::dump() const
@@ -145,3 +221,8 @@ OsmNode::setZ_order(int newZ_order)
 }
 
 } // namespace osmobjects
+
+// Local Variables:
+// mode: C++
+// indent-tabs-mode: nil
+// End:

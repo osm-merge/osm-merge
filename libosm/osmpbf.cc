@@ -29,20 +29,38 @@ using namespace osmobjects;
 // namespace osmpbf {
 
 void
-PBF_Parser::node_callback(uint64_t osmi,
+PBF_Parser::node_callback(uint64_t id,
                           double lon,
                           double lat,
                           const Tags &tags)
 {
-    BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::node_callback() called";
+  // BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::node_callback() called";
+  auto node = osmobjects::OsmNode();
+  node.id = id;
+  node.version = 1;             // FIXME: we need to get this from, the PBF
+  node.setPoint(lat, lon);
+  node_cache[id] = node;
 }
 
 void
-PBF_Parser::way_callback(uint64_t osmid,
+PBF_Parser::way_callback(uint64_t id,
                          const Tags &tags,
                          const std::vector<uint64_t> &refs)
 {
-    BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::way_callback() called";
+  //BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::way_callback() called";
+  auto way = std::make_shared<OsmWay>();
+  way->id = id;
+  way->version = 1;             // FIXME: we need to get this from, the PBF
+  for (auto it = std::begin(refs); it != std::end(refs); ++it) {
+    way->addRef(*it);
+    auto node = node_cache.at(*it);
+    boost::geometry::append(way->linestring, node.getPoint());
+  }
+  for (auto it = std::begin(tags); it != std::end(tags); ++it) {
+    way->addTag(it->first, it->second);
+  }
+  way_cache[id] = way;
+  // way->dump();
 }
 
 void
@@ -50,7 +68,7 @@ PBF_Parser::relation_callback(uint64_t osmid,
                               const Tags &tags,
                               const References &refs)
 {
-    BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::relation_callback() called";
+  BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::relation_callback() called";
 }
 
 //} //  end of osmpbf namespace

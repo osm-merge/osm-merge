@@ -31,24 +31,23 @@ using namespace osmpbfreader;
 #include "osmobjects.hh"
 using namespace osmobjects;
 
+#include "parsers.hh"
+
 // namespace osmpbf {
 
-class PBF_Parser {
+class PBF_Parser : public parsers::Parsers {
 private:
-    std::map<long int, OsmNode> node_cache;
-    std::map<long int, OsmWay> way_cache;
-    std::map<long int, OsmRelation> relation_cache;
 public:
     /// This method is called every time a Node is read
-    void node_callback(uint64_t /*osmid*/, double /*lon*/, double /*lat*/, const Tags &/*tags*/);
+    void node_callback(uint64_t osmid, double lon, double lat, const Tags &tags);
 
     /// This method is called every time a Way is read
     /// refs is a vector that contains the reference to the nodes that compose the way
-    void way_callback(uint64_t /*osmid*/, const Tags &/*tags*/, const std::vector<uint64_t> &/*refs*/);
+    void way_callback(uint64_t osmid, const Tags &tags, const std::vector<uint64_t> &refs);
 
     /// This method is called every time a Relation is read
     /// refs is a vector of pair corresponding of the relation type (Node, Way, Relation) and the reference to the object
-    void relation_callback(uint64_t /*osmid*/, const Tags &/*tags*/, const References & /*refs*/);
+    void relation_callback(uint64_t osmid, const Tags &tags, const References &refs);
 
     // bool readPBF();
 };

@@ -44,6 +44,8 @@ std::shared_ptr<std::string>
 OsmNode::as_osmxml() const
 {
   std::string attributes("<node id=\"%1%\" version=\"%2%\" timestamp=\"%3%\" lat=\"%4%\" lon=\"%5%\"/>");
+  std::string timestring = to_iso_extended_string(timestamp);
+  timestring += "Z";
   auto xmlout = boost::format(attributes) % id % version % timestring % point.get<1>() % point.get<0>();
 
   return std::make_shared<std::string>(xmlout.str());
@@ -135,26 +137,29 @@ OsmWay::dump(void) const
 std::shared_ptr<std::string>
 OsmWay::as_osmxml() const
 {
-    auto out = std::make_shared<std::string>();
-    // std::string attributes("id=\"%1%\" lat=\"%2%\" lon=\"%3%\" version=\"%4%\" timestamp=\"%5%\">");
-    std::string attributes("<way id=\"%1%\" version=\"%2%\" timestamp=\"%3%\">");
-    auto attrs = boost::format(attributes) % id % version % timestring;
-    *out += attrs.str();
+  auto out = std::make_shared<std::string>();
+  // std::string attributes("id=\"%1%\" lat=\"%2%\" lon=\"%3%\" version=\"%4%\" timestamp=\"%5%\">");
+  std::string attributes("<way id=\"%1%\" version=\"%2%\" timestamp=\"%3%\">");
+  std::string timestring = to_iso_extended_string(timestamp);
+  timestring += "Z";
 
-    std::vector<std::string> waytags;
-    std::string ndfmt("\n\t<nd ref=\"%1%\"/>");
-    for (auto it = std::begin(refs); it != std::end(refs); ++it) {
-        auto nd = boost::format(ndfmt) % *it;
-        *out += nd.str();
-    }
-    std::string tagfmt("\n\t<tag k=\"%1%\" v=\"%2%\"/>");
-    for (auto it = std::begin(tags); it != std::end(tags); ++it) {
-        auto tag = boost::format(tagfmt) % it->first % it->second;
-        *out += tag.str();
-    }
-    *out += "\n  </way>";
+  auto attrs = boost::format(attributes) % id % version % timestring;
+  *out += attrs.str();
 
-    return out;
+  std::vector<std::string> waytags;
+  std::string ndfmt("\n\t<nd ref=\"%1%\"/>");
+  for (auto it = std::begin(refs); it != std::end(refs); ++it) {
+    auto nd = boost::format(ndfmt) % *it;
+    *out += nd.str();
+  }
+  std::string tagfmt("\n\t<tag k=\"%1%\" v=\"%2%\"/>");
+  for (auto it = std::begin(tags); it != std::end(tags); ++it) {
+    auto tag = boost::format(tagfmt) % it->first % it->second;
+    *out += tag.str();
+  }
+  *out += "\n  </way>";
+
+  return out;
 }
 
 std::shared_ptr<std::string>

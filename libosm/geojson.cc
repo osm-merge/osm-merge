@@ -25,12 +25,39 @@
 #include <boost/json.hpp>
 using namespace boost;
 namespace json = boost::json;
+#include <cstdio>
 
 #include "geojson.hh"
 #include "osmobjects.hh"
 using namespace osmobjects;
 
 namespace geojson {
+  struct handler
+    {
+      constexpr static std::size_t max_object_size = std::size_t(-1);
+      constexpr static std::size_t max_array_size = std::size_t(-1);
+      constexpr static std::size_t max_key_size = std::size_t(-1);
+      constexpr static std::size_t max_string_size = std::size_t(-1);
+
+      bool on_document_begin( boost::system::error_code& ) { return true; }
+      bool on_document_end( boost::system::error_code& ) { return true; }
+      bool on_object_begin( boost::system::error_code& ) { return true; }
+      bool on_object_end( std::size_t, boost::system::error_code& ) { return true; }
+      bool on_array_begin( boost::system::error_code& ) { return true; }
+      bool on_array_end( std::size_t, boost::system::error_code& ) { return true; }
+      bool on_key_part( std::string_view, std::size_t, boost::system::error_code& ) { return true; }
+      bool on_key( std::string_view, std::size_t, boost::system::error_code& ) { return true; }
+      bool on_string_part( std::string_view, std::size_t, boost::system::error_code& ) { return true; }
+      bool on_string( std::string_view, std::size_t, boost::system::error_code& ) { return true; }
+      bool on_number_part( std::string_view, boost::system::error_code& ) { return true; }
+      bool on_int64( std::int64_t, std::string_view, boost::system::error_code& ) { return true; }
+      bool on_uint64( std::uint64_t, std::string_view, boost::system::error_code& ) { return true; }
+      bool on_double( double, std::string_view, boost::system::error_code& ) { return true; }
+      bool on_bool( bool, boost::system::error_code& ) { return true; }
+      bool on_null( boost::system::error_code& ) { return true; }
+      bool on_comment_part(std::string_view, boost::system::error_code&) { return true; }
+      bool on_comment(std::string_view, boost::system::error_code&) { return true; }
+    };
 
 std::shared_ptr<multipolygon_t>
 GeoJson::make_geometry(const std::string &wkt) {
@@ -117,11 +144,35 @@ GeoJson::make_geometry(const json::object &obj) {
 
 // CPLSetConfigOption( "OGR_GEOJSON_MAX_OBJ_SIZE", "0" );
 json::value
-GeoJson::readFile(const std::string &filespec) {
-  json::basic_parser <GeoJson> foo();
+readFile(const std::string &filespec) {
+  auto foo = GeoJson();
+  FILE *fp = std::fopen(filespec.c_str(), "r");
+  char buffer[500];
+  size_t         ret;
   boost::system::error_code ec;
 
-  // return result;
+  int elements = 0;
+  ret = std::fread(buffer, 1, 500, fp);
+  for (auto it = std::begin(buffer); it != std::end(buffer); ++it) {
+    if (it == "<") {
+      if (elements == 0) {
+        elements = 1;
+      } else {
+        elements += 1;
+      }
+    }
+    if (it == ">") {
+      elements -= 1;
+    }
+    // A complete JSON entry has been read
+    if (elements == 0) {
+      foo.write(buffer, ret, ec );
+    }
+  }
+  // foo.write(write( s.data(), s.size(), ec );
+
+  json::value result;
+  return result;
 }
 
 } // end of geojson namespace

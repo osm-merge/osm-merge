@@ -20,24 +20,19 @@
 #include "osmconfig.h"
 #endif
 
-#include <iostream>
-#include <string>
 #include <boost/program_options.hpp>
-#include <boost/geometry.hpp>
-#include <boost/json.hpp>
 #include <boost/log/core/core.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <filesystem>
+#include <dejagnu.h>
 
 namespace logging = boost::log;
 using namespace boost;
 namespace opts = boost::program_options;
 
-#include "osmxml.hh"
-#include "osmpbf.hh"
-#include "geojson.hh"
+#include "libosm.hh"
 
 int
 main(int argc, char *argv[])
@@ -91,13 +86,13 @@ main(int argc, char *argv[])
         outfile = vm["outfile"].as<std::string>();
     }
 
-    // By default only disp[lay informational messages
-    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
+    // By default only display informational messages
+    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
 
     if (vm.count("verbose")) {
         // Display debugging messages
         logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
-        // logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
+        logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
     }
 
     if (infile.extension() == ".osm") {
@@ -105,10 +100,14 @@ main(int argc, char *argv[])
         std::ifstream indata;
         indata.open(infile, std::ifstream::in);
         xml.readXML(indata);
+        xml.writeData("foo.osm");
         BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
     } else if (infile.extension() == ".pbf") {
-        // auto pbf = PBF_Parser();
-        //read_osm_pbf(infile, pbf);
+        auto pbf = PBF_Parser();
+        read_osm_pbf(infile, pbf);
+        pbf.writeData("bar.osm");
+    } else if (infile.extension() == ".geojsone") {
+      // FIXME: in progress...
     } else {
         BOOST_LOG_TRIVIAL(error) << "Must be an OSM XML or PBF file!";
     }

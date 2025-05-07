@@ -38,7 +38,7 @@ using namespace osmobjects;
 class PBF_Parser : public parsers::Parsers {
 private:
 public:
-    /// This method is called every time a Node is read
+  /// This method is called every time a Node is read
   void node_callback(uint64_t id,
                      double lon,
                      double lat,
@@ -46,23 +46,24 @@ public:
                      long int version,
                      long int timestamp);
 
-    /// This method is called every time a Way is read
-    /// refs is a vector that contains the reference to the nodes that compose the way
-    void way_callback(uint64_t osmid,
-                      const Tags &tags,
-                      const std::vector<uint64_t> &refs,
-                      long int version,
-                      long int timestamp);
+  /// This method is called every time a Way is read
+  /// refs is a vector that contains the reference to the nodes that compose the way
+  void way_callback(uint64_t id,
+                    const Tags &tags,
+                    const std::vector<uint64_t> &refs,
+                    long int version,
+                    long int timestamp);
 
-    /// This method is called every time a Relation is read
-    /// refs is a vector of pair corresponding of the relation type (Node, Way, Relation) and the reference to the object
-    void relation_callback(uint64_t osmid,
-                           const Tags &tags,
-                           const References &refs,
-                           long int version,
-                           long int timestamp);
+  /// This method is called every time a Relation is read
+  /// refs is a vector of pair corresponding of the relation type
+  //(Node, Way, Relation) and the reference to the object
+  void relation_callback(uint64_t id,
+                         const Tags &tags,
+                         const References &refs,
+                         long int version,
+                         long int timestamp);
 
-    // bool readPBF();
+  // bool readPBF();
 };
 
 //} //  end of osmpbf namespace

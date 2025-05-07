@@ -21,6 +21,7 @@
 #endif
 
 #include <boost/log/trivial.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
 
 #include "osmobjects.hh"
 using namespace osmobjects;
@@ -41,6 +42,7 @@ PBF_Parser::node_callback(uint64_t id,
   node.id = id;
   node.version = version;
   node.setPoint(lat, lon);
+  node.timestamp = from_time_t(timestamp);
   node_cache[id] = node;
 }
 
@@ -55,12 +57,14 @@ PBF_Parser::way_callback(uint64_t id,
   //BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::way_callback() called";
   auto way = std::make_shared<OsmWay>();
   way->id = id;
-  way->version = 1;             // FIXME: we need to get this from, the PBF
+  way->version = version;
+  way->timestamp = from_time_t(timestamp);
   for (auto it = std::begin(refs); it != std::end(refs); ++it) {
     way->addRef(*it);
     auto node = node_cache.at(*it);
     boost::geometry::append(way->linestring, node.getPoint());
   }
+
   for (auto it = std::begin(tags); it != std::end(tags); ++it) {
     way->addTag(it->first, it->second);
   }

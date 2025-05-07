@@ -32,12 +32,14 @@ void
 PBF_Parser::node_callback(uint64_t id,
                           double lon,
                           double lat,
-                          const Tags &tags)
+                          const Tags &tags,
+                          long int version,
+                          long int timestamp)
 {
   // BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::node_callback() called";
   auto node = osmobjects::OsmNode();
   node.id = id;
-  node.version = 1;             // FIXME: we need to get this from, the PBF
+  node.version = version;
   node.setPoint(lat, lon);
   node_cache[id] = node;
 }
@@ -45,7 +47,10 @@ PBF_Parser::node_callback(uint64_t id,
 void
 PBF_Parser::way_callback(uint64_t id,
                          const Tags &tags,
-                         const std::vector<uint64_t> &refs)
+                         const std::vector<uint64_t> &refs,
+                         long int version,
+                         long int timestamp
+                         )
 {
   //BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::way_callback() called";
   auto way = std::make_shared<OsmWay>();
@@ -66,7 +71,9 @@ PBF_Parser::way_callback(uint64_t id,
 void
 PBF_Parser::relation_callback(uint64_t osmid,
                               const Tags &tags,
-                              const References &refs)
+                              const References &refs,
+                              long int version,
+                              long int timestamp)
 {
   BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::relation_callback() called";
 }

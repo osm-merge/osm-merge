@@ -24,6 +24,7 @@
 #endif
 
 #include <fstream>
+#include <filesystem>
 
 namespace parsers {
 

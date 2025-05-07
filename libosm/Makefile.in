@@ -401,7 +401,8 @@ BOOST_LIBS = \
 	$(BOOST_JSON_LIB)
 
 noinst_LTLIBRARIES = libosm.la
-libosm_la_SOURCES = osmobjects.cc osmobjects.hh \
+libosm_la_SOURCES = parsers.hh \
+	osmobjects.cc osmobjects.hh \
 	osmxml.cc osmxml.hh \
 	osmpbf.cc osmpbf.hh \
 	geojson.cc geojson.hh

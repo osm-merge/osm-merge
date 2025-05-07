@@ -23,21 +23,127 @@
 #include "osmconfig.h"
 #endif
 
+#include <boost/geometry.hpp>
+#include <boost/json.hpp>
+#include <boost/json/basic_parser.hpp>
+#include <boost/json/basic_parser_impl.hpp>
+using namespace boost::json;
+#include "file.hpp"
 #include "osmobjects.hh"
 using namespace osmobjects;
 
+#include "parsers.hh"
+
 namespace geojson {
 
-class GeoJson {
+class GeoJson  : public parsers::Parsers {
 private:
-    
 public:
-    std::string &createGeoJson(OsmNode) const;
-    std::string &createGeoJson(OsmWay) const;
-    std::string &createGeoJson(OsmRelation) const;
+  std::shared_ptr<multipolygon_t> make_geometry(const std::string &wkt);
+  std::shared_ptr<multipolygon_t> make_geometry(const json::object &obj);
+  std::shared_ptr<multipolygon_t> make_geometry(const json::value &val);
+  json::value readFile(const std::string &filespec);
+
+  // Callbacks
+  constexpr static std::size_t max_object_size = std::size_t(-1);
+  constexpr static std::size_t max_array_size = std::size_t(-1);
+  constexpr static std::size_t max_key_size = std::size_t(-1);
+  constexpr static std::size_t max_string_size = std::size_t(-1);
+
+  bool on_document_begin( std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_document_end( std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_array_begin( std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_array_end( std::size_t n, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_object_begin( std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_object_end( std::size_t n, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_string_part( std::string_view s, std::size_t n, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_string( std::string_view s, std::size_t n, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_key_part( std::string_view s, std::size_t n, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_key( std::string_view s, std::size_t n, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_number_part( std::string_view s, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_int64( int64_t i, std::string_view s, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_uint64( uint64_t u, std::string_view s, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_double( double d, std::string_view s, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_bool( bool b, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_null( std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_comment_part( std::string_view s, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
+  bool on_comment( std::string_view s, std::error_code& ec ) {
+    BOOST_LOG_TRIVIAL(error) << __LINE__;
+    return false;
+  }
+
 };
 
 } // end of geojson namespace
+
 #endif  // end of __GEOJSON_HH_ 
 
 // Local Variables:

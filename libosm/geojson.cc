@@ -21,29 +21,107 @@
 #endif
 
 #include <boost/log/trivial.hpp>
+#include <boost/geometry.hpp>
+#include <boost/json.hpp>
+using namespace boost;
+namespace json = boost::json;
 
+#include "geojson.hh"
 #include "osmobjects.hh"
 using namespace osmobjects;
-#include "geojson.hh"
 
 namespace geojson {
 
-std::string &
-GeoJson::createGeoJson(OsmNode node) const
-{
-    BOOST_LOG_TRIVIAL(debug) << "GeoJson::createGeoJson(OsmNode) called";
+std::shared_ptr<multipolygon_t>
+GeoJson::make_geometry(const std::string &wkt) {
+    // Convert a WKT string into a geometry
+    auto geom = boost::geometry::from_wkt<multipolygon_t>(wkt);
+    auto mpoly = std::make_shared<multipolygon_t>(geom);
+
+    return mpoly;
 }
 
-std::string &
-GeoJson::createGeoJson(OsmWay way) const
-{
-    BOOST_LOG_TRIVIAL(debug) << "GeoJson::createGeoJson(OsmWay) called";
+std::shared_ptr<multipolygon_t>
+GeoJson::make_geometry(const json::value &val) {
+    auto mpoly = std::make_shared<multipolygon_t>();
+    if (val.is_array()) {
+        auto &array = val.get_array();
+        //tqdm bar;
+        //init_tqdm(&bar, "Processing", false, "tasks", true, array.size(), 5);
+        std::vector<point_t> points;
+        polygon_t poly;
+        for (auto it = array.begin(); it!= array.end(); ++it) {
+            //update_tqdm(&bar, 1, true);
+            if (it->is_array()) {
+                if (it->at(0).is_array()) {
+                    auto array2 = it->at(0).get_array();
+                    auto foo = make_geometry(array2);
+                    // BOOST_LOG_TRIVIAL(debug) << "YES: " << boost::geometry::wkt(*foo);
+                    for (auto iit = foo->begin(); iit!= foo->end(); ++iit) {
+                        // BOOST_LOG_TRIVIAL(debug) << "NO WAY: " << boost::geometry::wkt(*iit);
+                        for (auto iitt = foo->begin(); iitt!= foo->end(); ++iitt) {
+                            mpoly->push_back(*iitt);
+                            for (auto iittt = foo->begin(); iittt!= foo->end(); ++iittt) {
+                                // BOOST_LOG_TRIVIAL(debug) << "NO WAY 2: " << boost::geometry::wkt(*iittt);;
+                                mpoly->push_back(*iittt);
+                            }
+                        }
+                    }
+                    continue;
+                } else {
+                    double lat = it->at(0).as_double();
+                    double lon = it->at(1).as_double();
+                    point_t point(lat, lon);
+                    // BOOST_LOG_TRIVIAL(debug) << "NO: " << boost::geometry::wkt(point);
+                    points.push_back(point);
+                }
+            }
+        }
+        boost::geometry::assign_points(poly, points);
+        // for (auto iit = poly.begin(); iit!= poly.end(); ++iit) {
+        // BOOST_LOG_TRIVIAL(debug) << "FOO: " << boost::geometry::num_geometries(poly);
+        // }
+        mpoly->push_back(poly);
+        //close_tqdm(&bar);
+    } else {
+        BOOST_LOG_TRIVIAL(error) << "Is not an array()";
+    }
+
+    return mpoly;
 }
 
-std::string &
-GeoJson::createGeoJson(OsmRelation relation) const
-{
-    BOOST_LOG_TRIVIAL(debug) << "GeoJson::createGeoJson(OsmRelation) called";
+std::shared_ptr<multipolygon_t>
+GeoJson::make_geometry(const json::object &obj) {
+    auto mpoly = std::make_shared<multipolygon_t>();
+    if (obj.empty()) {
+      BOOST_LOG_TRIVIAL(error) << "Object has no entries!";
+      return mpoly;
+    }
+    BOOST_LOG_TRIVIAL(debug) << "Object has " << obj.size() << " entries" << std::endl;
+    auto data = json::parse(json::serialize(obj));
+    auto foo = data.at("features");
+    auto features = foo.get_array();
+    for (auto it = features.begin(); it!= features.end(); ++it) {
+      auto &geom = it->at("geometry");
+      auto &props = it->at("properties");
+      auto &coords = geom.at("coordinates");//
+      auto polys = make_geometry(coords);
+      for (auto iit = polys->begin(); iit!= polys->end(); ++iit) {
+          mpoly->push_back(*iit);
+      }
+      // mpoly->push_back(*polys);
+    }
+
+    return mpoly;
+}
+
+// CPLSetConfigOption( "OGR_GEOJSON_MAX_OBJ_SIZE", "0" );
+json::value
+GeoJson::readFile(const std::string &filespec) {
+  json::basic_parser <GeoJson> foo();
+  boost::system::error_code ec;
+
+  // return result;
 }
 
 } // end of geojson namespace

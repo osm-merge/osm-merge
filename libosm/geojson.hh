@@ -36,13 +36,10 @@ using namespace osmobjects;
 namespace geojson {
 
   class GeoJson  : public datastore::DataStore {
-private:
-public:
-  std::shared_ptr<multipolygon_t> make_geometry(const std::string &wkt);
-  std::shared_ptr<multipolygon_t> make_geometry(const json::object &obj);
-  std::shared_ptr<multipolygon_t> make_geometry(const json::value &val);
-  json::value readFile(const std::string &filespec);
-
+  private:
+  public:
+    bool makeFeature(const json::value &val);
+    json::value readFile(const std::string &filespec);
   // Callbacks
 #ifdef SAX                           // Ignore SAX parser for now
   struct handler {

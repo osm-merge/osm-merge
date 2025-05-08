@@ -32,149 +32,97 @@ namespace json = boost::json;
 using namespace osmobjects;
 
 namespace geojson {
-  struct handler
-    {
-      constexpr static std::size_t max_object_size = std::size_t(-1);
-      constexpr static std::size_t max_array_size = std::size_t(-1);
-      constexpr static std::size_t max_key_size = std::size_t(-1);
-      constexpr static std::size_t max_string_size = std::size_t(-1);
 
-      bool on_document_begin( boost::system::error_code& ) { return true; }
-      bool on_document_end( boost::system::error_code& ) { return true; }
-      bool on_object_begin( boost::system::error_code& ) { return true; }
-      bool on_object_end( std::size_t, boost::system::error_code& ) { return true; }
-      bool on_array_begin( boost::system::error_code& ) { return true; }
-      bool on_array_end( std::size_t, boost::system::error_code& ) { return true; }
-      bool on_key_part( std::string_view, std::size_t, boost::system::error_code& ) { return true; }
-      bool on_key( std::string_view, std::size_t, boost::system::error_code& ) { return true; }
-      bool on_string_part( std::string_view, std::size_t, boost::system::error_code& ) { return true; }
-      bool on_string( std::string_view, std::size_t, boost::system::error_code& ) { return true; }
-      bool on_number_part( std::string_view, boost::system::error_code& ) { return true; }
-      bool on_int64( std::int64_t, std::string_view, boost::system::error_code& ) { return true; }
-      bool on_uint64( std::uint64_t, std::string_view, boost::system::error_code& ) { return true; }
-      bool on_double( double, std::string_view, boost::system::error_code& ) { return true; }
-      bool on_bool( bool, boost::system::error_code& ) { return true; }
-      bool on_null( boost::system::error_code& ) { return true; }
-      bool on_comment_part(std::string_view, boost::system::error_code&) { return true; }
-      bool on_comment(std::string_view, boost::system::error_code&) { return true; }
-    };
+  bool
+  GeoJson::makeFeature(const json::value &val) {
+    std::vector<point_t> points;
 
-std::shared_ptr<multipolygon_t>
-GeoJson::make_geometry(const std::string &wkt) {
-    // Convert a WKT string into a geometry
-    auto geom = boost::geometry::from_wkt<multipolygon_t>(wkt);
-    auto mpoly = std::make_shared<multipolygon_t>(geom);
+    auto ftype = val.at("type");
+    auto props = val.at("properties");
+    auto geom = val.at("geometry");
+    auto gtype = geom.at("type");
+    auto coords = geom.at("coordinates");
 
-    return mpoly;
-}
-
-std::shared_ptr<multipolygon_t>
-GeoJson::make_geometry(const json::value &val) {
-    auto mpoly = std::make_shared<multipolygon_t>();
-    if (val.is_array()) {
-        auto &array = val.get_array();
-        //tqdm bar;
-        //init_tqdm(&bar, "Processing", false, "tasks", true, array.size(), 5);
-        std::vector<point_t> points;
-        polygon_t poly;
-        for (auto it = array.begin(); it!= array.end(); ++it) {
-            //update_tqdm(&bar, 1, true);
-            if (it->is_array()) {
-                if (it->at(0).is_array()) {
-                    auto array2 = it->at(0).get_array();
-                    auto foo = make_geometry(array2);
-                    // BOOST_LOG_TRIVIAL(debug) << "YES: " << boost::geometry::wkt(*foo);
-                    for (auto iit = foo->begin(); iit!= foo->end(); ++iit) {
-                        // BOOST_LOG_TRIVIAL(debug) << "NO WAY: " << boost::geometry::wkt(*iit);
-                        for (auto iitt = foo->begin(); iitt!= foo->end(); ++iitt) {
-                            mpoly->push_back(*iitt);
-                            for (auto iittt = foo->begin(); iittt!= foo->end(); ++iittt) {
-                                // BOOST_LOG_TRIVIAL(debug) << "NO WAY 2: " << boost::geometry::wkt(*iittt);;
-                                mpoly->push_back(*iittt);
-                            }
-                        }
-                    }
-                    continue;
-                } else {
-                    double lat = it->at(0).as_double();
-                    double lon = it->at(1).as_double();
-                    point_t point(lat, lon);
-                    // BOOST_LOG_TRIVIAL(debug) << "NO: " << boost::geometry::wkt(point);
-                    points.push_back(point);
-                }
-            }
-        }
-        boost::geometry::assign_points(poly, points);
-        // for (auto iit = poly.begin(); iit!= poly.end(); ++iit) {
-        // BOOST_LOG_TRIVIAL(debug) << "FOO: " << boost::geometry::num_geometries(poly);
-        // }
-        mpoly->push_back(poly);
-        //close_tqdm(&bar);
+    // Add to the cache
+    if (gtype == "Point") {
+      auto node = std::make_shared<OsmNode>();
+      node_cache[node->id] = *node;
     } else {
-        BOOST_LOG_TRIVIAL(error) << "Is not an array()";
-    }
-
-    return mpoly;
-}
-
-std::shared_ptr<multipolygon_t>
-GeoJson::make_geometry(const json::object &obj) {
-    auto mpoly = std::make_shared<multipolygon_t>();
-    if (obj.empty()) {
-      BOOST_LOG_TRIVIAL(error) << "Object has no entries!";
-      return mpoly;
-    }
-    BOOST_LOG_TRIVIAL(debug) << "Object has " << obj.size() << " entries" << std::endl;
-    auto data = json::parse(json::serialize(obj));
-    auto foo = data.at("features");
-    auto features = foo.get_array();
-    for (auto it = features.begin(); it!= features.end(); ++it) {
-      auto &geom = it->at("geometry");
-      auto &props = it->at("properties");
-      auto &coords = geom.at("coordinates");//
-      auto polys = make_geometry(coords);
-      for (auto iit = polys->begin(); iit!= polys->end(); ++iit) {
-          mpoly->push_back(*iit);
+      auto way = std::make_shared<OsmWay>();
+      for( const key_value_pair& kv: props.get_object() ) {
+        auto foo = kv.value().as_string();
+        way->addTag(kv.key(), foo.c_str());
       }
-      // mpoly->push_back(*polys);
-    }
-
-    return mpoly;
-}
-
-// CPLSetConfigOption( "OGR_GEOJSON_MAX_OBJ_SIZE", "0" );
-json::value
-readFile(const std::string &filespec) {
-  auto foo = GeoJson();
-  FILE *fp = std::fopen(filespec.c_str(), "r");
-  char buffer[500];
-  size_t         ret;
-  boost::system::error_code ec;
-
-  int elements = 0;
-  ret = std::fread(buffer, 1, 500, fp);
-  for (auto it = std::begin(buffer); it != std::end(buffer); ++it) {
-    if (it == "<") {
-      if (elements == 0) {
-        elements = 1;
-      } else {
-        elements += 1;
+      if (coords.is_array()) {
+        auto array = coords.get_array();
+        for (auto it = array.begin(); it!= array.end(); ++it) {
+          double lat = it->at(0).as_double();
+          double lon = it->at(1).as_double();
+          point_t point(lat, lon);
+          points.push_back(point);
+        }
+        if (gtype == "LineString") {
+          boost::geometry::assign_points(way->linestring, points);
+        } else {
+          boost::geometry::assign_points(way->polygon, points);
+        }
+        // way->dump();
+        way_cache[way->id] = way;
       }
     }
-    if (it == ">") {
-      elements -= 1;
-    }
-    // A complete JSON entry has been read
-    if (elements == 0) {
-      foo.write(buffer, ret, ec );
-    }
+
+    return true;
   }
-  // foo.write(write( s.data(), s.size(), ec );
 
-  json::value result;
-  return result;
-}
+#ifdef SAX
+  // CPLSetConfigOption( "OGR_GEOJSON_MAX_OBJ_SIZE", "0" );
+  json::value
+  readFile(const std::string &filespec) {
+    auto foo = GeoJson();
+    FILE *fp = std::fopen(filespec.c_str(), "r");
+    char buffer[500];
+    size_t         ret;
+    boost::system::error_code ec;
+    // int elements = 0;
+    do {
+      ret = std::fread(buffer, 1, 500, fp);
+      // for (auto it = std::begin(buffer); it != std::end(buffer); ++it) {
+      //   if (it == "<") {
+      //     if (elements == 0) {
+      //       elements = 1;
+      //     } else {
+      //       elements += 1;
+      //     }
+      //   }
+      //   if (it == ">") {
+      //     elements -= 1;
+      //   }
+      //   // A complete JSON entry has been read
+      //   if (elements == 0) {
+      std::cerr << buffer;
+      foo.write(buffer, ret, ec );
+      // foo.write_some(false,buffer, ret, ec);
+    } while (! std::feof(fp));
 
+    json::value result;
+    return result;
+  }
+#else
+  json::value
+  GeoJson::readFile(const std::string &filespec) {
+    json::stream_parser p;
+    boost::system::error_code ec;
+    auto f = std::fopen(filespec.c_str(), "r");
+    do {
+      char buf[4096];
+      auto const nread = std::fread( buf, 1, sizeof(buf), f );
+      p.write( buf, nread, ec );
+    }
+    while( ! feof(f) );
+    std::fclose(f);
+    return p.release();
+  }
+#endif
 } // end of geojson namespace
 
 // Local Variables:

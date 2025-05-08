@@ -37,80 +37,96 @@ namespace opts = boost::program_options;
 int
 main(int argc, char *argv[])
 {
-    opts::positional_options_description p;
-    opts::variables_map vm;
-    opts::options_description desc("Allowed options");
+  opts::positional_options_description p;
+  opts::variables_map vm;
+  opts::options_description desc("Allowed options");
 
-    logging::add_file_log("fastclip.log");
-    try {
-        // clang-format off
-        desc.add_options()
-            ("help,h", "display help")
-            ("verbose,v", "Enable verbosity")
-            ("infile,i", opts::value<std::string>(), "Input data file"
-                        "The file to be processed")
-            ("outfile,o", opts::value<std::string>(), "Output data file");
-
-        opts::store(opts::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-        opts::notify(vm);
-        if (argc == 1) {
-            std::cout << "Usage: options_description [options]" << std::endl;
-            std::cout << desc << std::endl;
-            exit(0);
-    }
-        if (vm.count("help")) {
-            std::cout << "Usage: options_description [options]" << std::endl;
-            std::cout << desc << std::endl;
-            exit(0);
-        }
-    } catch (std::exception &e) {
-        std::cout << e.what() << std::endl;
-        return 1;
-    }
+  logging::add_file_log("libosm.log");
+  try {
+    // clang-format off
+    desc.add_options()
+      ("help,h", "display help")
+      ("verbose,v", "Enable verbosity")
+      ("infile,i", opts::value<std::string>(), "Input data file"
+       "The file to be processed")
+      ("outfile,o", opts::value<std::string>(), "Output data file");
 
     opts::store(opts::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
     opts::notify(vm);
-
-    // Input data in OSM XML or PBF format
-    if (! vm.count("infile")) {
-            std::cout << "Usage: options_description [options]" << std::endl;
-            std::cout << desc << std::endl;
-            exit(0);
+    if (argc == 1) {
+      std::cout << "Usage: options_description [options]" << std::endl;
+      std::cout << desc << std::endl;
+      exit(0);
     }
-    std::filesystem::path infile(vm["infile"].as<std::string>());
-
-    // Output file, default to the same format as the input file
-    std::string outfile("testout");
-    outfile += infile.extension();
-    if (! vm.count("infile")) {
-        outfile = vm["outfile"].as<std::string>();
+    if (vm.count("help")) {
+      std::cout << "Usage: options_description [options]" << std::endl;
+      std::cout << desc << std::endl;
+      exit(0);
     }
+  } catch (std::exception &e) {
+    std::cout << e.what() << std::endl;
+    return 1;
+  }
 
-    // By default only display informational messages
-    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
+  opts::store(opts::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+  opts::notify(vm);
 
-    if (vm.count("verbose")) {
-        // Display debugging messages
-        logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
-        logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
+  // Input data in OSM XML or PBF format
+  if (! vm.count("infile")) {
+    std::cout << "Usage: options_description [options]" << std::endl;
+    std::cout << desc << std::endl;
+    exit(0);
+  }
+  std::filesystem::path infile(vm["infile"].as<std::string>());
+
+  // Output file, default to the same format as the input file
+  std::string outfile("testout");
+  outfile += infile.extension();
+  if (! vm.count("infile")) {
+    outfile = vm["outfile"].as<std::string>();
+  }
+
+  // By default only display informational messages
+  logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
+
+  if (vm.count("verbose")) {
+    // Display debugging messages
+    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
+    logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
+  }
+
+  if (infile.extension() == ".osm") {
+    auto xml = osmxml::XML_Parser();
+    std::ifstream indata;
+    indata.open(infile, std::ifstream::in);
+    xml.readXML(indata);
+    xml.writeData("foo.osm");
+    BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
+  } else if (infile.extension() == ".pbf") {
+    auto pbf = PBF_Parser();
+    read_osm_pbf(infile, pbf);
+    pbf.writeData("bar.osm");
+  } else if (infile.extension() == ".geojson") {
+    // FIXME: in progress...
+    auto geo = geojson::GeoJson();
+    // FIXME: This uses a DOM parser, so the entire file is loaded
+    // into memory.
+    auto boundary = geo.readFile(infile);
+    // std::cout << boost::geometry::wkt(*result) << std::endl;
+    if (boundary.kind() != json::kind::object) {
+      BOOST_LOG_TRIVIAL(error) << "Invalid input file!";
+      exit(-1);
     }
-
-    if (infile.extension() == ".osm") {
-        auto xml = osmxml::XML_Parser();
-        std::ifstream indata;
-        indata.open(infile, std::ifstream::in);
-        xml.readXML(indata);
-        xml.writeData("foo.osm");
-        BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
-    } else if (infile.extension() == ".pbf") {
-        auto pbf = PBF_Parser();
-        read_osm_pbf(infile, pbf);
-        pbf.writeData("bar.osm");
-    } else if (infile.extension() == ".geojsone") {
-      // FIXME: in progress...
-    } else {
-        BOOST_LOG_TRIVIAL(error) << "Must be an OSM XML or PBF file!";
+    auto ftype = boundary.at("type");
+    auto gen = boundary.at("generator");
+    auto features = boundary.at("features").get_array();
+    for (auto it = features.begin(); it!= features.end(); ++it) {
+      geo.makeFeature(*it);
     }
+    geo.writeData("bar.osm");
+  } else {
+    BOOST_LOG_TRIVIAL(error) << "Must be an OSM XML or PBF file!";
+  }
 }
 
 // Local Variables:

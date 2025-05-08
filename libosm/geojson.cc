@@ -54,7 +54,11 @@ namespace geojson {
       auto way = std::make_shared<OsmWay>();
       for( const key_value_pair& kv: props.get_object() ) {
         auto foo = kv.value().as_string();
-        way->addTag(kv.key(), foo.c_str());
+        std::string fixed = foo.c_str();
+        boost::algorithm::replace_all(fixed, "\"", "");
+        // boost::algorithm::replace_all(fixed, "\'", "");
+        boost::algorithm::replace_all(fixed, "&", "&amp;");
+        way->addTag(kv.key(), fixed);
       }
       way->id = OsmObject::newid--;
       if (coords.is_array()) {

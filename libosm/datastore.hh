@@ -44,6 +44,70 @@ namespace datastore {
       return relation_cache;
     }
     void writeData(const std::string &outfile) {
+      std::ofstream out(outfile);
+      std::filesystem::path path(outfile);
+      if (path.extension() == ".osm") {
+        out << "<?xml version='1.0' encoding='UTF-8'?>" << std::endl;
+        out << "<osm version=\"0.6\" generator=\"osm-merge\">" << std::endl;
+        for (auto it = std::begin(node_cache); it != std::end(node_cache); ++it) {
+          out << "  " << *it->second.as_osmxml() << std::endl;
+        }
+        for (auto it = std::begin(way_cache); it != std::end(way_cache); ++it) {
+          out << "  " << *it->second->as_osmxml() << std::endl;
+        }
+        out << "</osm>" << std::endl;
+      } else if (path.extension() == ".geojson") {
+        for (auto it = std::begin(node_cache); it != std::end(node_cache); ++it) {
+          out << "  " << *it->second.as_geojson() << std::endl;
+        }
+        for (auto it = std::begin(way_cache); it != std::end(way_cache); ++it) {
+          out << "  " << *it->second->as_geojson() << std::endl;
+        }
+      }
+      out.close();
+    }
+
+    void tagFilter(const std::string &outfile, const std::string &keyword) {
+      std::filesystem::path path(outfile);
+      std::ofstream out(outfile);
+      std::vector<OsmNode> nodes;
+      std::vector<OsmWay> ways;
+      for (auto it = std::begin(way_cache); it != std::end(way_cache); ++it) {
+        if (it->second->tags.count(keyword) > 0) {
+          // out << "  " << *it->second->as_osmxml() << std::endl;
+          auto refs = it->second->refs;
+          for (auto iit = refs.begin(); iit != refs.end(); ++iit) {
+            nodes.push_back(node_cache[*iit]);
+          }
+          ways.push_back(*it->second);
+        }
+      }
+      if (path.extension() == ".osm") {
+        out << "<?xml version='1.0' encoding='UTF-8'?>" << std::endl;
+        out << "<osm version=\"0.6\" generator=\"osm-merge\">" << std::endl;
+      }
+      // Nodes are always first in an OSM XML file
+      for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+        if (path.extension() == ".osm") {
+          out << "  " << *it->as_osmxml() << std::endl;
+        } else if (path.extension() == ".geojson") {
+            out << "  " << *it->as_geojson() << std::endl;
+        }
+      }
+      for (auto it = ways.begin(); it != ways.end(); ++it) {
+        if (path.extension() == ".osm") {
+          out << "  " << *it->as_osmxml() << std::endl;
+        } else if (path.extension() == ".geojson") {
+          out << "  " << *it->as_geojson() << std::endl;
+        }
+      }
+      if (path.extension() == ".osm") {
+        out << "</osm>" << std::endl;
+      }
+      out.close();
+    }
+
+    void clip(const std::string &outfile) {
       std::filesystem::path path(outfile);
       std::ofstream out(outfile);
       out << "<?xml version='1.0' encoding='UTF-8'?>" << std::endl;

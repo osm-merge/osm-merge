@@ -31,11 +31,11 @@ using namespace osmpbfreader;
 #include "osmobjects.hh"
 using namespace osmobjects;
 
-#include "parsers.hh"
+#include "datastore.hh"
 
 // namespace osmpbf {
 
-class PBF_Parser : public parsers::Parsers {
+class PBF_Parser : public datastore::DataStore {
 private:
 public:
   /// This method is called every time a Node is read

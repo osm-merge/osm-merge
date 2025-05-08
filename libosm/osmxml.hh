@@ -42,14 +42,14 @@ using namespace boost::gregorian;
 #include "osmobjects.hh"
 using namespace osmobjects;
 
-#include "parsers.hh"
-using namespace parsers;
+#include "datastore.hh"
+// using namespace datastore;
 
 namespace osmxml {
 
 /// This class implements a SAX parser for libxml++. A SAX parser is
 /// better for large files.
-  class XML_Parser : public Parsers, public xmlpp::SaxParser {
+  class XML_Parser : public datastore::DataStore, public xmlpp::SaxParser {
 private:
   std::shared_ptr<OsmWay> way;
 

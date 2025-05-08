@@ -31,19 +31,20 @@ using namespace boost::json;
 #include "osmobjects.hh"
 using namespace osmobjects;
 
-#include "parsers.hh"
+#include "datastore.hh"
 
 namespace geojson {
 
-  json::value readFile(const std::string &filespec);
-
-class GeoJson  : public parsers::Parsers {
+  class GeoJson  : public datastore::DataStore {
 private:
 public:
   std::shared_ptr<multipolygon_t> make_geometry(const std::string &wkt);
   std::shared_ptr<multipolygon_t> make_geometry(const json::object &obj);
   std::shared_ptr<multipolygon_t> make_geometry(const json::value &val);
+  json::value readFile(const std::string &filespec);
+
   // Callbacks
+#ifdef SAX                           // Ignore SAX parser for now
   struct handler {
     constexpr static std::size_t max_object_size = std::size_t(-1);
     constexpr static std::size_t max_array_size = std::size_t(-1);
@@ -152,7 +153,7 @@ public:
             ec = error::extra_data;
         return n;
     }
-
+#endif  // end of SAX
 };
 
 } // end of geojson namespace

@@ -63,6 +63,7 @@ typedef enum { empty, node, way, relation, member } osmtype_t;
 /// \brief This is the base class for the common data fields used by all OSM objects
 class OsmObject {
 public:
+  static long int newid;
   /// Add a metadata tag to an OSM object
   void addTag(const std::string &key, const std::string &value) {
     tags[key] = value;

@@ -46,7 +46,13 @@ OsmNode::as_osmxml() const
   std::string attributes("<node id=\"%1%\" version=\"%2%\" timestamp=\"%3%\" lat=\"%4%\" lon=\"%5%\"/>");
   std::string timestring = to_iso_extended_string(timestamp);
   timestring += "Z";
-  auto xmlout = boost::format(attributes) % id % version % timestring % point.get<1>() % point.get<0>();
+  if (id == 0) {
+    newid -= 1;                 // FIXME: this should probably be  wrapped with a mutex
+  } else {
+    newid = id;
+  }
+
+  auto xmlout = boost::format(attributes) % newid % version % timestring % point.get<1>() % point.get<0>();
 
   return std::make_shared<std::string>(xmlout.str());
 }
@@ -122,12 +128,8 @@ OsmWay::dump(void) const
    BOOST_LOG_TRIVIAL(debug) << boost::geometry::wkt(polygon);
     if (tags.size() > 0) {
        BOOST_LOG_TRIVIAL(debug) << "\tTags: " << tags.size();
-        for (auto const& [key, val] : tags)
-        {
-           BOOST_LOG_TRIVIAL(debug) << key
-                    << ": "
-                    << val
-                    << ", ";
+        for (auto const& [key, val] : tags) {
+          BOOST_LOG_TRIVIAL(debug) << key << ": " << val << ", ";
         }
     } else {
        BOOST_LOG_TRIVIAL(debug) << "No tags.";
@@ -143,7 +145,12 @@ OsmWay::as_osmxml() const
   std::string timestring = to_iso_extended_string(timestamp);
   timestring += "Z";
 
-  auto attrs = boost::format(attributes) % id % version % timestring;
+  if (id == 0) {
+    newid -= 1;                 // FIXME: this should probably be  wrapped with a mutex
+  } else {
+    newid = id;
+  }
+  auto attrs = boost::format(attributes) % newid % version % timestring;
   *out += attrs.str();
 
   std::vector<std::string> waytags;

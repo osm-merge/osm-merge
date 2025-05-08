@@ -31,7 +31,10 @@ namespace json = boost::json;
 #include "osmobjects.hh"
 using namespace osmobjects;
 
+long int OsmObject::newid = -1;
+
 namespace geojson {
+
 
   bool
   GeoJson::makeFeature(const json::value &val) {
@@ -53,6 +56,7 @@ namespace geojson {
         auto foo = kv.value().as_string();
         way->addTag(kv.key(), foo.c_str());
       }
+      way->id = OsmObject::newid--;
       if (coords.is_array()) {
         auto array = coords.get_array();
         for (auto it = array.begin(); it!= array.end(); ++it) {
@@ -60,13 +64,19 @@ namespace geojson {
           double lon = it->at(1).as_double();
           point_t point(lat, lon);
           points.push_back(point);
+          auto node = OsmNode();
+          node.id = OsmObject::newid--;
+          node.version = 1;
+          way->addRef(node.id);
+          node_cache[node.id] = node;
         }
         if (gtype == "LineString") {
           boost::geometry::assign_points(way->linestring, points);
         } else {
           boost::geometry::assign_points(way->polygon, points);
         }
-        // way->dump();
+        way->version = 1;
+        way->id = OsmObject::newid--;
         way_cache[way->id] = way;
       }
     }

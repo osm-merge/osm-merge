@@ -30,10 +30,9 @@ using namespace osmobjects;
 
 namespace osmxml {
 
-
 // Called by libxml++ for each element of the XML file
 void
-XML_Parser::on_start_element(const Glib::ustring &name,
+XML_Parser::on_start_element(const std::string &name,
                              const AttributeList &attributes)
 {
   // BOOST_LOG_TRIVIAL(debug) << "::on_start_element() called: " << name;
@@ -113,7 +112,7 @@ XML_Parser::on_start_element(const Glib::ustring &name,
 }
 
 void
-XML_Parser::on_end_element(const Glib::ustring& name)
+XML_Parser::on_end_element(const std::string& name)
 {
   if (name == "osm" || name == "bounds") {
     return;
@@ -143,30 +142,30 @@ XML_Parser::on_end_element(const Glib::ustring& name)
 }
 
 // void
-// XML_Parser::on_characters(const Glib::ustring& text)
+// XML_Parser::on_characters(const std::string& text)
 // {
 //   BOOST_LOG_TRIVIAL(debug) << "on_characters(): " << text;
 // }
 
 void
-XML_Parser::on_comment(const Glib::ustring& text)
+XML_Parser::on_comment(const std::string& text)
 {
   BOOST_LOG_TRIVIAL(debug) << "on_comment(): " << text;
 }
 
 void
-XML_Parser::on_warning(const Glib::ustring& text)
+XML_Parser::on_warning(const std::string& text)
 {
   BOOST_LOG_TRIVIAL(debug) << "on_warning(): " << text;
 }
 void
-XML_Parser::on_error(const Glib::ustring& text)
+XML_Parser::on_error(const std::string& text)
 {
   BOOST_LOG_TRIVIAL(debug) << "on_error(): " << text;
 }
 
 void
-XML_Parser::on_fatal_error(const Glib::ustring& text)
+XML_Parser::on_fatal_error(const std::string& text)
 {
   BOOST_LOG_TRIVIAL(debug) << "on_fatal_error(): " << text;
 }

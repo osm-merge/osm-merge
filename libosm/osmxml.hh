@@ -31,7 +31,7 @@ namespace logging = boost::log;
 
 #include <map>
 #include <libxml++/libxml++.h>
-// #include <libxml++/ustring.h>
+#include <libxml++/ustring.h>
 #include <osmpbfreader.h>
 #include <boost/date_time.hpp>
 #include "boost/date_time/posix_time/posix_time.hpp"
@@ -59,13 +59,13 @@ public:
   bool readXML(std::istream &xml);
 
   // These are the callbacks for libxml++
-  void on_start_element(const Glib::ustring &name,
+  void on_start_element(const std::string &name,
                         const AttributeList &properties);
-  void on_end_element(const Glib::ustring& name);
-  void on_comment(const Glib::ustring& text);
-  void on_warning(const Glib::ustring& text);
-  void on_error(const Glib::ustring& text);
-  void on_fatal_error(const Glib::ustring& text);
+  void on_end_element(const std::string& name);
+  void on_comment(const std::string& text);
+  void on_warning(const std::string& text);
+  void on_error(const std::string& text);
+  void on_fatal_error(const std::string& text);
 };
 
 } // end of osmxml namespace

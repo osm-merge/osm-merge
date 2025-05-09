@@ -19,5 +19,5 @@ PROJECTS = fastclip libosm
 
 all:
 	for dir in $(PROJECTS); do \
-		pushd $${dir}/ && make && popd; \
+		cd $${dir}/ && make && cd ..; \
 	done

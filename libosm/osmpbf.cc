@@ -59,16 +59,19 @@ PBF_Parser::way_callback(uint64_t id,
   way->id = id;
   way->version = version;
   way->timestamp = from_time_t(timestamp);
-  for (auto it = std::begin(refs); it != std::end(refs); ++it) {
-    way->addRef(*it);
-    auto node = node_cache.at(*it);
+  for (auto it : refs) {
+    way->addRef(it);
+    auto node = node_cache.at(it);
     boost::geometry::append(way->linestring, node.getPoint());
   }
 
-  for (auto it = std::begin(tags); it != std::end(tags); ++it) {
-    way->addTag(it->first, it->second);
+  for (auto it : tags) {
+    way->addTag(it.first, it.second);
   }
-  way_cache[id] = way;
+  /// Optionally cache files.
+  if (cache_files) {
+    way_cache[id] = way;
+  }
   // way->dump();
 }
 

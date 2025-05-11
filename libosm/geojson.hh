@@ -25,9 +25,9 @@
 
 #include <boost/geometry.hpp>
 #include <boost/json.hpp>
+using namespace boost::json;
 #include <boost/json/basic_parser.hpp>
 #include <boost/json/basic_parser_impl.hpp>
-using namespace boost::json;
 #include "osmobjects.hh"
 using namespace osmobjects;
 
@@ -40,6 +40,7 @@ namespace geojson {
   public:
     bool makeFeature(const json::value &val);
     json::value readFile(const std::string &filespec);
+    std::shared_ptr<multipolygon_t> readAOI(const std::string &filespec);
   // Callbacks
 #ifdef SAX                           // Ignore SAX parser for now
   struct handler {

@@ -97,15 +97,15 @@ OsmObject::dump(void) const
    BOOST_LOG_TRIVIAL(debug) << "\tTimestamp: " << to_simple_string(timestamp);
    if (attributes.size() > 0) {
        BOOST_LOG_TRIVIAL(debug) << "\tAttributes: " << attributes.size();
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-           BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->first << ": " << it->second;
+       for (auto it : attributes) {
+           BOOST_LOG_TRIVIAL(debug) << "\t\t" << it.first << ": " << it.second;
         }
     }
 
     if (tags.size() > 0) {
        BOOST_LOG_TRIVIAL(debug) << "\tTags: " << tags.size();
-        for (auto it = std::begin(tags); it != std::end(tags); ++it) {
-           BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->first << ": " << it->second;
+       for (auto it : tags) {
+           BOOST_LOG_TRIVIAL(debug) << "\t\t" << it.first << ": " << it.second;
         }
     }
 };
@@ -117,8 +117,8 @@ OsmWay::dump(void) const
     if (refs.size() > 0) {
        BOOST_LOG_TRIVIAL(debug) << "\tRefs: " << refs.size();
         std::string tmp;
-        for (auto it = std::begin(refs); it != std::end(refs); ++it) {
-            tmp += std::to_string(*it) + ", ";
+        for (auto it : refs) {
+            tmp += std::to_string(it) + ", ";
         }
         tmp.pop_back();
         tmp.pop_back();
@@ -155,13 +155,13 @@ OsmWay::as_osmxml() const
 
   std::vector<std::string> waytags;
   std::string ndfmt("\n\t<nd ref=\"%1%\"/>");
-  for (auto it = std::begin(refs); it != std::end(refs); ++it) {
-    auto nd = boost::format(ndfmt) % *it;
+  for (auto it : refs) {
+    auto nd = boost::format(ndfmt) % it;
     *out += nd.str();
   }
   std::string tagfmt("\n\t<tag k=\"%1%\" v=\"%2%\"/>");
-  for (auto it = std::begin(tags); it != std::end(tags); ++it) {
-    auto tag = boost::format(tagfmt) % it->first % it->second;
+  for (auto it : tags) {
+    auto tag = boost::format(tagfmt) % it.first % it.second;
     *out += tag.str();
   }
   *out += "\n  </way>";
@@ -179,8 +179,8 @@ OsmWay::as_geojson() const
     //  BOOST_LOG_TRIVIAL(debug) << boost::geometry::wkt(jsonout.str());
     *out += jsonout.str();
     std::string propfmt("\t\t\"%1%\": \"%2%\"\n");
-    for (auto it = std::begin(tags); it != std::end(tags); ++it) {
-        auto tag = boost::format(propfmt) % it->first % it->second;
+    for (auto it : tags) {
+        auto tag = boost::format(propfmt) % it.first % it.second;
         *out += tag.str();
     }
     *out += "\n\t},\n\tgeometry\": {\n\t\t\"type\": \"LineString\".\n\t\t\"coordinates\" [";

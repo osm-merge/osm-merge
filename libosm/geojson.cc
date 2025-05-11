@@ -34,12 +34,44 @@ using namespace osmobjects;
 long int OsmObject::newid = -1;
 
 namespace geojson {
+  std::shared_ptr<multipolygon_t>
+  GeoJson::readAOI(const std::string &filespec) {
+    auto mpoly = std::make_shared<multipolygon_t>();
+    auto data = readFile(filespec);
 
+    // This is the file header
+    auto ftype = data.at("type");
+    auto gen = data.at("generator");
+
+    // Each feature is a polygon within the AOI
+    auto features = data.at("features").get_array();
+    for (auto feature : features) {
+      auto poly = std::make_shared<polygon_t>();
+      std::vector<point_t> points;
+      auto geom = feature.at("geometry");
+      auto coords = geom.at("coordinates");
+      if (coords.is_array()) {
+        auto array = coords.get_array();
+        for (auto inner : array) {
+          if (inner.at(0).is_array()) {
+            BOOST_LOG_TRIVIAL(error) << "Is this an inner polygon ?";
+            continue;
+          }
+          double lat = inner.at(0).as_double();
+          double lon = inner.at(1).as_double();
+          point_t point(lat, lon);
+          points.push_back(point);
+        }
+      }
+      boost::geometry::assign_points(*poly, points);
+      mpoly->push_back(*poly);
+    }
+    return mpoly;
+  }
 
   bool
   GeoJson::makeFeature(const json::value &val) {
     std::vector<point_t> points;
-
     auto ftype = val.at("type");
     auto props = val.at("properties");
     auto geom = val.at("geometry");
@@ -63,9 +95,12 @@ namespace geojson {
       way->id = OsmObject::newid--;
       if (coords.is_array()) {
         auto array = coords.get_array();
-        for (auto it = array.begin(); it!= array.end(); ++it) {
-          double lat = it->at(0).as_double();
-          double lon = it->at(1).as_double();
+        for (auto it : array) {
+          if (it.at(0).is_array()) {
+            continue;
+          }
+          double lat = it.at(0).as_double();
+          double lon = it.at(1).as_double();
           point_t point(lat, lon);
           points.push_back(point);
           auto node = OsmNode();

@@ -46,27 +46,27 @@ XML_Parser::on_start_element(const std::string &name,
     float lat = 0.0, lon = 0.0;
     int version = 0;
     auto node = osmobjects::OsmNode();
-    for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
+    for (auto it : attributes) {
       // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-      if (it->name == "id") {
-        id = std::stol(it->value);
+      if (it.name == "id") {
+        id = std::stol(it.value);
         node.id = id ;
       }
-      if (it->name == "lat") {
-        lat = std::stod(it->value);
+      if (it.name == "lat") {
+        lat = std::stod(it.value);
       }
-      if (it->name == "lon") {
-        lon = std::stod(it->value);
+      if (it.name == "lon") {
+        lon = std::stod(it.value);
       }
-      if (it->name == "version") {
-        version = std::stoi(it->value);
+      if (it.name == "version") {
+        version = std::stoi(it.value);
         node.version = version;
       }
-      if (it->name == "timestamp") {
+      if (it.name == "timestamp") {
         // The trailing Z needs to be dropped to be an ISO string
-        std::string fixed = it->value.substr(0, 16);
+        std::string fixed = it.value.substr(0, 16);
         node.timestamp = boost::posix_time::from_iso_extended_string(fixed);
-        node.timestring = it->value;
+        node.timestring = it.value;
       }
     }
     node.setPoint(lat, lon);
@@ -77,21 +77,21 @@ XML_Parser::on_start_element(const std::string &name,
   } else if (name == "way") {
     way = std::make_shared<OsmWay>();
     long int id = 0;
-    for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
+    for (auto it : attributes) {
       // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-      if (it->name == "id") {
-        long int id = std::stol(it->value);
+      if (it.name == "id") {
+        long int id = std::stol(it.value);
         way->id = id ;
       }
-      if (it->name == "version") {
-        int version = std::stoi(it->value);
+      if (it.name == "version") {
+        int version = std::stoi(it.value);
         way->version = version;
       }
-      if (it->name == "timestamp") {
+      if (it.name == "timestamp") {
         // The trailing Z needs to be dropped to be an ISO string
-        std::string fixed = it->value.substr(0, 16);
+        std::string fixed = it.value.substr(0, 16);
         way->timestamp = boost::posix_time::from_iso_extended_string(fixed);
-        way->timestring = it->value;
+        way->timestring = it.value;
       }
     }
   } else if (name == "nd") {
@@ -129,8 +129,8 @@ XML_Parser::on_end_element(const std::string& name)
   // }
   if (name == "way") {
     // Create a spatial geometry from the refs for clipping purposes later
-    for (auto it = std::begin(way->refs); it != std::end(way->refs); ++it) {
-      auto node = node_cache.at(*it);
+    for (auto it : way->refs) {
+      auto node = node_cache.at(it);
       // BOOST_LOG_TRIVIAL(debug) << "::on_end_element(way) called: " << boost::geometry::wkt(node.getPoint());
       boost::geometry::append(way->linestring, node.getPoint());
     }

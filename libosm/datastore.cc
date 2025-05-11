@@ -30,25 +30,23 @@ namespace datastore {
 
   void
   DataStore::openOutfiles(const std::string &format) {
-    for (auto it = aoi.begin(); it != aoi.end(); ++it) {
-      std::string outfile;
-      if (it->second->containsKey("task")) {
-	outfile = format +  it->second->getTag("task");
-	boost::algorithm::replace_all(outfile, " ", "_");
-      } else if (it->second->containsKey("name")) {
-	outfile = format +  it->second->getTag("name");
-      } else {
-	outfile = format;
-      }
-      std::ofstream out(outfile);
-      outfiles[outfile] = std::make_shared<std::ofstream>(outfile);
+    std::filesystem::path path(format);
+    int task = 0;
+    for (auto it : aoi) {
+      auto outfile = boost::format(format) % task++ % suffix;
+      struct outfiles ofile;
+      ofile.file = std::fopen(outfile.str().c_str(), "w");
+      std::cerr  << outfile << std::endl;
+      ofile.boundary = it;
+      output.push_back(ofile);
     }
   }
 
   /// Make this the AOI for the next input file
   void
-  DataStore::addAOI(const std::string &filespec) {
-    // aoi = way_cache;
+  DataStore::addAOI(const multipolygon_t &mpoly) {
+    aoi = mpoly;
+    openOutfiles("Task_%1%.%2%");
   }
 
   void
@@ -58,19 +56,19 @@ namespace datastore {
     if (path.extension() == ".osm") {
       out << "<?xml version='1.0' encoding='UTF-8'?>" << std::endl;
       out << "<osm version=\"0.6\" generator=\"osm-merge\">" << std::endl;
-      for (auto it = std::begin(node_cache); it != std::end(node_cache); ++it) {
-	out << "  " << *it->second.as_osmxml() << std::endl;
+      for (auto it : node_cache) {
+	out << "  " << it.second.as_osmxml() << std::endl;
       }
-      for (auto it = std::begin(way_cache); it != std::end(way_cache); ++it) {
-	out << "  " << *it->second->as_osmxml() << std::endl;
+      for (auto it : way_cache) {
+	out << "  " << it.second->as_osmxml() << std::endl;
       }
       out << "</osm>" << std::endl;
     } else if (path.extension() == ".geojson") {
-      for (auto it = std::begin(node_cache); it != std::end(node_cache); ++it) {
-	out << "  " << *it->second.as_geojson() << std::endl;
+      for (auto it : node_cache) {
+	out << "  " << it.second.as_geojson() << std::endl;
       }
-      for (auto it = std::begin(way_cache); it != std::end(way_cache); ++it) {
-	out << "  " << *it->second->as_geojson() << std::endl;
+      for (auto it : way_cache) {
+	out << "  " << it.second->as_geojson() << std::endl;
       }
     }
     out.close();

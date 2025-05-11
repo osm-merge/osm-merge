@@ -39,25 +39,25 @@ XML_Parser::on_start_element(const Glib::ustring &name,
         float lat = 0.0, lon = 0.0;
         int version = 0;
         auto node = osmobjects::OsmNode();
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
+        for (auto it attributes) {
             // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-            if (it->name == "id") {
+            if (it.name == "id") {
                 id = std::stol(it->value);
                 node.id = id ;
             }
-            if (it->name == "lat") {
+            if (it.name == "lat") {
                 lat = std::stod(it->value);
             }
-            if (it->name == "lon") {
+            if (it.name == "lon") {
                 lon = std::stod(it->value);
             }
-            if (it->name == "version") {
+            if (it.name == "version") {
                 version = std::stoi(it->value);
                 node.version = version;
             }
-            if (it->name == "timestamp") {
+            if (it.name == "timestamp") {
                 // The trailing Z needs to be dropped to be an ISO string
-                std::string foo = it->value.substr(0, 16);
+                std::string foo = it.value.substr(0, 16);
                 node.timestamp = boost::posix_time::from_iso_extended_string(foo);
             }
         }
@@ -69,19 +69,19 @@ XML_Parser::on_start_element(const Glib::ustring &name,
     } else if (name == "way") {
         auto way = osmobjects::OsmWay();
         long int id = 0;
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
+        for (auto it : attributes) {
             BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
             for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
                 // BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
-                if (it->name == "id") {
+                if (it.name == "id") {
                     long int id = std::stol(it->value);
                     way.id = id ;
                 }
-                if (it->name == "version") {
+                if (it.name == "version") {
                     int version = std::stoi(it->value);
                     way.version = version;
                 }
-                if (it->name == "timestamp") {
+                if (it.name == "timestamp") {
                     // The trailing Z needs to be dropped to be an ISO string
                     std::string foo = it->value.substr(0, 16);
                     way.timestamp = boost::posix_time::from_iso_extended_string(foo);
@@ -91,12 +91,12 @@ XML_Parser::on_start_element(const Glib::ustring &name,
         way_cache[id] = way;
         way.dump();
     } else if (name == "nd") {
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-            BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
+      for (auto it : attributes) {
+            BOOST_LOG_TRIVIAL(debug) << "\t\t" << it.name << ": " << it.value;
         }
     } else if (name == "tag") {
-        for (auto it = std::begin(attributes); it != std::end(attributes); ++it) {
-            BOOST_LOG_TRIVIAL(debug) << "\t\t" << it->name << ": " << it->value;
+      for (auto it : attributes) {
+            BOOST_LOG_TRIVIAL(debug) << "\t\t" << it.name << ": " << it.value;
         }
     }
 }

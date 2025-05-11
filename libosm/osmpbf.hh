@@ -36,7 +36,6 @@ using namespace osmobjects;
 // namespace osmpbf {
 
 class PBF_Parser : public datastore::DataStore {
-private:
 public:
   /// This method is called every time a Node is read
   void node_callback(uint64_t id,
@@ -63,7 +62,6 @@ public:
                          long int version,
                          long int timestamp);
 
-  // bool readPBF();
 };
 
 //} //  end of osmpbf namespace

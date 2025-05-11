@@ -138,7 +138,8 @@ am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 libosm_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
-am_libosm_la_OBJECTS = osmobjects.lo osmxml.lo osmpbf.lo geojson.lo
+am_libosm_la_OBJECTS = osmobjects.lo osmxml.lo osmpbf.lo geojson.lo \
+	datastore.lo
 libosm_la_OBJECTS = $(am_libosm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -162,9 +163,10 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/geojson.Plo \
-	./$(DEPDIR)/libosm-test.Po ./$(DEPDIR)/osmobjects.Plo \
-	./$(DEPDIR)/osmpbf.Plo ./$(DEPDIR)/osmxml.Plo
+am__depfiles_remade = ./$(DEPDIR)/datastore.Plo \
+	./$(DEPDIR)/geojson.Plo ./$(DEPDIR)/libosm-test.Po \
+	./$(DEPDIR)/osmobjects.Plo ./$(DEPDIR)/osmpbf.Plo \
+	./$(DEPDIR)/osmxml.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -232,13 +234,13 @@ EXPECT = expect
 RUNTEST = runtest
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/libosm/missing' aclocal-1.17
+ACLOCAL = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/main/missing' aclocal-1.17
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/libosm/missing' autoconf
-AUTOHEADER = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/libosm/missing' autoheader
-AUTOMAKE = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/libosm/missing' automake-1.17
+AUTOCONF = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/main/missing' autoconf
+AUTOHEADER = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/main/missing' autoheader
+AUTOMAKE = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/main/missing' automake-1.17
 AWK = gawk
 BOOST_CPPFLAGS = -pthread -I/usr/include
 BOOST_FILESYSTEM_LIB = -lboost_filesystem
@@ -254,7 +256,7 @@ BOOST_THREAD_LIB = -lboost_thread -lpthread
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O0
-CPPFLAGS =  -I/usr/include/gdal   -I/usr/include/libxml++-3.0 -I/usr/lib64/libxml++-3.0/include -I/usr/include/libxml2 -DWITH_GZFILEOP -I/usr/include/glibmm-2.4 -I/usr/lib64/glibmm-2.4/include -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/sysprof-6 -pthread -I/usr/include/sigc++-2.0 -I/usr/lib64/sigc++-2.0/include
+CPPFLAGS =  -I/usr/include/gdal   -I/usr/include/libxml++-5.0 -I/usr/lib64/libxml++-5.0/include -I/usr/include/libxml2 -DWITH_GZFILEOP
 CSCOPE = cscope
 CTAGS = ctags
 CXX = g++
@@ -284,13 +286,13 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBOBJS = 
-LIBS =  -lgdal -lexpat -lbz2 -lxml++-3.0 -lxml2 -lglibmm-2.4 -lgobject-2.0 -lglib-2.0 -lsigc-2.0 -losmpbf -lprotobuf
+LIBS =  -lgdal -lexpat -lbz2 -lxml++-5.0 -lxml2 -losmpbf -lprotobuf
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 LT_SYS_LIBRARY_PATH = 
-MAKEINFO = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/libosm/missing' makeinfo
+MAKEINFO = ${SHELL} '/home/rob/projects/OSM-US/osm-merge.git/main/missing' makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /usr/bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -324,10 +326,10 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = strip
 VERSION = 1.0dev
-abs_builddir = /home/rob/projects/OSM-US/osm-merge.git/libosm/libosm
-abs_srcdir = /home/rob/projects/OSM-US/osm-merge.git/libosm/libosm
-abs_top_builddir = /home/rob/projects/OSM-US/osm-merge.git/libosm
-abs_top_srcdir = /home/rob/projects/OSM-US/osm-merge.git/libosm
+abs_builddir = /home/rob/projects/OSM-US/osm-merge.git/main/libosm
+abs_srcdir = /home/rob/projects/OSM-US/osm-merge.git/main/libosm
+abs_top_builddir = /home/rob/projects/OSM-US/osm-merge.git/main
+abs_top_srcdir = /home/rob/projects/OSM-US/osm-merge.git/main
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -359,7 +361,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/rob/projects/OSM-US/osm-merge.git/libosm/install-sh
+install_sh = ${SHELL} /home/rob/projects/OSM-US/osm-merge.git/main/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -405,7 +407,8 @@ libosm_la_SOURCES = parsers.hh \
 	osmobjects.cc osmobjects.hh \
 	osmxml.cc osmxml.hh \
 	osmpbf.cc osmpbf.hh \
-	geojson.cc geojson.hh
+	geojson.cc geojson.hh \
+	datastore.cc datastore.hh
 
 libosm_la_LIBADD = $(BOOST_LIBS)
 libosm_test_SOURCES = libosm-test.cc
@@ -510,6 +513,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/datastore.Plo # am--include-marker
 include ./$(DEPDIR)/geojson.Plo # am--include-marker
 include ./$(DEPDIR)/libosm-test.Po # am--include-marker
 include ./$(DEPDIR)/osmobjects.Plo # am--include-marker
@@ -720,6 +724,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-libtool \
 	clean-noinstLTLIBRARIES mostlyclean-am
 
 distclean: distclean-am
+	-rm -f ./$(DEPDIR)/datastore.Plo
 	-rm -f ./$(DEPDIR)/geojson.Plo
 	-rm -f ./$(DEPDIR)/libosm-test.Po
 	-rm -f ./$(DEPDIR)/osmobjects.Plo
@@ -770,6 +775,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -f ./$(DEPDIR)/datastore.Plo
 	-rm -f ./$(DEPDIR)/geojson.Plo
 	-rm -f ./$(DEPDIR)/libosm-test.Po
 	-rm -f ./$(DEPDIR)/osmobjects.Plo

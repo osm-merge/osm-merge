@@ -31,7 +31,6 @@ namespace logging = boost::log;
 
 #include <map>
 #include <libxml++/libxml++.h>
-#include <libxml++/ustring.h>
 #include <osmpbfreader.h>
 #include <boost/date_time.hpp>
 #include "boost/date_time/posix_time/posix_time.hpp"
@@ -43,7 +42,6 @@ using namespace boost::gregorian;
 using namespace osmobjects;
 
 #include "datastore.hh"
-// using namespace datastore;
 
 namespace osmxml {
 

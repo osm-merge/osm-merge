@@ -25,50 +25,64 @@
 
 #include <fstream>
 #include <map>
+#include <cstdio>
 #include <filesystem>
 #include <boost/format.hpp>
+#include <boost/json.hpp>
+// using namespace boost::json;
 #include "osmobjects.hh"
 using namespace osmobjects;
 
 namespace datastore {
 
   class DataStore {
+  private:
+    void openOutfiles(const std::string &format);
   protected:
+    multipolygon_t aoi;
     std::map<long int, OsmNode> node_cache;
     std::map<long int, std::shared_ptr<OsmWay>> way_cache;
     std::map<long int, OsmRelation> relation_cache;
     /// The project boundary
-    std::map<long int, std::shared_ptr<OsmWay>> aoi;
+    // std::map<long int, std::shared_ptr<OsmWay>> aoi;
     // FIXME: this should probably be a vector of tag/value pairs, but
     // keep it simple for now.
     std::vector<std::string_view> keywords;
-    std::map<std::string, std::shared_ptr<std::ofstream>> outfiles;
+    std::string suffix;
+    struct outfiles {
+      FILE *file;
+      polygon_t boundary;
+    };
+    std::vector<outfiles> output;
     bool cache_files;
   public:
     /// Features only need to be cached if the data is wanted, otherwise
     /// it's disabled for tag filtering and clipping.
-    DataStore(void) { cache_files = false; }
+    DataStore(void) {
+      cache_files = false;
+      suffix = "geojson";
+    }
+    /// Set the keyword for tag filtering
+    void addSuffix(std::string value) {
+      suffix = value;
+    }
     /// Set the keyword for tag filtering
     void addTagFilter(std::string tag) {
       keywords.push_back(tag);
     }
-
-    void openOutfiles(const std::string &format);
-    /// Make this the AOI for the next input file
-    void addAOI(const std::string &filespec);
-
     std::map<long int, OsmNode>getNodes(void) {
       return node_cache;
     }
-     std::map<long int, std::shared_ptr<OsmWay>>getWays(void) {
+    std::map<long int, std::shared_ptr<OsmWay>>getWays(void) {
       return way_cache;
     }
-     std::map<long int, OsmRelation>getRelations(void) {
+    std::map<long int, OsmRelation>getRelations(void) {
       return relation_cache;
     }
-    void writeData(const std::string &outfile);
-
+    /// Add an AOI for clipping data
+    void addAOI(const multipolygon_t &aoi);
     void tagFilter(const std::string &outfile, const OsmWay &way);
+    void writeData(const std::string &outfile);
   };
 } // end of datastore namespace
 

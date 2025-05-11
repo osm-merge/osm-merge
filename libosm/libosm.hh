@@ -31,6 +31,7 @@
 #include "osmxml.hh"
 #include "osmpbf.hh"
 #include "geojson.hh"
+#include "datastore.hh"
 #endif
 
 // Local Variables:

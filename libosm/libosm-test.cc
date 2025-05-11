@@ -26,7 +26,7 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <filesystem>
-#include <dejagnu.h>
+// #include <dejagnu.h>
 
 namespace logging = boost::log;
 using namespace boost;
@@ -49,6 +49,10 @@ main(int argc, char *argv[])
       ("verbose,v", "Enable verbosity")
       ("infile,i", opts::value<std::string>(), "Input data file"
        "The file to be processed")
+      ("filter,f", opts::value<std::string>(), "Tag Filter"
+       "a tag to filter for")
+      ("clip,c", opts::value<std::string>(), "Clip data"
+       "Clip data by a MultiPolygon")
       ("outfile,o", opts::value<std::string>(), "Output data file");
 
     opts::store(opts::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
@@ -95,23 +99,57 @@ main(int argc, char *argv[])
     logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
   }
 
+
+  std::string filter;
+  if (vm.count("filter")) {
+    std::string tag = vm["filter"].as<std::string>();
+    filter = vm["filter"].as<std::string>();
+  }
+
+  auto aoi = geojson::GeoJson();
+  std::string clip;
+  multipolygon_t mpoly;
+  if (vm.count("clip")) {
+    auto data = aoi.readAOI(vm["clip"].as<std::string>());
+    mpoly = *data;
+  }
+
   if (infile.extension() == ".osm") {
+    auto dparser = osmxml::XML_Parser();
     auto xml = osmxml::XML_Parser();
     std::ifstream indata;
     indata.open(infile, std::ifstream::in);
-    xml.readXML(indata);
-    xml.writeData("foo.osm");
-    BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
+    if (filter.size() > 0) {
+      dparser.addTagFilter(filter);
+    }
+    if (clip.size() > 0) {
+      //dparser.addAOI(clip);
+    }
+    dparser.readXML(indata);
+    // dparser.writeData("foo.osm");
+    // BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
   } else if (infile.extension() == ".pbf") {
-    auto pbf = PBF_Parser();
-    read_osm_pbf(infile, pbf);
-    pbf.writeData("bar.osm");
+    auto dparser = PBF_Parser();
+    if (filter.size() > 0) {
+      dparser.addTagFilter(filter);
+    }
+    if (mpoly.size() > 0) {
+      dparser.addAOI(mpoly);
+    }
+    read_osm_pbf(infile, dparser);
+    // dparser.writeData("bar.osm");
   } else if (infile.extension() == ".geojson") {
+    auto dparser = geojson::GeoJson();
     // FIXME: in progress...
-    auto geo = geojson::GeoJson();
     // FIXME: This uses a DOM parser, so the entire file is loaded
     // into memory.
-    auto boundary = geo.readFile(infile);
+    if (filter.size() > 0) {
+      dparser.addTagFilter(filter);
+    }
+    if (clip.size() > 0) {
+      //dparser.addAOI(clip);
+    }
+    auto boundary = dparser.readFile(infile);
     // std::cout << boost::geometry::wkt(*result) << std::endl;
     if (boundary.kind() != json::kind::object) {
       BOOST_LOG_TRIVIAL(error) << "Invalid input file!";
@@ -121,9 +159,9 @@ main(int argc, char *argv[])
     auto gen = boundary.at("generator");
     auto features = boundary.at("features").get_array();
     for (auto it = features.begin(); it!= features.end(); ++it) {
-      geo.makeFeature(*it);
+      dparser.makeFeature(*it);
     }
-    geo.writeData("bar.osm");
+    dparser.writeData("bar.osm");
   } else {
     BOOST_LOG_TRIVIAL(error) << "Must be an OSM XML or PBF file!";
   }

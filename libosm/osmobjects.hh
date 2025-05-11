@@ -157,7 +157,7 @@ public:
       point.set<0>(lon);
     };
     /// Set the location of this node
-    point_t getPoint(void)
+    point_t getPoint(void) const
     {
       return point;
     };
@@ -182,42 +182,45 @@ public:
 /// A way has multiple nodes, and should always have standard OSM tags
 /// or it's bad data.
 class OsmWay : public OsmObject {
-  public:
-    OsmWay(long wid) { id = wid; };
-    OsmWay(void)
-    {
-        type = way;
-        refs.clear();
-    };
+public:
+  OsmWay(long wid) { id = wid; };
+  OsmWay(void) {
+    type = way;
+    refs.clear();
+  };
 
-    std::vector<long> refs;  ///< Store all the nodes by reference ID
-    linestring_t linestring; ///< Store the node as a linestring
-    polygon_t polygon;       ///< Store the nodes as a polygon
-    point_t center;          ///< Store the centroid of the way
+  std::vector<long> refs;  ///< Store all the nodes by reference ID
+  linestring_t linestring; ///< Store the node as a linestring
+  polygon_t polygon;       ///< Store the nodes as a polygon
+  point_t center;          ///< Store the centroid of the way
 
-    /// Add a reference to a node to this way
-    void addRef(long ref) { refs.push_back(ref); };
+  /// Add a reference to a node to this way
+  void addRef(long ref) { refs.push_back(ref); };
 
-    /// Polygons are closed objects, like a building, while a highway
-    /// is a linestring
-    bool isClosed(void) const
-    {
-        return refs.size() > 3 && (refs.front() == refs.back());
-    };
-    /// Return the number of nodes in this way
-    int numPoints(void) { return boost::geometry::num_points(linestring); };
+  linestring_t getLineString(void) const {
+    return linestring;
+  }
+  polygon_t getPolygon(void) const{
+    return polygon;
+  }
+  /// Polygons are closed objects, like a building, while a highway
+  /// is a linestring
+  bool isClosed(void) const {
+    return refs.size() > 3 && (refs.front() == refs.back());
+  };
+  /// Return the number of nodes in this way
+  int numPoints(void) { return boost::geometry::num_points(linestring); };
 
-    /// Calculate the length of the linestring in Kilometers
-    double getLength(void)
-    {
-        return boost::geometry::length(linestring, boost::geometry::strategy::distance::haversine<float>(6371.0));
-    };
+  /// Calculate the length of the linestring in Kilometers
+  double getLength(void) {
+    return boost::geometry::length(linestring, boost::geometry::strategy::distance::haversine<float>(6371.0));
+  };
 
-    std::shared_ptr<std::string> as_osmxml() const;
-    std::shared_ptr<std::string> as_geojson() const;
+  std::shared_ptr<std::string> as_osmxml() const;
+  std::shared_ptr<std::string> as_geojson() const;
 
-    /// Dump internal data to the terminal, only for debugging
-    void dump(void) const;
+  /// Dump internal data to the terminal, only for debugging
+  void dump(void) const;
 };
 
 /// class OsmRelationMember

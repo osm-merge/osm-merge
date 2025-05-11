@@ -102,11 +102,11 @@ main(int argc, char *argv[])
 
   std::string filter;
   if (vm.count("filter")) {
-    std::string tag = vm["filter"].as<std::string>();
     filter = vm["filter"].as<std::string>();
   }
 
   auto aoi = geojson::GeoJson();
+  aoi.setupNodeCache("node_cache.db");
   std::string clip;
   multipolygon_t mpoly;
   if (vm.count("clip")) {
@@ -146,7 +146,7 @@ main(int argc, char *argv[])
     if (filter.size() > 0) {
       dparser.addTagFilter(filter);
     }
-    if (clip.size() > 0) {
+    if (mpoly.size() > 0) {
       //dparser.addAOI(clip);
     }
     auto boundary = dparser.readFile(infile);
@@ -161,7 +161,7 @@ main(int argc, char *argv[])
     for (auto it = features.begin(); it!= features.end(); ++it) {
       dparser.makeFeature(*it);
     }
-    dparser.writeData("bar.osm");
+    // dparser.writeCache("bar.osm");
   } else {
     BOOST_LOG_TRIVIAL(error) << "Must be an OSM XML or PBF file!";
   }

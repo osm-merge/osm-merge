@@ -135,7 +135,7 @@ XML_Parser::on_end_element(const std::string& name)
       boost::geometry::append(way->linestring, node.getPoint());
     }
     // way->dump();
-    way_cache[way->id] = way;
+    // way_cache[way->id] = way;
     BOOST_LOG_TRIVIAL(debug) << *way->as_osmxml();
     BOOST_LOG_TRIVIAL(debug) << *way->as_geojson();
   }

@@ -23,10 +23,88 @@
 #include <fstream>
 #include <filesystem>
 #include <boost/format.hpp>
+#include <boost/log/trivial.hpp>
 
 #include "datastore.hh"
 
+// Create a callback function
+static int cache_callback(void *NotUsed, int argc, char **argv, char **azColName) {
+  long int id = std::stol(argv[0]);
+  long int lat = std::stol(argv[1]);
+  long int lon = std::stol(argv[2]);
+  int version = std::stoi(argv[3]);
+  long int timestamp = std::stol(argv[4]);
+  BOOST_LOG_TRIVIAL(debug) << "FIXME: " << id << ", " << lat;
+  return 0;
+}
+
 namespace datastore {
+
+  std::shared_ptr<const OsmNode> DataStore::getNode(long int id) {
+    char *zErrMsg = 0;
+    std::string sql("SELECT id, lat, lon, version, timestamp");
+    auto rc = sqlite3_exec(db, sql.c_str(), cache_callback, 0, &zErrMsg);
+    if (rc != SQLITE_OK) {
+      BOOST_LOG_TRIVIAL(error) << "SELECT TABLE nodes failed! " << zErrMsg;
+    }
+  }
+
+  bool
+  DataStore::setupNodeCache(const std::string &dbname) {
+    char *zErrMsg = 0;
+    // Create the table if a new database
+    // if (! std::filesystem::exists(dbname)) {
+      std::string sql("CREATE TABLE nodes (id bigint PRIMARY KEY NOT NULL, lat double NOT NULL, lon double NOT NULL, version int NOT NULL, timestamp text NOT NULL);");
+      // sqlite3_open(dbname.c_str(), &db);
+      auto rc = sqlite3_exec(db, sql.c_str(), cache_callback, 0, &zErrMsg);
+      if (rc != SQLITE_OK) {
+        BOOST_LOG_TRIVIAL(error) << "CREATE TABLE command failed! " << zErrMsg;
+      }
+      //} else {
+      //sqlite3_open(dbname.c_str(), &db);
+      //}
+
+    return false;
+  }
+
+  void
+  DataStore::writeFeature(const OsmWay &way) {
+    if (output.size() > 0) {
+      for (auto [task, poly] : output) {
+	if (boost::geometry::within(way.getLineString(), poly)) {
+	  if (keywords.size() > 0) {
+	    for (auto key : keywords) {
+	      for (auto tag: way.tags) {
+	 	if (key == tag.first) {
+		  auto data = way.as_osmxml();
+		  std::fwrite(data->c_str(), 1, data->size(), task);
+		  continue;
+		}
+	      }
+	    }
+	  } else {
+	    auto data = way.as_osmxml();
+	    std::fwrite(data->c_str(), 1, data->size(), task);
+	  }
+	}
+      }
+    }
+  }
+
+  void
+  DataStore::writeFeature(const OsmNode &node) {
+#if 0
+    if (output.size() > 0) {
+      for (auto poly : output) {
+	if (boost::geometry::within(node.getPoint(), poly)) {
+	  BOOST_LOG_TRIVIAL(debug) << "Node " << " is within the AOI";
+	} else {
+	  BOOST_LOG_TRIVIAL(debug) << "Node " << " is not within the AOI";
+	}
+      }
+    }
+#endif
+  }
 
   void
   DataStore::openOutfiles(const std::string &format) {
@@ -39,6 +117,12 @@ namespace datastore {
       std::cerr  << outfile << std::endl;
       ofile.boundary = it;
       output.push_back(ofile);
+      if (suffix == "osm") {
+	std::string header = "<?xml version='1.0' encoding='UTF-8'?>\n";
+	std::fwrite(header.c_str(), 1, header.size(), ofile.file);
+	header = "<osm version=\"0.6\" generator=\"osm-merge\">\n";
+	std::fwrite(header.c_str(), 1, header.size(), ofile.file);
+      }
     }
   }
 
@@ -50,7 +134,7 @@ namespace datastore {
   }
 
   void
-  DataStore::writeData(const std::string &outfile) {
+  DataStore::writeCache(const std::string &outfile) {
     std::ofstream out(outfile);
     std::filesystem::path path(outfile);
     if (path.extension() == ".osm") {

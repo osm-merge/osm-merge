@@ -30,6 +30,7 @@
 #include <boost/format.hpp>
 #include <boost/json.hpp>
 // using namespace boost::json;
+#include <sqlite3.h>
 #include "osmobjects.hh"
 using namespace osmobjects;
 
@@ -39,6 +40,7 @@ namespace datastore {
   private:
     void openOutfiles(const std::string &format);
   protected:
+    sqlite3 *db;
     multipolygon_t aoi;
     std::map<long int, OsmNode> node_cache;
     std::map<long int, std::shared_ptr<OsmWay>> way_cache;
@@ -47,7 +49,7 @@ namespace datastore {
     // std::map<long int, std::shared_ptr<OsmWay>> aoi;
     // FIXME: this should probably be a vector of tag/value pairs, but
     // keep it simple for now.
-    std::vector<std::string_view> keywords;
+    std::vector<std::string> keywords;
     std::string suffix;
     struct outfiles {
       FILE *file;
@@ -56,18 +58,37 @@ namespace datastore {
     std::vector<outfiles> output;
     bool cache_files;
   public:
+    bool setupNodeCache(const std::string &dbname);
     /// Features only need to be cached if the data is wanted, otherwise
     /// it's disabled for tag filtering and clipping.
+
+    std::shared_ptr<const OsmNode> getNode(long int id);
+
     DataStore(void) {
       cache_files = false;
-      suffix = "geojson";
+      suffix = "osm";
+      sqlite3_open("node_cache.db", &db);
+      // If verbose debug logging is enabled, these don't do anything.
+      sqlite3_trace_v2(db, 0, nullptr, nullptr); // Disable tracing￼
+      auto rc = sqlite3_config(SQLITE_CONFIG_LOG, NULL, NULL);
+    }
+
+    ~DataStore(void) {
+      sqlite3_close(db);
+      if (suffix == "osm") {
+        // OSM XML needs to close the entry
+        std::string header = "</osm>\n";
+        for (auto [task, poly] : output) {
+          std::fwrite(header.c_str(), 1, header.size(), task);
+        }
+      }
     }
     /// Set the keyword for tag filtering
-    void addSuffix(std::string value) {
+    void addSuffix(const std::string &value) {
       suffix = value;
     }
     /// Set the keyword for tag filtering
-    void addTagFilter(std::string tag) {
+    void addTagFilter(const std::string &tag) {
       keywords.push_back(tag);
     }
     std::map<long int, OsmNode>getNodes(void) {
@@ -82,7 +103,9 @@ namespace datastore {
     /// Add an AOI for clipping data
     void addAOI(const multipolygon_t &aoi);
     void tagFilter(const std::string &outfile, const OsmWay &way);
-    void writeData(const std::string &outfile);
+    void writeCache(const std::string &outfile);
+    void writeFeature(const OsmWay &way);
+    void writeFeature(const OsmNode &node);
   };
 } // end of datastore namespace
 

@@ -41,7 +41,7 @@ namespace geojson {
 
     // This is the file header
     auto ftype = data.at("type");
-    auto gen = data.at("generator");
+    // auto gen = data.at("generator");
 
     // Each feature is a polygon within the AOI
     auto features = data.at("features").get_array();
@@ -116,7 +116,7 @@ namespace geojson {
         }
         way->version = 1;
         way->id = OsmObject::newid--;
-        way_cache[way->id] = way;
+        // way_cache[way->id] = way;
       }
     }
 

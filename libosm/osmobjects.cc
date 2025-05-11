@@ -164,7 +164,7 @@ OsmWay::as_osmxml() const
     auto tag = boost::format(tagfmt) % it.first % it.second;
     *out += tag.str();
   }
-  *out += "\n  </way>";
+  *out += "\n  </way>\n";
 
   return out;
 }

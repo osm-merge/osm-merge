@@ -26,8 +26,15 @@
 #include "osmobjects.hh"
 using namespace osmobjects;
 #include "osmpbf.hh"
+#include "datastore.hh"
 
 // namespace osmpbf {
+
+// Create a callback function
+static int cache_callback(void *NotUsed, int argc, char **argv, char **azColName){
+  // Return successful
+  return 0;
+}
 
 void
 PBF_Parser::node_callback(uint64_t id,
@@ -38,12 +45,23 @@ PBF_Parser::node_callback(uint64_t id,
                           long int timestamp)
 {
   // BOOST_LOG_TRIVIAL(debug) << "PBF_Parser::node_callback() called";
+#if 0
   auto node = osmobjects::OsmNode();
   node.id = id;
   node.version = version;
   node.setPoint(lat, lon);
   node.timestamp = from_time_t(timestamp);
   node_cache[id] = node;
+#endif
+  char *zErrMsg = 0;
+  std::string format("INSERT INTO nodes (id,lat,lon,version,timestamp)");
+  format += " VALUES(%1%, %2%, %3%, %4%, %5%);";
+  auto sql = boost::format(format) % id % lat % lon % version % timestamp;
+  BOOST_LOG_TRIVIAL(debug) << sql.str();
+  int rc = sqlite3_exec(db, sql.str().c_str(), cache_callback, 0, &zErrMsg);
+  if (rc != SQLITE_OK) {
+    BOOST_LOG_TRIVIAL(error) << "SQL command failed! " << zErrMsg;
+  }
 }
 
 void
@@ -61,17 +79,18 @@ PBF_Parser::way_callback(uint64_t id,
   way->timestamp = from_time_t(timestamp);
   for (auto it : refs) {
     way->addRef(it);
-    auto node = node_cache.at(it);
-    boost::geometry::append(way->linestring, node.getPoint());
+    //auto node = node_cache.at(it);
+    //boost::geometry::append(way->linestring, node.getPoint());
   }
 
   for (auto it : tags) {
     way->addTag(it.first, it.second);
   }
+  // writeFeature(*way);
   /// Optionally cache files.
-  if (cache_files) {
-    way_cache[id] = way;
-  }
+  //if (cache_files) {
+  //  way_cache[id] = way;
+  //}
   // way->dump();
 }
 

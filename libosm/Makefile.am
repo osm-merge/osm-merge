@@ -34,7 +34,8 @@ libosm_la_SOURCES = parsers.hh \
 	osmobjects.cc osmobjects.hh \
 	osmxml.cc osmxml.hh \
 	osmpbf.cc osmpbf.hh \
-	geojson.cc geojson.hh
+	geojson.cc geojson.hh \
+	datastore.cc datastore.hh
 libosm_la_LIBADD = $(BOOST_LIBS)
 
 # An executable for debugging convienince

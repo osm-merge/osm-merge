@@ -35,7 +35,8 @@ libosm_la_SOURCES = parsers.hh \
 	osmxml.cc osmxml.hh \
 	osmpbf.cc osmpbf.hh \
 	geojson.cc geojson.hh \
-	datastore.cc datastore.hh
+	datastore.cc datastore.hh \
+	python.cc
 libosm_la_LIBADD = $(BOOST_LIBS)
 
 # An executable for debugging convienince
@@ -43,18 +44,17 @@ bin_PROGRAMS = libosm-test
 libosm_test_SOURCES = libosm-test.cc
 libosm_test_LDADD = $(BOOST_LIBS) libosm.la
 
-# FIXME: not quite ready to do this yet
-# if ENABLE_PYTHON
-# # FIXME: although this builds and imports into python, no classes
-# # are shown, so doesn't work yet.
-# EXT := $(shell python3-config --extension-suffix)
-# DIR := $(shell python3-config --configdir)
+if ENABLE_PYTHON
+# FIXME: although this builds and imports into python, no classes
+# are shown, so doesn't work yet.
+EXT := $(shell python3-config --extension-suffix)
+DIR := $(shell python3-config --configdir)
 # lib_LTLIBRARIES = libosm.la
 # libosm_la_SOURCES = python.cc
 # libosm_la_LIBADD = libosm.la \
 # 	$(BOOST_LIBS) \
 # 	$(PYTHON_LIBS) \
 # 	$(BOOST_PYTHON_LIB)
-# libosm_la_LDFLAGS = -module -avoid-version -no-undefined
-# endif
+libosm_la_LDFLAGS = -module -avoid-version -no-undefined
+endif
 

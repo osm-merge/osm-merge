@@ -139,12 +139,15 @@ am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 libosm_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
 am_libosm_la_OBJECTS = osmobjects.lo osmxml.lo osmpbf.lo geojson.lo \
-	datastore.lo
+	datastore.lo python.lo
 libosm_la_OBJECTS = $(am_libosm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+libosm_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(libosm_la_LDFLAGS) $(LDFLAGS) -o $@
 am_libosm_test_OBJECTS = libosm-test.$(OBJEXT)
 libosm_test_OBJECTS = $(am_libosm_test_OBJECTS)
 libosm_test_DEPENDENCIES = $(am__DEPENDENCIES_2) libosm.la
@@ -166,7 +169,7 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/datastore.Plo \
 	./$(DEPDIR)/geojson.Plo ./$(DEPDIR)/libosm-test.Po \
 	./$(DEPDIR)/osmobjects.Plo ./$(DEPDIR)/osmpbf.Plo \
-	./$(DEPDIR)/osmxml.Plo
+	./$(DEPDIR)/osmxml.Plo ./$(DEPDIR)/python.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -256,7 +259,7 @@ BOOST_THREAD_LIB = -lboost_thread -lpthread
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O0
-CPPFLAGS =  -I/usr/include/gdal   -I/usr/include/libxml++-5.0 -I/usr/lib64/libxml++-5.0/include -I/usr/include/libxml2 -DWITH_GZFILEOP
+CPPFLAGS =  -I/usr/include/gdal    -I/usr/include/libxml++-5.0 -I/usr/lib64/libxml++-5.0/include -I/usr/include/libxml2 -DWITH_GZFILEOP
 CSCOPE = cscope
 CTAGS = ctags
 CXX = g++
@@ -286,7 +289,7 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBOBJS = 
-LIBS =  -lgdal -lexpat -lbz2 -lxml++-5.0 -lxml2 -losmpbf -lprotobuf
+LIBS =  -lgdal -lexpat -lbz2 -lsqlite3 -lxml++-5.0 -lxml2 -losmpbf -lprotobuf
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
@@ -408,11 +411,24 @@ libosm_la_SOURCES = parsers.hh \
 	osmxml.cc osmxml.hh \
 	osmpbf.cc osmpbf.hh \
 	geojson.cc geojson.hh \
-	datastore.cc datastore.hh
+	datastore.cc datastore.hh \
+	python.cc
 
 libosm_la_LIBADD = $(BOOST_LIBS)
 libosm_test_SOURCES = libosm-test.cc
 libosm_test_LDADD = $(BOOST_LIBS) libosm.la
+
+# FIXME: although this builds and imports into python, no classes
+# are shown, so doesn't work yet.
+#EXT := $(shell python3-config --extension-suffix)
+#DIR := $(shell python3-config --configdir)
+# lib_LTLIBRARIES = libosm.la
+# libosm_la_SOURCES = python.cc
+# libosm_la_LIBADD = libosm.la \
+# 	$(BOOST_LIBS) \
+# 	$(PYTHON_LIBS) \
+# 	$(BOOST_PYTHON_LIB)
+#libosm_la_LDFLAGS = -module -avoid-version -no-undefined
 all: all-am
 
 .SUFFIXES:
@@ -501,7 +517,7 @@ clean-noinstLTLIBRARIES:
 	$(am__rm_f) $${locs}
 
 libosm.la: $(libosm_la_OBJECTS) $(libosm_la_DEPENDENCIES) $(EXTRA_libosm_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(CXXLINK)  $(libosm_la_OBJECTS) $(libosm_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(libosm_la_LINK)  $(libosm_la_OBJECTS) $(libosm_la_LIBADD) $(LIBS)
 
 libosm-test$(EXEEXT): $(libosm_test_OBJECTS) $(libosm_test_DEPENDENCIES) $(EXTRA_libosm_test_DEPENDENCIES) 
 	@rm -f libosm-test$(EXEEXT)
@@ -519,6 +535,7 @@ include ./$(DEPDIR)/libosm-test.Po # am--include-marker
 include ./$(DEPDIR)/osmobjects.Plo # am--include-marker
 include ./$(DEPDIR)/osmpbf.Plo # am--include-marker
 include ./$(DEPDIR)/osmxml.Plo # am--include-marker
+include ./$(DEPDIR)/python.Plo # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -730,6 +747,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/osmobjects.Plo
 	-rm -f ./$(DEPDIR)/osmpbf.Plo
 	-rm -f ./$(DEPDIR)/osmxml.Plo
+	-rm -f ./$(DEPDIR)/python.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-DEJAGNU distclean-compile \
 	distclean-generic distclean-tags
@@ -781,6 +799,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/osmobjects.Plo
 	-rm -f ./$(DEPDIR)/osmpbf.Plo
 	-rm -f ./$(DEPDIR)/osmxml.Plo
+	-rm -f ./$(DEPDIR)/python.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -818,21 +837,6 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
-
-# FIXME: not quite ready to do this yet
-# if ENABLE_PYTHON
-# # FIXME: although this builds and imports into python, no classes
-# # are shown, so doesn't work yet.
-# EXT := $(shell python3-config --extension-suffix)
-# DIR := $(shell python3-config --configdir)
-# lib_LTLIBRARIES = libosm.la
-# libosm_la_SOURCES = python.cc
-# libosm_la_LIBADD = libosm.la \
-# 	$(BOOST_LIBS) \
-# 	$(PYTHON_LIBS) \
-# 	$(BOOST_PYTHON_LIB)
-# libosm_la_LDFLAGS = -module -avoid-version -no-undefined
-# endif
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

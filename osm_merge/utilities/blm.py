@@ -27,7 +27,7 @@ import sys
 import os
 import re
 from sys import argv
-from osm_fieldwork.osmfile import OsmFile
+from osm_merge.osmfile import OsmFile
 from geojson import Point, Feature, FeatureCollection, dump, Polygon, load
 import geojson
 from shapely.geometry import shape, LineString, Polygon, mapping

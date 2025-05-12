@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2021, 2022, 2023, 2024 OpenStreetMap US
+# Copyright (c) 2021, 2022, 2023, 2024, 2025 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -20,7 +20,7 @@ import logging
 import sys
 import os
 from sys import argv
-from osm_fieldwork.osmfile import OsmFile
+from osm_merge.osmfile import OsmFile
 from geojson import Point, Feature, FeatureCollection, dump, Polygon, load
 import geojson
 from shapely.geometry import shape, LineString, Polygon, mapping

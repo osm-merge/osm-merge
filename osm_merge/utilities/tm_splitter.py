@@ -338,6 +338,8 @@ class TM_Splitter(object):
         index = 0
         spin = Spinner('Processing input data...')
         dir = os.path.dirname(dataout)
+        if len(dir) == 0:
+            dir = "."
         for poly in polys:
             dataout = f"{dir}/MVUM_Highways_Task_{index}.geojson"
             # else: dataout = 
@@ -384,32 +386,53 @@ class TM_Splitter(object):
         timer = Timer(text="clip() took {seconds:.0f}s")
         timer.start()
 
-        # Load the boundary
-        if self.data["type"] == "Feature":
-            boundary = self.data
-            task = shape(boundary["geometry"])
-        elif self.data["type"] == "FeatureCollection":
-            boundary = self.data["features"]
-            task = shape(boundary[0]["geometry"])
+        aoi = fiona.open(self.aoi, 'r')
+        polys = list()
+        # Convert the boundary AOI to a clean list of Polygons
+        spin = Spinner('Processing Task MultiPolygon file...')
+        for task in aoi:
+            spin.next()
+            if task['geometry']['coordinates']:
+                if task.geometry.type == "Polygon":
+                    try:
+                        polys.append(Polygon(task['geometry']['coordinates'][0]))
+                    except:
+                        logging.error(f"Bad task Polygon! {task.properties.get("name")}")
+                        continue
+                elif task.geometry.type == "MultiPolygon":
+                    for poly in task.geometry.coordinates:
+                        polys.append(Polygon(poly[0]))
+        logging.debug(f"There are {len(polys)} polygons in the boundary AOI")
 
-        if os.path.exists(outfile):
-            os.remove(outfile)
         nodes = set()
         # Pre-filter the ways by tags. The less objects we need to look at, the better.
         way_filter = osmium.filter.KeyFilter('highway')
         # only scan the ways of the file
         spin = Spinner('Processing nodes...')
+        dir = os.path.dirname(outfile)
+        if len(dir) == 0:
+            dir = "."
+
+        index = 0
+        outfiles = dict()
+        for poly in polys:
+            dataout = f"{dir}/OSM_Highways_Task_{index}.pbf"
+            if os.path.exists(dataout):
+                os.remove(dataout)
+            writer = osmium.SimpleWriter(dataout)
+            outfiles[index] = {"task": index, "outfile": writer, "geometry": poly}
+            index += 1
+
         fp = osmium.FileProcessor(infile, osmium.osm.WAY).with_filter(osmium.filter.KeyFilter('highway'))
         for obj in fp:
-           spin.next()
-           if "highway" in obj.tags:
-               nodes.update(n.ref for n in obj.nodes)
-
-        writer = osmium.SimpleWriter(outfile)
+            spin.next()
+            if "highway" in obj.tags:
+                nodes.update(n.ref for n in obj.nodes)
 
         # We need nodes and ways in the second pass.
         fab = GeoJSONFactory()
-        spin = Spinner('Processing ways...')
+        spin = Spinner(f"Processing ways...")
+        # FIXME: make this multi-threaded.
         way_filter = osmium.filter.KeyFilter('highway').enable_for(osmium.osm.WAY)
         for obj in osmium.FileProcessor(infile, osmium.osm.WAY | osmium.osm.NODE).with_filter(way_filter).with_locations():
             spin.next()
@@ -420,17 +443,24 @@ class TM_Splitter(object):
                 wkt = fab.create_point(obj)
                 geom = shape(geojson.loads(wkt))
                 # Add a node if it exists within the boundary
-                if contains(task, geom) or intersects(task, geom):
-                    writer.add(obj)
-                    # log.debug(f"Adding {obj.id}")
-                    continue
-                    # Strip the object of tags along the way
+                for task, metadata in outfiles.items():
+                    if contains(metadata["geometry"], geom) or intersects(metadata["geometry"], geom):
+                        # breakpoint()
+                        metadata["outfile"].add(obj)
+                        # log.debug(f"Adding {obj.id}")
+                        continue
+                # Strip the object of tags along the way
                 # writer.add_node(obj.replace(tags={}))
-            elif obj.is_way() and "highway" in obj.tags:
+            # elif obj.is_way() and "highway" in obj.tags:
+            elif obj.is_way():
                 wkt = fab.create_linestring(obj.nodes)
                 geom = shape(geojson.loads(wkt))
-                if contains(task, geom) or intersection(task, geom):
-                    writer.add_way(obj)
+                for task, metadata in outfiles.items():
+                    if contains(metadata["geometry"], geom) or intersects(metadata["geometry"], geom):
+                        # breakpoint()
+                        # log.debug(f"Adding {obj.id}")
+                        metadata["outfile"].add_way(obj)
+            # writer.close()
         timer.stop()
         return True
 

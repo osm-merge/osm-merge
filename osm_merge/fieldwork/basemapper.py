@@ -586,6 +586,7 @@ def move_tiles(
     boundary=None,
     indir=None,
     outdir=None,
+    copy=False,
 ) -> None:
     """Move tiles within a boundary to another directory. Used for managing the
     map tile cache.
@@ -594,6 +595,7 @@ def move_tiles(
         boundary (str | BytesIO, optional): The boundary for the area you want.
         indir (str, optional): Top level directory for existing tile cache.
         outdir (str, optional): Output directory name for the new tile cache.
+        copy (bool): Whether to copy instead of move the tiles.
 
     Returns:
         None
@@ -621,7 +623,10 @@ def move_tiles(
                     os.makedirs(outspec)
                 outspec += f"/{tile.x}.jpg"
                 # print(f"Move {inspec} to {outspec}")
-                shutil.move(inspec, outspec)
+                if copy:
+                    shutil.copy(inspec, outspec)
+                else:
+                    shutil.move(inspec, outspec)
             else:
                 # log.debug("Input tile %s doesn't exist" % inspec)
                 continue
@@ -648,7 +653,9 @@ def main():
     parser.add_argument("-z", "--zooms", default="12-17", help="The Zoom levels")
     parser.add_argument("-d", "--outdir", help="Output directory name for new tile cache")
     parser.add_argument("-m", "--move", help="Move tiles to different directory")
-    parser.add_argument("-a", "--append", action="store_true", default=False, help="Append to an existing database file")
+    parser.add_argument("-c", "--copy", help="Copy tiles to different directory")
+    parser.add_argument("-a", "--append", action="store_true", default=False,
+                        help="Append to an existing database file")
     parser.add_argument(
         "-s",
         "--source",
@@ -706,7 +713,7 @@ def main():
         parser.print_help()
         quit()
     elif args.move is not None and args.outdir is not None:
-        move_tiles(boundary_parsed, args.move, args.outdir)
+        move_tiles(boundary_parsed, args.move, args.outdir, args.copy)
         return
 
     create_basemap_file(

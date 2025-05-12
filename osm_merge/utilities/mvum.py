@@ -126,8 +126,6 @@ def processDataThread(config: dict,
         props = dict()
         if geom is None:
             continue
-        # FIXME: simplify the geometry with shapely.simplify
-
         exists = ["Drive", "Road", "Lane", "Circle"]
         # unclassified, as we don't know what it is.
         #        if "highway" not in props:
@@ -152,7 +150,7 @@ def processDataThread(config: dict,
             if config["tags"][key] == "name":
                 if value:
                     # print(f"FIXME: \'{props}\' = {value.title()}")
-                    newname = value.title()
+                    newname = re.sub(' +', ' ', value.title()).strip()
                     # Some names are just spaces
                     if len(value.strip()) == 0 or newname == "Un-Named":
                         continue
@@ -179,7 +177,7 @@ def processDataThread(config: dict,
                 if len(value.strip()) == 0:
                     continue
                 index = int(value[:1])
-                if index >= 2:
+                if index >= 3:
                     props["4wd_only"] = "yes"
                 for i in config["tags"]["smoothness"]:
                     if int(i) == index:
@@ -191,18 +189,17 @@ def processDataThread(config: dict,
                     else:
                         props["seasonal"] = "yes"
             elif config["tags"][key] == "ref":
-                if value is None:
+                if value is None or len(value.strip()) == 0:
                     continue
                 if value.isnumeric() and fixref and len(value) == 5:
                     # FIXME: this fixes multiple forests in Utah and Colorado,
                     # don't know if any other states use a 5 digit reference
-                    # number
+                    # numbers
                     # props["ref:orig"] = f"FR {value}"
                     props["ref"] = f"FR {value[1:]}"
                     # props["note"] = f"Validate this changed ref!"
                     # logging.debug(f"Converted {value} to {props["ref"]}")
                 elif value.isalnum() and fixref:
-                    # breakpoint()
                     pat = re.compile("[0-9]+")
                     result = re.match(pat, value)
                     # There are other patterns, like M21 for example
@@ -213,7 +210,7 @@ def processDataThread(config: dict,
                     num = result.group()
                     if len(num) == 5:
                         # FIXME: Same here, but need to validate if 5 digit
-                        # reference nunbers are used by some forests.
+                        # reference numbers are used by some forests.
                         num = num[1:]
                     minor = value.find('.') > 0
                     if minor:
@@ -233,7 +230,13 @@ def processDataThread(config: dict,
             props["name"] += " Road"
         if geom is not None:
             props["highway"] = "unclassified"
-            highways.append(Feature(geometry=geom, properties=props))
+            simple = shapely.simplify(shape(geom), tolerance=0.0001) # preserve_topology=True
+            # Short roads may get simplified down to a single node.
+            # In that case, use the original geometry.
+            if shapely.count_coordinates(simple) <= 1:
+                highways.append(Feature(geometry=geom, properties=props))
+            else:
+                highways.append(Feature(geometry=simple, properties=props))
         # print(props)
 
     return FeatureCollection(highways)

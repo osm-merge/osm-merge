@@ -1,23 +1,32 @@
 # Commen abbreviations found in the MVUM dataset
 - abbreviations:
+    - Fdr: FR
     - Cr: Creek
     - Cr.: Creek
     - Ck.: Creek
     - Crk: Creek
     - Cg: Campground
     - C G: Campground
+    - C.G: Campground
     - Th: Trailhead
+    - Tr: Trail
+    - T.H.: Trailhead
     - Rd: Road
     - Disp: Dispersed 
     - Rd.: Road
+    - Rd: Road
     - Mt: Mountain 
     - Mtn.: Mountain 
+    - Mtn: Mountain
     - Lk: Lake
     - Pk: Park
     - Resvr: Reservoir
+    - Rsvr: Reservoir
     - Spg: Spring
     - Sp: Spring
     - Br: Bridge
+    - Ext: Extension
+    - Fk.: Fork
     - N: North
     - N.: North
     - W: West
@@ -27,7 +36,6 @@
     - S: South
     - S.: South
     - So: South
-    - Mtn: Mountain
 
 - tags:
   - seasonal:
@@ -75,9 +83,9 @@
   - SEASONAL: seasonal
 
   - vehicle:
-    - TRUCK: designated
-    - BUS: designated
-    - MOTORHOME: designated
+    # - TRUCK: designated
+    # - BUS: designated
+    # - MOTORHOME: designated
     - ATV: designated
     - MOTORCYCLE: designated
     # - OTHERWHEELED_OHV: designated

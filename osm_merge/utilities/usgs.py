@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2021, 2022, 2023, 2024 OpenStreetMap US
+# Copyright (c) 2021, 2022, 2023, 2024, 2025 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@ import sys
 import os
 import re
 from sys import argv
-from osm_fieldwork.osmfile import OsmFile
+from osm_merge.osmfile import OsmFile
 from progress.bar import Bar, PixelBar
 from osm_merge.yamlfile import YamlFile
 import geojson

@@ -62,10 +62,9 @@ class OsmFile(object):
         # Open the OSM output file
         self.file = None
         if filespec is not None:
-            self.file = open(filespec, "w")
+            self.file = open(filespec, "r")
             # self.file = open(filespec + ".osm", 'w')
-            logging.info("Opened output file: " + filespec)
-        self.header()
+            logging.info("Opened input file: " + filespec)
         # logging.error("Couldn't open %s for writing!" % filespec)
 
         # This is the file that contains all the filtering data
@@ -75,7 +74,6 @@ class OsmFile(object):
         self.full = None
         self.addr = None
         # decrement the ID
-        self.start = -1
         # path = xlsforms_path.replace("xlsforms", "")
         self.data = list()
 
@@ -222,7 +220,7 @@ class OsmFile(object):
         """
         negid = -100
         out = str()
-        newmvum = list()
+        #newmvum = list()
         nodes = str()
         ways = str()
         self.file = open(filespec, "w")
@@ -236,17 +234,23 @@ class OsmFile(object):
             spin.next()
             version = 1
             tags = entry["properties"]
+            if "ref" in entry["properties"]:
+                # FIXME: from GeoJson file
+                pass
+            # elif "id" not in tags:
+            #else:
+                # There is no id or version for non OSM features
+            #     self.osmid -= 1
+            if "version" in entry["properties"]:
+                version = int(entry["properties"]["version"])
+                version += 1
             if "osm_id" in tags:
                 id = tags["osm_id"]
             elif "id" in tags:
                 id = tags["id"]
-            elif "id" not in tags:
-                # There is no id or version for non OSM features
-                self.osmid -= 1
-            if "version" in entry["properties"]:
-                version = int(entry["properties"]["version"])
-                version += 1
-            attrs = {"id": self.osmid, "version": version}
+            else:
+                id = self.osmid
+            attrs = {"version": version}
             # These are OSM attributes, not tags
             if "id" in tags:
                 del tags["id"]
@@ -257,34 +261,11 @@ class OsmFile(object):
                 item["attrs"]["timestamp"] = item["tags"]["timestamp"]
                 del item["tags"]["timestamp"]
             # print(entry)
-            out = str()
+            # out = str()
+            # GeoJson input files have a geometry.
             if entry["geometry"] is not None:
-                # It's a node referenced by a way
-                # coords = entry["geometry"]["coordinates"]
-                # gtype = entry["geometry"]["type"]
-                nodes, refs = self.geom_to_nodes(entry)
-                # if len(coords) == 2:
-                #     # it's a point
-                #     item["attrs"]["lon"] = coords[0]
-                #     item["attrs"]["lat"] = coords[1]
-                #     nodes += self.createNode(item, False)
-                #     self.osmid -= 1
-                # else:
-                #     # breakpoint()
-                #     refs = list()
-                #     for node in coords:
-                #         nitem = {"attrs": dict(), "tags": dict(), "refs": list()}
-                #         refs.append(self.osmid)
-                #         nitem["attrs"]["id"] = self.osmid
-                #         nitem["attrs"]["version"] = 1
-                #         nitem["attrs"]["lon"] = node[0]
-                #         nitem["attrs"]["lat"] = node[1]
-                #         if "tags" in nitem:
-                #             del nitem["tags"]
-                #         nodes += self.createNode(nitem, False) + '\n'
-                #         self.osmid -= 1
-                #     item["refs"] = refs
-                # breakpoint()
+                refnodes, refs = self.geom_to_nodes(entry)
+                nodes += refnodes
                 item["refs"] = refs
                 ways += self.createWay(item, True) + '\n'
             else:
@@ -296,7 +277,7 @@ class OsmFile(object):
                     # tags["fixme"] = "New road from MVUM, don't add!"
                     # FIXME: for now we don't do anything with new roads from
                     # an external dataset, because that would be an import.
-                    newmvum.append(entry)
+                    # newmvum.append(entry)
                     continue
                 if len(tags['refs']) > 0 or type(entry) == 'Feature':
                     if type(tags["refs"]) != list:
@@ -311,8 +292,8 @@ class OsmFile(object):
                 logging.error(f"")
                 quit()
             # OSM prefers all the nodes are first in the file
-            self.file.write(nodes + "\n")
-            self.file.write(ways + "\n")
+        self.file.write(nodes + "\n")
+        self.file.write(ways + "\n")
         self.footer()
 
     def createWay(
@@ -333,6 +314,7 @@ class OsmFile(object):
         osm = ""
 
         # Add default attributes
+        # breakpoint()
         if modified:
             attrs["action"] = "modify"
         if "osm_way_id" in way["attrs"]:
@@ -342,8 +324,8 @@ class OsmFile(object):
         elif "id" in way["attrs"]:
             attrs["id"] = int(way["attrs"]["id"])
         else:
-            attrs["id"] = self.start
-            self.start -= 1
+            attrs["id"] = self.osmid
+            self.osmid -= 1
         if "version" not in way["attrs"]:
             attrs["version"] = 1
         else:
@@ -462,8 +444,8 @@ class OsmFile(object):
         if "id" in node["attrs"]:
             attrs["id"] = int(node["attrs"]["id"])
         else:
-            attrs["id"] = self.start
-            self.start -= 1
+            attrs["id"] = self.osmid
+            self.osmid -= 1
         if "version" not in node["attrs"]:
             attrs["version"] = "1"
         else:
@@ -568,9 +550,16 @@ class OsmFile(object):
                     ):
         """
         Convert the geometry from a GeoJson Feature to OSM XML.
+
+        Args:
+            feature (Feature):  The GeoJson feature to get the geometry from
+
+        Returns:
+            out (str): The OSM XML output for this Feature
+            refs (list): The list of node references
         """
         gtype = feature["geometry"]["type"]
-        logging.debug(f"GEOM TYPE: {gtype}")
+        # logging.debug(f"GEOM TYPE: {gtype}")
         out = str()
         refs = list()
         if gtype == "Point":
@@ -580,20 +569,21 @@ class OsmFile(object):
             for node in coords:
                 item = {"attrs": dict(), "tags": dict(), "refs": list()}
                 refs.append(self.osmid)
-                item["attrs"]["id"] = self.osmid
+                # item["attrs"]["id"] = self.osmid
                 item["attrs"]["version"] = 1
                 item["attrs"]["lon"] = node[0]
                 item["attrs"]["lat"] = node[1]
                 if "tags" in item:
                     del item["tags"]
-                    out += self.createNode(item, False) + '\n'
-                self.osmid -= 1
+                out += self.createNode(item, False) + '\n'
+                # self.osmid -= 1
         elif gtype == "MultiLineString":
             # breakpoint()
             for line in feature["geometry"]["coordinates"]:
                 # coords = line["coordinates"]
                 segment = LineString(line)
                 result = self.geom_to_nodes(Feature(geometry=segment))
+                refs += result[1]
                 out += result[0]
         return out, refs
 

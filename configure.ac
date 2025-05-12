@@ -59,6 +59,10 @@ dnl libboost has a dependency on libbzip2
 CPPFLAGS+=" $(pkg-config --cflags bzip2)"
 LIBS+=" $(pkg-config --libs bzip2)"
 
+dnl the node cache uses sqlite3
+CPPFLAGS+=" $(pkg-config --cflags sqlite3)"
+LIBS+=" $(pkg-config --libs sqlite3)"
+
 # Find the path for python modules
 AM_PATH_PYTHON([3])
 
@@ -77,12 +81,15 @@ fi
 AM_CONDITIONAL(ENABLE_PYTHON, [ test x"${enable_python}" != x"no" ])
 
 $(pkg-config --exists libxml++-5.0)
-if test $? -gt 0 ; then
+if test $? -eq 0 ; then
    CPPFLAGS+=" $(pkg-config --cflags libxml++-5.0)"
    LIBS+=" $(pkg-config --libs libxml++-5.0)"
 else
-  CPPFLAGS+=" $(pkg-config --cflags libxml++-3.0)"
-  LIBS+=" $(pkg-config --libs libxml++-3.0)"
+  $(pkg-config --exists libxml++-5.0)
+  if test $? -eq 0 ; then
+     CPPFLAGS+=" $(pkg-config --cflags libxml++-3.0)"
+     LIBS+=" $(pkg-config --libs libxml++-3.0)"
+  fi
 fi
 
 AC_CHECK_FILE([/usr/lib64/libosmpbf.so], [has_osmpbf=yes], [has_osmpbf=yes])

@@ -24,7 +24,7 @@ OpenStreetMap syntax so they can be conflated.
 
 ### TRLUSE
 
-This is a messy tag with multiple possible values, each seperated by a
+This is a messy tag with multiple possible values, each separated by a
 vertical bar. Some values use a slash when the values may be similar,
 for example __Hiker/Biker/Pedestrian__, which for OSM will have only
 one value, *foot=yes*. There's also many variations on the values, but
@@ -36,7 +36,7 @@ refer to motorized access use *highway=track* instead of
 * Hiker, Pedestrian, Hike, Walking, Hiking becomes **foot=**
 * Bike, Biker, Biking, Bicycle becomes **bicycle=**
 * Horse, Horseback, Pack Or Saddle, Equestrian: becomes **horse=**
-* Snowshoe becomes **snowhoe=**
+* Snowshoe becomes **snowshoe=**
 * Cross-Country Ski becomes **ski=nordic**
 * Dog Sled becomes **dog_sled=**, but isn't a common OSM tag
 * Trail/Admin Road becomes **highway=service**
@@ -45,7 +45,7 @@ refer to motorized access use *highway=track* instead of
 * Motorized Watercraft becomes **motorboat=**
 * Non Motorized Watercraft becomes **boat=**
 * Motorized becomes **motor_vehicle=**
-* Motorcycle becomes **morotcycle=**
+* Motorcycle becomes **motorcycle=**
 * All-Terrain Vehicle becomes **atv=**
 * Snowmobile becomes **snowmobile=**
 
@@ -53,9 +53,9 @@ refer to motorized access use *highway=track* instead of
 
 This is another data field with multiple possible values, sometimes
 lower case, other times uppercase, so case insensitive string matching
-is used. These map directly to thwir OSM equivalant. There are some
+is used. These map directly to their OSM equivalent. There are some
 other weird values, but they are ignored as we only want to convert a
-data field when it has an OSM equivalant.
+data field when it has an OSM equivalent.
 
 * Asphalt
 * Bituminous
@@ -110,7 +110,7 @@ These fields are all ignored, and are dropped from the output file.
 
 ## National Forest Service Trails
 
-The US Forest Service makes much of their data publically accessible,
+The US Forest Service makes much of their data publicly accessible,
 so it's been a source for imports for a long time. There is a nice
 detailed wiki page on the [Forest Service
 Data](https://wiki.openstreetmap.org/wiki/US_Forest_Service_Data). The
@@ -133,7 +133,7 @@ which is used for access.
 * Restricted: Usage is restricted
 * Discouraged: Usage is discouraged
 
-These are converted to the apppropriate value, but most are not in the
+These are converted to the appropriate value, but most are not in the
 output file as they don't really have an OSM equivalent. For a value,
 these use a date string, which becomes **opening_hours** in OSM. The
 prefix which is *HIKER*_, *ATV_*, etc... becomes the access tag,
@@ -152,10 +152,10 @@ output file. If the value exists.
 * PACK_SADDLE_ becomes **horse=**
 * BICYCLE_ becomes **bicycle=**
 * MOTORCYCLE_ becomes **motorcycle=**
-* ATV_ becoms **atv=**
+* ATV_ becomes **atv=**
 * FOURWD_ becomes **4wd_only**
 * SNOWMOBILE_ becomes **snowmobile=**
-* SNOWSHOE_ becomes **snowwhoe=**
+* SNOWSHOE_ becomes **snowshoe=**
 * XCOUNTRY_SKI_ becomes **ski=**
 * HIKER_PEDESTRIAN becomes **foot=**, but is the default, so not needed
 * MOTOR_WATERCRAFT becomes **motorboat=**

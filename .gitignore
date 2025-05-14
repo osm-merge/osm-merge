@@ -10,6 +10,7 @@ docs/*.png
 README
 autom4te.cache/
 .deps/
+*/= .gdb_history
 
 
 # output files

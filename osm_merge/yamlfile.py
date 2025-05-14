@@ -77,13 +77,14 @@ class YamlFile(object):
                 self.data[key] = dict()
                 # values is a list of dicts which are tag/value pairs
                 for item in values:
+                    # print(f"YAML: {item}")
                     [[k, v]] = item.items()
                     if type(v) == str:
                         self.data[key][k] = v
                     elif type(v) == list:
-                        self.data[key][k] = dict()                        
-                        for convert in v:
-                            self.data[key][k].update(convert)
+                        self.data[key][k] = list()
+                        for newval in v:
+                            self.data[key][k].append(newval)
                     else:
                         log.error(f"{type(v)} is not suported.")
 

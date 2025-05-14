@@ -16,12 +16,60 @@ OpenStreetMap syntax so they can be conflated.
 
 * OBJECTID becomes **id**
 * TRLNAME becomes **name**
-* TRLCLASS becomes **sac_scale**
-* TRLUSE becomes *yes* for **horse**, **bicycle**, **atv**, etc...
 * TRLALTNAME becomes **alt_name**
+* MAINTAINER becomes **operator** (although seems to only be the NPS)
+* TRLUSE becomes *yes* for **horse**, **bicycle**, **atv**, etc...
 * SEASONAL becomes **seasonal**
-* MAINTAINER becomas **operator**
 * TRLSURFACE becomes **surface**
+
+### TRLUSE
+
+This is a messy tag with multiple possible values, each seperated by a
+vertical bar. Some values use a slash when the values may be similar,
+for example __Hiker/Biker/Pedestrian__, which for OSM will have only
+one value, *foot=yes*. There's also many variations on the values, but
+they do fall into the same group. When seen in the data, these values
+are converted into *="yes"* instead of *designated*. The values that
+refer to motorized access use *highway=track* instead of
+*highway=path*.
+
+* Hiker, Pedestrian, Hike, Walking, Hiking becomes **foot=**
+* Bike, Biker, Biking, Bicycle becomes **bicycle=**
+* Horse, Horseback, Pack Or Saddle, Equestrian: becomes **horse=**
+* Snowshoe becomes **snowhoe=**
+* Cross-Country Ski becomes **ski=nordic**
+* Dog Sled becomes **dog_sled=**, but isn't a common OSM tag
+* Trail/Admin Road becomes **highway=service**
+* Wheelchair Accessible Trail becomes **wheelchair=**
+* Watercraft becomes **boat=**
+* Motorized Watercraft becomes **motorboat=**
+* Non Motorized Watercraft becomes **boat=**
+* Motorized becomes **motor_vehicle=**
+* Motorcycle becomes **morotcycle=**
+* All-Terrain Vehicle becomes **atv=**
+* Snowmobile becomes **snowmobile=**
+
+### TRLSURFACE
+
+This is another data field with multiple possible values, sometimes
+lower case, other times uppercase, so case insensitive string matching
+is used. These map directly to thwir OSM equivalant. There are some
+other weird values, but they are ignored as we only want to convert a
+data field when it has an OSM equivalant.
+
+* Asphalt
+* Bituminous
+* Earth
+* Grass
+* Gravel
+* Concrete
+* Native
+* Wood
+* Snow
+* Water
+* Sand
+* Stone
+* Dirt
 
 ## Dropped Fields
 
@@ -30,6 +78,7 @@ These fields are all ignored, and are dropped from the output file.
 * MAPLABEL
 * TRLSTATUS
 * TRLTYPE
+* TRLCLASS
 * PUBLICDISP
 * DATAACCESS
 * ACCESSNOTE
@@ -67,7 +116,7 @@ detailed wiki page on the [Forest Service
 Data](https://wiki.openstreetmap.org/wiki/US_Forest_Service_Data). The
 conversion process handles most of the implementation details.
 
-# Keep Fields
+# Kept Fields
 
 The two primary fields are *TRAIL_NO*, which is used for the
 *ref:usfs* tags, and *TRAIL_NAME*, which is the name of the trail. In
@@ -84,18 +133,21 @@ which is used for access.
 * Restricted: Usage is restricted
 * Discouraged: Usage is discouraged
 
-These are converted to the apppropriate value.
+These are converted to the apppropriate value, but most are not in the
+output file as they don't really have an OSM equivalent. For a value,
+these use a date string, which becomes **opening_hours** in OSM. The
+prefix which is *HIKER*_, *ATV_*, etc... becomes the access tag,
+similar to the NPS values. For USFS trails, the values *designated**
+is used instead of *yes*.
 
-* Managed* sets the keyword to **designated**
-* Accepted* sets the keyword to **yes**
+* Managed*  could set keyword to **designated**
+* Accepted* could set the keyword to **yes**
+* Discouraged* could set the keyword to **discouraged**
+* Accepted/Discouraged* could set the keyword to **permissive**
 * Restricted* sets the keyword to **no**
-* Discouraged* sets the keyword to **discouraged**
-* Accepted/Discouraged* sets the keyword to **permissive**
 
 Many of the values for these are NULL, so ignored when generating the
-output file. If the value exists, it's either a **Y** or a **N**, which
-is used to set the values. For example: "SNOWMOBILE": "Y" becomes
-**snowmobile=yes** in the output file.
+output file. If the value exists.
 
 * PACK_SADDLE_ becomes **horse=**
 * BICYCLE_ becomes **bicycle=**
@@ -104,7 +156,10 @@ is used to set the values. For example: "SNOWMOBILE": "Y" becomes
 * FOURWD_ becomes **4wd_only**
 * SNOWMOBILE_ becomes **snowmobile=**
 * SNOWSHOE_ becomes **snowwhoe=**
-* XCOUNTRY_SKI_ becomes **ski**
+* XCOUNTRY_SKI_ becomes **ski=**
+* HIKER_PEDESTRIAN becomes **foot=**, but is the default, so not needed
+* MOTOR_WATERCRAFT becomes **motorboat=**
+* NONMOTOR_WATERCRAFT becomes **boat**
 
 Currently these fields appear to be empty, but that may change in the
 future.
@@ -115,18 +170,11 @@ future.
 * E_BIKE_CLASS2_
 * E_BIKE_CLASS3_
 
-This field is ignored as it's assumed the trail is accessible by
-hikers.
-
-* HIKER_PEDESTRIAN_
-
 ## Dropped Fields
 
-These fields are dropped as unnecessary for OSM. Manye only have a
+These fields are dropped as unnecessary for OSM. Most only have a
 NULL value anyway, so useless.
 
-* MOTOR_WATERCRAFT_
-* NONMOTOR_WATERCRAFT_
 * GIS_MILES
 * Geometry Column
 * TRAIL_TYPE

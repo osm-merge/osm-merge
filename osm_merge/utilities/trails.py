@@ -116,7 +116,10 @@ def processDataThread(config: dict,
                 # be enough to identify the trail.
                 if value == "Un-Named":
                     continue
-                props["name"] = f"{value.title()} Trail"
+                if value.title().find(" Trail") > 0:
+                    props["name"] = f"{value.title()}"
+                else:
+                    props["name"] = f"{value.title()} Trail"
             elif config["tags"][key] == "alt_name":
                 if len(value.strip()) > 0:
                     # this is a bogus alternate name

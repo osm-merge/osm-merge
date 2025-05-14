@@ -60,7 +60,7 @@
     - snowmobile: snowmobile
     - snowshoe: snowshoe
     - hiker: foot
-    - motor: motorboat
+    # - motor: motorboat
     - nonmotor: boat
   # - TRAIL_CN:
   # - BMP:

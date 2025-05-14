@@ -7,14 +7,16 @@ two default tags in the output file which are *bicycle=no* and
 *motor_vehicle=no*. These default tags are [documented
 here](https://wiki.openstreetmap.org/wiki/US_National_Park_Service_Tagging:_Trails).
 
-This dataset is available in a variety of formats from the [ArcGIS Hub](https://hub.arcgis.com/datasets/fedmaps::national-park-service-trails/about).
+This dataset is available in a variety of formats from the [ArcGIS
+Hub](https://hub.arcgis.com/datasets/fedmaps::national-park-service-trails/about). They
+use a NAD84 CRS, so don't have to be reprojected.
 
 ## Processed Fields
 
 These are the fields extracted from the data that are converted to
 OpenStreetMap syntax so they can be conflated.
 
-* OBJECTID becomes **id**
+* OBJECTID becomes **ref**
 * TRLNAME becomes **name**
 * TRLALTNAME becomes **alt_name**
 * MAINTAINER becomes **operator** (although seems to only be the NPS)
@@ -75,6 +77,7 @@ data field when it has an OSM equivalent.
 
 These fields are all ignored, and are dropped from the output file.
 
+* FEATUREID
 * MAPLABEL
 * TRLSTATUS
 * TRLTYPE
@@ -97,7 +100,6 @@ These fields are all ignored, and are dropped from the output file.
 * SOURCEDATE
 * XYACCURACY
 * GEOMETRYID
-* FEATUREID
 * FACLOCID
 * FACASSETID
 * IMLOCID
@@ -115,6 +117,20 @@ so it's been a source for imports for a long time. There is a nice
 detailed wiki page on the [Forest Service
 Data](https://wiki.openstreetmap.org/wiki/US_Forest_Service_Data). The
 conversion process handles most of the implementation details.
+
+These files all use a NAD83 CRS, so have to be reprojected to NAD84 to
+be spatially accurate. This can be fixed using QGIS, or on the command
+line using ogr2ogr:
+
+	ogr2ogr -t_srs EPSG:4326 -s_srs EPSG:4269 outfile infile
+
+# Reference numbers
+
+In a few areas I've looked at are in both the MVUM dataset, and the
+Trails (no vehicles) dataset, which is a bit confusing. The MVUM and
+the Trail reference nunbers aren't the same. In the converted output
+file it'll have the Trail number, not the MVUM one. Something to
+consider around editing time.
 
 # Kept Fields
 
@@ -173,7 +189,8 @@ future.
 ## Dropped Fields
 
 These fields are dropped as unnecessary for OSM. Most only have a
-NULL value anyway, so useless.
+NULL value anyway, so useless. Some of the entries also have no
+geometry, so they are also dropped.
 
 * GIS_MILES
 * Geometry Column

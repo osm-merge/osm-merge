@@ -29,8 +29,6 @@ from shapely.ops import transform, nearest_points, linemerge
 from shapely import wkt
 from progress.bar import Bar, PixelBar
 from progress.spinner import PixelSpinner
-# from osm_fieldwork.convert import escape
-# from osm_fieldwork.parsers import ODKParsers
 import pyproj
 import asyncio
 from codetiming import Timer
@@ -156,15 +154,13 @@ def conflateThread(primary: list,
             # FIXME: debug
             if existing["geometry"]["type"] == "Point":
                 continue
-            foo = f"ID: {existing["properties"]["id"]}, "
+            foo = f'ID: {existing["properties"]["id"]}, '
             if "name" in existing["properties"]:
-                foo += f"NAME: {existing["properties"]["name"]}, "
+                foo += f'name: {existing["properties"]["name"]}, '
             if "highway" in existing["properties"]:
-                foo += f"HIGHWAY: {existing["properties"]["highway"]}, "
+                foo += f'highway: {existing["properties"]["highway"]}, '
             if "ref" in existing["properties"]:
-                foo += f"REF: {existing["properties"]["ref"]}, "
-            if "ref:usfs" in existing["properties"]:
-                foo += f"REF:USFS: {existing["properties"]["ref:usfs"]}, "
+                foo += f'ref: {existing["properties"]["ref"]}, '
             if len(foo) < 0:
                 print(f"\tSECONDARY: {foo}")
             feature = dict()
@@ -733,7 +729,7 @@ class Conflator(object):
             # In OSM, there may be an existing value for the ref
             # that is a county or state designation in addition to
             # the USFS reference number. That should be kept.
-            if key == "ref" and osm["properties"]["ref"][:2] in keep:
+            if key == "ref" and "ref" in osm["properties"]:
                 props["ref"] = osm["properties"]["ref"]
                 continue
 
@@ -743,7 +739,7 @@ class Conflator(object):
             # your phone to enter the name. Course names also change
             # too so if it isn't a match, use the new name from the
             # external dataset.
-            if key in osm["properties"] and key in extfeat["properties"]:
+            if key in osm["properties"] and key in extfeat["properties"] and extfeat["properties"][key] is not None :
                 length = len(extfeat["properties"][key]) - len(osm["properties"][key])
                 # Sometimes there will be a word match, which returns a
                 # ratio in the low 80s. In that case they should be
@@ -854,7 +850,7 @@ class Conflator(object):
         else:
             single = False
 
-        # single = True          # FIXME: debug
+        single = True          # FIXME: debug
         if single:
             alldata = conflateThread(primarydata, secondarydata)
         else:
@@ -1141,6 +1137,3 @@ osm-rawdata project on pypi.org or https://github.com/hotosm/osm-rawdata.
 if __name__ == "__main__":
     """This is just a hook so this file can be run standlone during development."""
     main()
-    #loop = asyncio.new_event_loop()
-    #asyncio.set_event_loop(loop)
-    #loop.run_until_complete(main())

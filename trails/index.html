@@ -1419,7 +1419,7 @@ OpenStreetMap syntax so they can be conflated.</p>
 <li>TRLSURFACE becomes <strong>surface</strong></li>
 </ul>
 <h3 id="trluse">TRLUSE<a class="headerlink" href="#trluse" title="Permanent link">&para;</a></h3>
-<p>This is a messy tag with multiple possible values, each seperated by a
+<p>This is a messy tag with multiple possible values, each separated by a
 vertical bar. Some values use a slash when the values may be similar,
 for example <strong>Hiker/Biker/Pedestrian</strong>, which for OSM will have only
 one value, <em>foot=yes</em>. There's also many variations on the values, but
@@ -1431,7 +1431,7 @@ refer to motorized access use <em>highway=track</em> instead of
 <li>Hiker, Pedestrian, Hike, Walking, Hiking becomes <strong>foot=</strong></li>
 <li>Bike, Biker, Biking, Bicycle becomes <strong>bicycle=</strong></li>
 <li>Horse, Horseback, Pack Or Saddle, Equestrian: becomes <strong>horse=</strong></li>
-<li>Snowshoe becomes <strong>snowhoe=</strong></li>
+<li>Snowshoe becomes <strong>snowshoe=</strong></li>
 <li>Cross-Country Ski becomes <strong>ski=nordic</strong></li>
 <li>Dog Sled becomes <strong>dog_sled=</strong>, but isn't a common OSM tag</li>
 <li>Trail/Admin Road becomes <strong>highway=service</strong></li>
@@ -1440,16 +1440,16 @@ refer to motorized access use <em>highway=track</em> instead of
 <li>Motorized Watercraft becomes <strong>motorboat=</strong></li>
 <li>Non Motorized Watercraft becomes <strong>boat=</strong></li>
 <li>Motorized becomes <strong>motor_vehicle=</strong></li>
-<li>Motorcycle becomes <strong>morotcycle=</strong></li>
+<li>Motorcycle becomes <strong>motorcycle=</strong></li>
 <li>All-Terrain Vehicle becomes <strong>atv=</strong></li>
 <li>Snowmobile becomes <strong>snowmobile=</strong></li>
 </ul>
 <h3 id="trlsurface">TRLSURFACE<a class="headerlink" href="#trlsurface" title="Permanent link">&para;</a></h3>
 <p>This is another data field with multiple possible values, sometimes
 lower case, other times uppercase, so case insensitive string matching
-is used. These map directly to thwir OSM equivalant. There are some
+is used. These map directly to their OSM equivalent. There are some
 other weird values, but they are ignored as we only want to convert a
-data field when it has an OSM equivalant.</p>
+data field when it has an OSM equivalent.</p>
 <ul>
 <li>Asphalt</li>
 <li>Bituminous</li>
@@ -1502,7 +1502,7 @@ data field when it has an OSM equivalant.</p>
 <li>NOTES</li>
 </ul>
 <h2 id="national-forest-service-trails">National Forest Service Trails<a class="headerlink" href="#national-forest-service-trails" title="Permanent link">&para;</a></h2>
-<p>The US Forest Service makes much of their data publically accessible,
+<p>The US Forest Service makes much of their data publicly accessible,
 so it's been a source for imports for a long time. There is a nice
 detailed wiki page on the <a href="https://wiki.openstreetmap.org/wiki/US_Forest_Service_Data">Forest Service
 Data</a>. The
@@ -1521,7 +1521,7 @@ which is used for access.</p>
 <li>Restricted: Usage is restricted</li>
 <li>Discouraged: Usage is discouraged</li>
 </ul>
-<p>These are converted to the apppropriate value, but most are not in the
+<p>These are converted to the appropriate value, but most are not in the
 output file as they don't really have an OSM equivalent. For a value,
 these use a date string, which becomes <strong>opening_hours</strong> in OSM. The
 prefix which is <em>HIKER</em>_, <em>ATV_</em>, etc... becomes the access tag,
@@ -1540,10 +1540,10 @@ output file. If the value exists.</p>
 <li>PACK_SADDLE_ becomes <strong>horse=</strong></li>
 <li>BICYCLE_ becomes <strong>bicycle=</strong></li>
 <li>MOTORCYCLE_ becomes <strong>motorcycle=</strong></li>
-<li>ATV_ becoms <strong>atv=</strong></li>
+<li>ATV_ becomes <strong>atv=</strong></li>
 <li>FOURWD_ becomes <strong>4wd_only</strong></li>
 <li>SNOWMOBILE_ becomes <strong>snowmobile=</strong></li>
-<li>SNOWSHOE_ becomes <strong>snowwhoe=</strong></li>
+<li>SNOWSHOE_ becomes <strong>snowshoe=</strong></li>
 <li>XCOUNTRY_SKI_ becomes <strong>ski=</strong></li>
 <li>HIKER_PEDESTRIAN becomes <strong>foot=</strong>, but is the default, so not needed</li>
 <li>MOTOR_WATERCRAFT becomes <strong>motorboat=</strong></li>

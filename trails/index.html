@@ -968,6 +968,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Processed Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trluse" class="md-nav__link">
+    <span class="md-ellipsis">
+      TRLUSE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trlsurface" class="md-nav__link">
+    <span class="md-ellipsis">
+      TRLSURFACE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1059,6 +1083,27 @@
             API
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/basemapper/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    basemapper
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1291,6 +1336,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Processed Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trluse" class="md-nav__link">
+    <span class="md-ellipsis">
+      TRLUSE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trlsurface" class="md-nav__link">
+    <span class="md-ellipsis">
+      TRLSURFACE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1343,12 +1412,58 @@ OpenStreetMap syntax so they can be conflated.</p>
 <ul>
 <li>OBJECTID becomes <strong>id</strong></li>
 <li>TRLNAME becomes <strong>name</strong></li>
-<li>TRLCLASS becomes <strong>sac_scale</strong></li>
-<li>TRLUSE becomes <em>yes</em> for <strong>horse</strong>, <strong>bicycle</strong>, <strong>atv</strong>, etc...</li>
 <li>TRLALTNAME becomes <strong>alt_name</strong></li>
+<li>MAINTAINER becomes <strong>operator</strong> (although seems to only be the NPS)</li>
+<li>TRLUSE becomes <em>yes</em> for <strong>horse</strong>, <strong>bicycle</strong>, <strong>atv</strong>, etc...</li>
 <li>SEASONAL becomes <strong>seasonal</strong></li>
-<li>MAINTAINER becomas <strong>operator</strong></li>
 <li>TRLSURFACE becomes <strong>surface</strong></li>
+</ul>
+<h3 id="trluse">TRLUSE<a class="headerlink" href="#trluse" title="Permanent link">&para;</a></h3>
+<p>This is a messy tag with multiple possible values, each seperated by a
+vertical bar. Some values use a slash when the values may be similar,
+for example <strong>Hiker/Biker/Pedestrian</strong>, which for OSM will have only
+one value, <em>foot=yes</em>. There's also many variations on the values, but
+they do fall into the same group. When seen in the data, these values
+are converted into <em>="yes"</em> instead of <em>designated</em>. The values that
+refer to motorized access use <em>highway=track</em> instead of
+<em>highway=path</em>.</p>
+<ul>
+<li>Hiker, Pedestrian, Hike, Walking, Hiking becomes <strong>foot=</strong></li>
+<li>Bike, Biker, Biking, Bicycle becomes <strong>bicycle=</strong></li>
+<li>Horse, Horseback, Pack Or Saddle, Equestrian: becomes <strong>horse=</strong></li>
+<li>Snowshoe becomes <strong>snowhoe=</strong></li>
+<li>Cross-Country Ski becomes <strong>ski=nordic</strong></li>
+<li>Dog Sled becomes <strong>dog_sled=</strong>, but isn't a common OSM tag</li>
+<li>Trail/Admin Road becomes <strong>highway=service</strong></li>
+<li>Wheelchair Accessible Trail becomes <strong>wheelchair=</strong></li>
+<li>Watercraft becomes <strong>boat=</strong></li>
+<li>Motorized Watercraft becomes <strong>motorboat=</strong></li>
+<li>Non Motorized Watercraft becomes <strong>boat=</strong></li>
+<li>Motorized becomes <strong>motor_vehicle=</strong></li>
+<li>Motorcycle becomes <strong>morotcycle=</strong></li>
+<li>All-Terrain Vehicle becomes <strong>atv=</strong></li>
+<li>Snowmobile becomes <strong>snowmobile=</strong></li>
+</ul>
+<h3 id="trlsurface">TRLSURFACE<a class="headerlink" href="#trlsurface" title="Permanent link">&para;</a></h3>
+<p>This is another data field with multiple possible values, sometimes
+lower case, other times uppercase, so case insensitive string matching
+is used. These map directly to thwir OSM equivalant. There are some
+other weird values, but they are ignored as we only want to convert a
+data field when it has an OSM equivalant.</p>
+<ul>
+<li>Asphalt</li>
+<li>Bituminous</li>
+<li>Earth</li>
+<li>Grass</li>
+<li>Gravel</li>
+<li>Concrete</li>
+<li>Native</li>
+<li>Wood</li>
+<li>Snow</li>
+<li>Water</li>
+<li>Sand</li>
+<li>Stone</li>
+<li>Dirt</li>
 </ul>
 <h2 id="dropped-fields">Dropped Fields<a class="headerlink" href="#dropped-fields" title="Permanent link">&para;</a></h2>
 <p>These fields are all ignored, and are dropped from the output file.</p>
@@ -1356,6 +1471,7 @@ OpenStreetMap syntax so they can be conflated.</p>
 <li>MAPLABEL</li>
 <li>TRLSTATUS</li>
 <li>TRLTYPE</li>
+<li>TRLCLASS</li>
 <li>PUBLICDISP</li>
 <li>DATAACCESS</li>
 <li>ACCESSNOTE</li>
@@ -1391,7 +1507,7 @@ so it's been a source for imports for a long time. There is a nice
 detailed wiki page on the <a href="https://wiki.openstreetmap.org/wiki/US_Forest_Service_Data">Forest Service
 Data</a>. The
 conversion process handles most of the implementation details.</p>
-<h1 id="keep-fields">Keep Fields<a class="headerlink" href="#keep-fields" title="Permanent link">&para;</a></h1>
+<h1 id="kept-fields">Kept Fields<a class="headerlink" href="#kept-fields" title="Permanent link">&para;</a></h1>
 <p>The two primary fields are <em>TRAIL_NO</em>, which is used for the
 <em>ref:usfs</em> tags, and <em>TRAIL_NAME</em>, which is the name of the trail. In
 addition to these</p>
@@ -1405,18 +1521,21 @@ which is used for access.</p>
 <li>Restricted: Usage is restricted</li>
 <li>Discouraged: Usage is discouraged</li>
 </ul>
-<p>These are converted to the apppropriate value.</p>
+<p>These are converted to the apppropriate value, but most are not in the
+output file as they don't really have an OSM equivalent. For a value,
+these use a date string, which becomes <strong>opening_hours</strong> in OSM. The
+prefix which is <em>HIKER</em>_, <em>ATV_</em>, etc... becomes the access tag,
+similar to the NPS values. For USFS trails, the values <em>designated**
+is used instead of *yes</em>.</p>
 <ul>
-<li>Managed* sets the keyword to <strong>designated</strong></li>
-<li>Accepted* sets the keyword to <strong>yes</strong></li>
+<li>Managed*  could set keyword to <strong>designated</strong></li>
+<li>Accepted* could set the keyword to <strong>yes</strong></li>
+<li>Discouraged* could set the keyword to <strong>discouraged</strong></li>
+<li>Accepted/Discouraged* could set the keyword to <strong>permissive</strong></li>
 <li>Restricted* sets the keyword to <strong>no</strong></li>
-<li>Discouraged* sets the keyword to <strong>discouraged</strong></li>
-<li>Accepted/Discouraged* sets the keyword to <strong>permissive</strong></li>
 </ul>
 <p>Many of the values for these are NULL, so ignored when generating the
-output file. If the value exists, it's either a <strong>Y</strong> or a <strong>N</strong>, which
-is used to set the values. For example: "SNOWMOBILE": "Y" becomes
-<strong>snowmobile=yes</strong> in the output file.</p>
+output file. If the value exists.</p>
 <ul>
 <li>PACK_SADDLE_ becomes <strong>horse=</strong></li>
 <li>BICYCLE_ becomes <strong>bicycle=</strong></li>
@@ -1425,7 +1544,10 @@ is used to set the values. For example: "SNOWMOBILE": "Y" becomes
 <li>FOURWD_ becomes <strong>4wd_only</strong></li>
 <li>SNOWMOBILE_ becomes <strong>snowmobile=</strong></li>
 <li>SNOWSHOE_ becomes <strong>snowwhoe=</strong></li>
-<li>XCOUNTRY_SKI_ becomes <strong>ski</strong></li>
+<li>XCOUNTRY_SKI_ becomes <strong>ski=</strong></li>
+<li>HIKER_PEDESTRIAN becomes <strong>foot=</strong>, but is the default, so not needed</li>
+<li>MOTOR_WATERCRAFT becomes <strong>motorboat=</strong></li>
+<li>NONMOTOR_WATERCRAFT becomes <strong>boat</strong></li>
 </ul>
 <p>Currently these fields appear to be empty, but that may change in the
 future.</p>
@@ -1436,17 +1558,10 @@ future.</p>
 <li>E_BIKE_CLASS2_</li>
 <li>E_BIKE_CLASS3_</li>
 </ul>
-<p>This field is ignored as it's assumed the trail is accessible by
-hikers.</p>
-<ul>
-<li>HIKER_PEDESTRIAN_</li>
-</ul>
 <h2 id="dropped-fields_1">Dropped Fields<a class="headerlink" href="#dropped-fields_1" title="Permanent link">&para;</a></h2>
-<p>These fields are dropped as unnecessary for OSM. Manye only have a
+<p>These fields are dropped as unnecessary for OSM. Most only have a
 NULL value anyway, so useless.</p>
 <ul>
-<li>MOTOR_WATERCRAFT_</li>
-<li>NONMOTOR_WATERCRAFT_</li>
 <li>GIS_MILES</li>
 <li>Geometry Column</li>
 <li>TRAIL_TYPE</li>
@@ -1503,7 +1618,7 @@ NULL value anyway, so useless.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 30, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 14, 2025</span>
   </span>
 
     

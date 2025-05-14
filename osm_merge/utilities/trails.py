@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2021, 2022, 2023, 2024 OpenStreetMap US
+# Copyright (c) 2021, 2022, 2023, 2024, 2025 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -16,23 +16,25 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #
-# This program proccesses the National Park service trails dataset. That
-# processing includes deleting unnecessary tags, and converting the
-# tags to an OSM standard for conflation.
+# This program proccesses the National Park service and national Forest
+# Service trail datasets. That processing includes deleting unnecessary
+# tags, and converting the tags to an OSM standard for conflation.
 #
 
 import argparse
 import logging
 import sys
 import os
+import re
 from sys import argv
 from osm_merge.osmfile import OsmFile
+from osm_merge.yamlfile import YamlFile
+from osm_merge.utilities.dateutil import parse_opening_hours, count_lines
 from geojson import Point, Feature, FeatureCollection, dump, Polygon, load
 import geojson
 from shapely.geometry import shape, LineString, Polygon, mapping
 import shapely
 from shapely.ops import transform
-import pyproj
 import asyncio
 from codetiming import Timer
 import concurrent.futures
@@ -42,7 +44,11 @@ from thefuzz import fuzz, process
 from pathlib import Path
 from tqdm import tqdm
 import tqdm.asyncio
+import fiona
 from progress.bar import Bar, PixelBar
+
+import osm_merge as om
+rootdir = om.__path__[0]
 
 # Instantiate logger
 log = logging.getLogger(__name__)
@@ -55,182 +61,140 @@ cores = info['count']
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
+def processDataThread(config: dict,
+                      # filespec: str,
+                      data: list,
+                      fixref: bool = True,
+                      ) -> FeatureCollection:
+    """
+    Convert the Feature from the USFS schema to OSM syntax.
+
+    """
+    spin = Bar('Processing input data...', max=len(data))
+    highways = list()
+
+    for entry in data:
+        spin.next()
+        geom = entry["geometry"]
+        props = dict()
+        props["operator"] = "National Park Service"
+        props["highway"] = "path"
+        if geom is None:
+            logging.error("The entry has no geometry!")
+            continue
+        for key, value in entry["properties"].items():
+            if key not in config["tags"]:
+                continue
+            if value is None or value == "Unknown":
+                continue
+            # print(f"FIXME: \'{key}\' = {value}")
+            if config["tags"][key] == "name":
+                props["name"] = value.title()
+            elif config["tags"][key] == "alt_name":
+                if len(value.strip()) > 0:
+                    # this is a bogus alternate name
+                    if value == "Developed Area Trail":
+                        continue
+                    props["alt_name"] = value.title()
+            elif config["tags"][key] == "ref":
+                props["ref"] = int(value)
+            # elif config["tags"][key] == "operator":
+            #     if value == "RG-NPS":
+            #         props["operator"] = "National Park Service"
+            #     else:
+            #         props["operator"] = value
+            elif config["tags"][key] == "surface":
+                pass
+            elif config["tags"][key] == "seasonal":
+                if value == "Yes":
+                    props["seasonal"] = "yes"
+                elif value == "No":
+                    # props["seasonal"] = "no"
+                    # This is the default, avoid tag bloat
+                    pass
+            elif config["tags"][key] == "access":
+                # print(f"FIXME: {value}")
+                for access in config["tags"]["access"]:
+                    [[k2, v2]] = access.items()
+                    pat = re.compile(f".*{k2}.*")
+                    if pat.search(value.lower()):
+                        if v2.find('=') > 0:
+                            tmp = v2.split('=')
+                            props[tmp[0]] = tmp[1]
+                        else:
+                            props[v2] = "yes"
+                        # According to the OSM Wiki, these access types
+                        # use highway=track instead of highway=path
+                        if k2 in config["tags"]["highway"]:
+                            props["highway"] = "track"
+            elif config["tags"][key] == "highway":
+                pass
+        print(props)
+
 class Trails(object):
     def __init__(self,
-                 filespec: str = None,
+                 dataspec: str = None,
+                 yamlspec: str = "utilities/trails.yaml",
                  ):
+        """
+        This class processes the NPS and USFS Trails datasets.
+
+        Args:
+            dataspec (str): The input data to convert
+            yamlspec (str): The YAML config file for converting data
+
+        Returns:
+            (Trails): An instance of this class
+        """
         self.file = None
-        if filespec is not None:
-            self.file = open(filespec, "r")
+        if dataspec is not None:
+            self.file = open(dataspec, "r")
 
-    def convert(self,
-                filespec: str = None,
-                ) -> list:
+        filespec = f"{rootdir}/{yamlspec}"
+        if not os.path.exists(filespec):
+            log.error(f"{yamlspec} does not exist!")
+            quit()
 
-        # FIXME: read in the whole file for now
-        if filespec is not None:
-            file = open(filespec, "r")
+        yaml = YamlFile(filespec)
+        yaml.dump()
+        self.config = yaml.getEntries()
+
+    def process_data(self,
+                     filespec: str,
+                     overwrite: bool,
+                     usemem: bool = True,
+                     tmpdir: str = "/tmp") -> list():
+        """
+        Read a large file in chunks so python stops core dumping.
+
+        Args:
+            filespec (str): The input data file name
+
+        Returns:
+            (list): The lines of data from the file
+        """
+
+        path = Path(filespec)
+        #lines = count_lines(filespec)
+        #if lines < 0:
+            # logging.error(f"")
+        #    return list()
+
+        # Split the files into smaller chunks, one for each core.
+        # FIXME: I hate tmp files, but disk space is better till
+        # python stops core dumping on large files as the geojson
+        # module loads the entire file into memory.
+        # size = round(lines / cores)
+
+        data = fiona.open(filespec, "r")
+        meta = data.meta
+        files = list()
+        single = True           # FIXME: debug only
+        # single threaded for debugging
+        if single:
+            osmdata = processDataThread(self.config, list(data))
         else:
-            file = self.file
-
-        data = geojson.load(file)
-
-        highways = list()
-        spin = Bar('Processing...', max=len(data["features"]))
-        for entry in data["features"]:
-            spin.next()
-            geom = entry["geometry"]
-            props = dict()
-            # These are the defaults for all trail features
-            props["highway"] = "path"
-            props["foot"] = "designated"
-            props["bicyle"] = "no"
-            props["motor_vehicle"] = "no"
-            if "MAINTAINER" in entry["properties"]:
-                # This is the NPS trail dataset
-                props["operator"] = entry["properties"]["MAINTAINER"]
-                if "TRLNAME" in entry["properties"]:
-                    props["name"] = entry["properties"]["TRLNAME"]
-                if "TRLALTNAME" in entry["properties"]:
-                    if entry["properties"]["TRLALTNAME"] != "Unknown":
-                        props["alt_name"] = entry["properties"]["TRLALTNAME"].title()
-                if "TRLCLASS"  in entry["properties"]:
-                    if entry["properties"]["TRLCLASS"] == "Class1":
-                        pass
-                    elif entry["properties"]["TRLCLASS"] == "Class2":
-                        pass
-                    elif entry["properties"]["TRLCLASS"] == "Class3":
-                        pass
-                    elif entry["properties"]["TRLCLASS"] == "Class4":
-                        pass
-                    elif entry["properties"]["TRLCLASS"] == "Class5":
-                        pass
-                if "TRLUSE" in entry["properties"]:
-                    for usage in entry["properties"]["TRLUSE"].strip().split('|'):
-                        if usage == "Unknown":
-                            continue
-                        elif usage == "Bike" or usage == "Bicycle":
-                            props["bicycle"] = "yes"
-                        elif usage == "ATV" or usage[:12] == "All-Terrain":
-                            props["atv"] = "yes"
-                        elif usage == "Motorcycle":
-                            props["motorcycle"] = "yes"
-                        elif usage == "ADA":
-                            # FIXME on this tag
-                            props["wheelchair"] = "yes"
-                        elif usage.find("Saddle") > 0:
-                            props["horse"] = "yes"
-                        elif usage == "Bicycle/Motorized":
-                            props["bicycle"] = "yes"
-                            props["motor_vehicle"] = "yes"
-                        elif usage == "Cross-Country Ski":
-                            props["ski"] = "yes"
-                        elif usage == "Dog Sled":
-                            props["dog_sled"] = "yes"
-                        elif usage == "Foot/Bicycle/Motorized":
-                            props["bicycle"] = "yes"
-                            props["motor_vehicle"] = "yes"
-                        elif usage.find("Four-Wheel") > 0:
-                            props["4wd_only"] = "yes"
-                        elif usage == "Snowmobile":
-                            props["snowmobile"] = "yes"
-                        elif usage == "Snowshoe":
-                            props["snowshoe"] = "yes"
-                        elif usage == "Horse and Hiking" or usage == "Horse/Hiking":
-                            props["horse"] = "yes"
-                        elif usage == "Horse, Hiking, and Bicycle":
-                            props["horse"] = "yes"
-                            props["bicycle"] = "yes"
-                        elif usage == "Horse/Motorized":
-                            props["horse"] = "yes"
-                            props["motor_vehicle"] = "yes"
-                        elif usage == "Motorized":
-                            props["motor_vehicle"] = "yes"
-                        elif usage == "Wheelchair Accessible Trail":
-                            props["wheelchair"] = "yes"
-                    if "TRLSURFACE" in entry["properties"]:
-                        types = ["metal",
-                                 "rubber",
-                                 "snow",
-                                 "clay",
-                                 "brick",
-                                 "concrete",
-                                 "asphalt",
-                                 "wood",
-                                 "sand",
-                                 ]
-                        surface = entry["properties"]["TRLSURFACE"].lower()
-                        if surface[:7] == "gravel":
-                            props["surface"] = "gravel"
-                        elif surface == "Native":
-                            props["surface"] = "ground"
-                        elif surface == "earth" or surface == "dirt" or surface == "soil":
-                            props["surface"] = "dirt"
-                        elif surface == "Aggregate":
-                            props["surface"] = "chipseal"
-                        elif surface == "Bituminous":
-                            props["surface"] = "asphalt"
-                        elif surface in types:
-                            # Catch everything in the list
-                            props["surface"] = surface.lower()
-                    if "SEASONAL" in entry["properties"]:
-                        props["seasonal"] = "yes"
-
-            else:
-                # This is the USFS dataset
-                spin.next()
-                props["operator"] = "US Forest Service"
-                id = 0
-                sym = 0
-                op = None
-                surface = str()
-                name = str()
-                # props["informal"] = "no"
-                # print(entry["properties"])
-                for key, value in entry["properties"].items():
-                    if value == "N/A" or value is None:
-                        continue
-                    # print(key, value)
-                    if key == "TRAIL_NO":
-                        id = f"FR {entry['properties']['TRAIL_NO']}"
-                        # For consistency, capitalize the last character
-                        props["ref:usfs"] = id.upper()
-
-                    elif key == "TRAIL_NAME":
-                        props["name"] = value.title()
-                    if key[:-6] == "_ACCPT" and value == "Y":
-                        value = "yes"
-                    elif key[:-5] == "_DISC" and value == "Y":
-                        value = "discouraged"
-                    elif key[:-12] == "_ACCPT_DISC" and value == "Y":
-                        value = "permissive"
-                    elif key[:-9] == "_MANAGED" and value == "Y":
-                        value = "designated"
-                    elif key[:-11] == "_RESTRICTED" and value == "Y":
-                        value = "no"
-                    if key[:16] == "HIKER_PEDESTRIAN" and value == "Y":
-                        props["foot"] = value
-                    elif key[:11] == "SNOWMOBILE" and value == "Y":
-                        props["snowmobile"] = value
-                    elif key[:7] == "BICYCLE" and value == "Y":
-                        props["bicyclMAINTAINERe"] = value
-                    elif key[:3] == "ATV" and value == "Y":
-                        props["atv"] = value
-                    elif key[:10] == "MOTORCYCLE" and value == "Y":
-                        props["motorcycle"] = value
-                    elif key[:11] == "PACK_SADDLE" and value == "Y":
-                        props["horse"] = "yes"
-                    elif key[:8] == "SNOWSHOE" and value == "Y":
-                        props["snowshoe"] = value
-                    elif key[:13] == "XCOUNTRY_SKI" and value == "Y":
-                        props["ski"] = value
-
-            if geom is not None:
-                highways.append(Feature(geometry=geom, properties=props))
-            #print(props)
-
-        return FeatureCollection(highways)
-        
+            logging.error(f"FIXME: multithreaded reader isn't implemented yet!")
     
 def main():
     """This main function lets this class be run standalone by a bash script"""
@@ -239,19 +203,19 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="This program converts MVUM highway data into OSM tagging",
         epilog="""
-This program processes the NPS trails dataset. It will convert the data
-to using OSM tagging schema so it can be conflated. Abbreviations are
-discouraged in OSM, so they are expanded. Most entries in the NPS
-dataset are ignored. The schema is similar to the MVUM schema, but not
-exactly.
+This program processes the NPS and USFS trails datasets. It will convert
+the data an OSM tagging schema so it can be conflated. Abbreviations are
+discouraged in OSM, so they are expanded. Most entries in the two
+dataset are ignored as they are blank. The schema is similar to the
+MVUM schema, but not exactly.
 
     For Example: 
-        trails.py -v -c -i /National_Park_Service_Trails.geojson
+        trails.py -v -i NPS_-_Trails_-_Geographic_Coordinate_System.geojson -o NPS_Trails.geojson
         """,
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
     parser.add_argument("-i", "--infile", required=True, help="Output file from the conflation")
-    parser.add_argument("-c", "--convert", default=True, action="store_true", help="Convert MVUM feature to OSM feature")
+    # parser.add_argument("-c", "--convert", default=True, action="store_true", help="Convert MVUM feature to OSM feature")
     parser.add_argument("-o", "--outfile", default="out.geojson", help="Output file")
 
     args = parser.parse_args()
@@ -268,13 +232,24 @@ exactly.
         log.addHandler(ch)
 
     trails = Trails()
-    if args.convert and args.convert:
-        data = trails.convert(args.infile)
-
-        file = open(args.outfile, "w")
+    data = trails.process_data(args.infile, False)
+    # data = mvum.convert(args.infile)
+    path = Path(args.outfile)
+    if path.suffix == ".geojson":
+        file = open(args.outfile, "w", encoding='utf-8',)
+        # FIXME: should use fiona
+        import geojson
         geojson.dump(data, file, indent=4)
-        log.info(f"Wrote {args.outfile}")
-        
+    elif path.suffix == ".osm":
+        osm = OsmFile()
+        osm.header()
+        osm.writeOSM(data, args.outfile)
+        # osm.footer()
+    log.info(f"Wrote {args.outfile}")
+    # file = open(args.outfile, "w")
+    # geojson.dump(data, file, indent=4)
+    # log.info(f"Wrote {args.outfile}")
+
 if __name__ == "__main__":
     """This is just a hook so this file can be run standlone during development."""
     main()

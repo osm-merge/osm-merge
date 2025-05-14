@@ -1,0 +1,148 @@
+# Commen abbreviations found in the MVUM dataset
+- abbreviations:
+  - Fdr: FR
+  - Cr: Creek
+  - Cr.: Creek
+  - Ck.: Creek
+  - Crk: Creek
+  - Cg: Campground
+  - C G: Campground
+  - C.G: Campground
+  - Th: Trailhead
+  - Tr: Trail
+  - T.H.: Trailhead
+  - Rd: Road
+  - Disp: Dispersed 
+  - Rd.: Road
+  - Rd: Road
+  - Mt: Mountain 
+  - Mtn.: Mountain 
+  - Mtn: Mountain
+  - Lk: Lake
+  - Pk: Park
+  - Resvr: Reservoir
+  - Rsvr: Reservoir
+  - Spg: Spring
+  - Sp: Spring
+  - Br: Bridge
+  - Ext: Extension
+  - Fk.: Fork
+  - N: North
+  - N.: North
+  - W: West
+  - W.: West
+  - E: East
+  - E.: East
+  - S: South
+  - S.: South
+  - So: South
+
+- tags:
+  # USFS tagging
+  - TRAIL_NAME: name
+  - TRAIL_TYPE: surface
+  - TRAIL_NO: ref
+  - MANAGING_ORG: operator
+  - surface:
+    - metal
+    - rubber
+    - snow
+    - clay
+    - brick
+    - concrete
+    - asphalt
+    - wood
+    - sand
+  # - TRAIL_CN:
+  # - BMP:
+  # - EMP:
+  # - SEGMENT_LENGTH:
+  # - ADMIN_ORG:
+  # - SECURITY_ID:
+  # - ATTRIBUTESUBSET:
+  # - NATIONAL_TRAIL_DESIGNATION:
+  # - ACCESSIBILITY_STATUS:
+  # - TRAIL_CLASS:
+  #   - Class1: 
+  #   - Class2: 
+  #   - Class3: 
+  #   - Class4: 
+  #   - Class5: 
+  # - NONMOTOR_WATERCRAFT_MANAGED:
+  # - SURFACE_FIRMNESS:
+  # - TYPICAL_TRAIL_GRADE:
+  # - TYPICAL_TREAD_WIDTH:
+  # - MINIMUM_TRAIL_WIDTH:
+  # - TYPICAL_TREAD_CROSS_SLOPE:
+  # - SPECIAL_MGMT_AREA:
+  # - ERRA_BASE_SYMBOLOGY:
+  # - MVUM_SYMBOL:
+  # - TERRA_MOTORIZED:
+  # - SNOW_MOTORIZED:
+  # - WATER_MOTORIZED:
+  # - ALLOWED_TERRA_USE:
+  # - ALLOWED_SNOW_USE:
+  # - FOURWD_MANAGED:
+  # - E_BIKE_CLASS1_MANAGED:
+  # - E_BIKE_CLASS2_MANAGED:
+  # - E_BIKE_CLASS3_MANAGED:
+
+  # NPS tagging
+  - MAINTAINER: operator
+  - TRLNAME: name
+  - TRLALTNAME: alt_name
+  - TRLSURFACE: surface
+  - SEASONAL: seasonal
+  - OBJECTID: ref
+  - TRLUSE: access
+  # Multiples of these may appear on this data field
+  - access:
+    - hiker: foot
+    - pedestrian: foot
+    - hike: foot
+    - walking: foot
+    - hiking: foot
+    - bike: bicycle
+    - biker: bicycle
+    - biking: bicycle
+    - bicycle: bicycle
+    - horse: bicycle
+    - horseback: bicycle
+    - saddle: horse
+    - equestrian: horse
+    - snowshoe: snowshoe
+    - cross-country: ski=nordic
+    - wheelchair: wheelchair
+    - motorized watercraft: motorboat
+    - non motorized watercraft: boat
+    - watercraft: boat
+    - motorized: motor_vehicle
+    - motorcycle: motorcycle
+    - all-terrain: atv
+    - snowmobile: snowmobile
+    # this tag is not on the OSM wiki
+    # - Dog Sled: dog_sled
+    # These use highway=track instead of highway=path according to
+  # the OSM wiki
+  - highway:
+    - atv
+    - motorcycle
+    - snowmobile
+    - ski
+    # - dog_sled
+  - surface:
+    - asphalt
+    - bituminous
+    - grass
+    - gravel
+    - concrete
+    - wood
+    - snow
+    - water
+    - sand
+    - stone
+    # - native
+    # - dirt
+    # - earth
+          
+          

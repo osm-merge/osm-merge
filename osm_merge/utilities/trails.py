@@ -67,7 +67,7 @@ def processDataThread(config: dict,
                       fixref: bool = True,
                       ) -> FeatureCollection:
     """
-    Convert the Feature from the USFS schema to OSM syntax.
+    Convert the Feature from the NPS or USFS schema to OSM syntax.
 
     """
     spin = Bar('Processing input data...', max=len(data))
@@ -77,7 +77,10 @@ def processDataThread(config: dict,
         spin.next()
         geom = entry["geometry"]
         props = dict()
-        props["operator"] = "National Park Service"
+        if "OBJECTID" in entry["properties"]:
+            props["operator"] = "National Park Service"
+        else:
+            props["operator"] = "US Forest Service"
         props["highway"] = "path"
         if geom is None:
             logging.error("The entry has no geometry!")
@@ -89,7 +92,7 @@ def processDataThread(config: dict,
                 continue
             # print(f"FIXME: \'{key}\' = {value}")
             if config["tags"][key] == "name":
-                props["name"] = value.title()
+                props["name"] = f"{value.title()} Trail"
             elif config["tags"][key] == "alt_name":
                 if len(value.strip()) > 0:
                     # this is a bogus alternate name
@@ -97,7 +100,10 @@ def processDataThread(config: dict,
                         continue
                     props["alt_name"] = value.title()
             elif config["tags"][key] == "ref":
-                props["ref"] = int(value)
+                if "OBJECTID" in entry["properties"]:
+                    props["ref"] = f"NPS {value}"
+                else:
+                    props["ref"] = f"FR {value}"
             # elif config["tags"][key] == "operator":
             #     if value == "RG-NPS":
             #         props["operator"] = "National Park Service"
@@ -129,7 +135,16 @@ def processDataThread(config: dict,
                             props["highway"] = "track"
             elif config["tags"][key] == "highway":
                 pass
-        print(props)
+
+        simple = shapely.simplify(shape(geom), tolerance=0.0001) # preserve_topology=True
+        # Short trails may get simplified down to a single node.
+        # In that case, use the original geometry.
+        if shapely.count_coordinates(simple) <= 1:
+            highways.append(Feature(geometry=geom, properties=props))
+        else:
+            highways.append(Feature(geometry=simple, properties=props))
+
+    return FeatureCollection(highways)
 
 class Trails(object):
     def __init__(self,
@@ -195,6 +210,7 @@ class Trails(object):
             osmdata = processDataThread(self.config, list(data))
         else:
             logging.error(f"FIXME: multithreaded reader isn't implemented yet!")
+        return osmdata
     
 def main():
     """This main function lets this class be run standalone by a bash script"""

@@ -77,21 +77,45 @@ def processDataThread(config: dict,
         spin.next()
         geom = entry["geometry"]
         props = dict()
+        # OBJECTID is only in the NPS dataset
         if "OBJECTID" in entry["properties"]:
             props["operator"] = "National Park Service"
         else:
             props["operator"] = "US Forest Service"
         props["highway"] = "path"
         if geom is None:
-            logging.error("The entry has no geometry!")
+            # This is unfortunately common in the USFS dataset
+            # logging.error(f"The entry has no geometry!")
             continue
         for key, value in entry["properties"].items():
-            if key not in config["tags"]:
+            # In USFS Trail data, these are the types of backcountry
+            # access types. Each one has four values, but we only need
+            # one, since in OSM the value will only be "yes".
+            if value == "N/A" or value is None or value == "Unknown":
                 continue
-            if value is None or value == "Unknown":
+            pat = re.compile(".*ACCPT_DISC")
+            if pat.search(key):
+                hours = parse_opening_hours(value)
+                if len(hours) > 0:
+                    props["seasonal"] = "yes"
+                    props["opening_hours"] = hours
+                for access in config["tags"]["type"]:
+                    [[k2, v2]] = access.items()
+                    pat = re.compile(f".*{k2}.*")
+                    if pat.search(key.lower()):
+                        if v2.find('=') > 0:
+                            tmp = v2.split('=')
+                            props[tmp[0]] = tmp[1]
+                        else:
+                            props[v2] = "yes"
+            if key not in config["tags"]:
                 continue
             # print(f"FIXME: \'{key}\' = {value}")
             if config["tags"][key] == "name":
+                # Seems obvious if there is no name, so drop it. The ref will
+                # be enough to identify the trail.
+                if value == "Un-Named":
+                    continue
                 props["name"] = f"{value.title()} Trail"
             elif config["tags"][key] == "alt_name":
                 if len(value.strip()) > 0:
@@ -133,8 +157,6 @@ def processDataThread(config: dict,
                         # use highway=track instead of highway=path
                         if k2 in config["tags"]["highway"]:
                             props["highway"] = "track"
-            elif config["tags"][key] == "highway":
-                pass
 
         simple = shapely.simplify(shape(geom), tolerance=0.0001) # preserve_topology=True
         # Short trails may get simplified down to a single node.

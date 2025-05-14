@@ -415,8 +415,13 @@ class TM_Splitter(object):
 
         index = 0
         outfiles = dict()
+        path = Path(outfile)
+        if outfile.find("Trail") > 0:
+            otype = "Trails"
+        else:
+            otype = "Highways"
         for poly in polys:
-            dataout = f"{dir}/OSM_Highways_Task_{index}.pbf"
+            dataout = f"{dir}/OSM_{otype}_Task_{index}.osm"
             if os.path.exists(dataout):
                 os.remove(dataout)
             writer = osmium.SimpleWriter(dataout)

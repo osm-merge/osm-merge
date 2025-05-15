@@ -20,7 +20,7 @@ theme:
   name: material
   palette:
     primary: custom
-  favicon: assets/favicon.png
+  favicon: assets/favicon.ico
   logo: assets/osmus-logo.svg
   # custom_dir: docs/overrides
 

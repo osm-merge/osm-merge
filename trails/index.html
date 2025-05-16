@@ -19,7 +19,7 @@
         <link rel="next" href="../osmhighways/">
       
       
-      <link rel="icon" href="../assets/favicon.png">
+      <link rel="icon" href="../assets/favicon.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
@@ -1405,12 +1405,14 @@ is very similar. One of the differences is for Park Service Trails has
 two default tags in the output file which are <em>bicycle=no</em> and
 <em>motor_vehicle=no</em>. These default tags are <a href="https://wiki.openstreetmap.org/wiki/US_National_Park_Service_Tagging:_Trails">documented
 here</a>.</p>
-<p>This dataset is available in a variety of formats from the <a href="https://hub.arcgis.com/datasets/fedmaps::national-park-service-trails/about">ArcGIS Hub</a>.</p>
+<p>This dataset is available in a variety of formats from the <a href="https://hub.arcgis.com/datasets/fedmaps::national-park-service-trails/about">ArcGIS
+Hub</a>. They
+use a NAD84 CRS, so don't have to be reprojected.</p>
 <h2 id="processed-fields">Processed Fields<a class="headerlink" href="#processed-fields" title="Permanent link">&para;</a></h2>
 <p>These are the fields extracted from the data that are converted to
 OpenStreetMap syntax so they can be conflated.</p>
 <ul>
-<li>OBJECTID becomes <strong>id</strong></li>
+<li>OBJECTID becomes <strong>ref</strong></li>
 <li>TRLNAME becomes <strong>name</strong></li>
 <li>TRLALTNAME becomes <strong>alt_name</strong></li>
 <li>MAINTAINER becomes <strong>operator</strong> (although seems to only be the NPS)</li>
@@ -1468,6 +1470,7 @@ data field when it has an OSM equivalent.</p>
 <h2 id="dropped-fields">Dropped Fields<a class="headerlink" href="#dropped-fields" title="Permanent link">&para;</a></h2>
 <p>These fields are all ignored, and are dropped from the output file.</p>
 <ul>
+<li>FEATUREID</li>
 <li>MAPLABEL</li>
 <li>TRLSTATUS</li>
 <li>TRLTYPE</li>
@@ -1490,7 +1493,6 @@ data field when it has an OSM equivalent.</p>
 <li>SOURCEDATE</li>
 <li>XYACCURACY</li>
 <li>GEOMETRYID</li>
-<li>FEATUREID</li>
 <li>FACLOCID</li>
 <li>FACASSETID</li>
 <li>IMLOCID</li>
@@ -1507,6 +1509,17 @@ so it's been a source for imports for a long time. There is a nice
 detailed wiki page on the <a href="https://wiki.openstreetmap.org/wiki/US_Forest_Service_Data">Forest Service
 Data</a>. The
 conversion process handles most of the implementation details.</p>
+<p>These files all use a NAD83 CRS, so have to be reprojected to NAD84 to
+be spatially accurate. This can be fixed using QGIS, or on the command
+line using ogr2ogr:</p>
+<div class="highlight"><pre><span></span><code>ogr2ogr -t_srs EPSG:4326 -s_srs EPSG:4269 outfile infile
+</code></pre></div>
+<h1 id="reference-numbers">Reference numbers<a class="headerlink" href="#reference-numbers" title="Permanent link">&para;</a></h1>
+<p>In a few areas I've looked at are in both the MVUM dataset, and the
+Trails (no vehicles) dataset, which is a bit confusing. The MVUM and
+the Trail reference nunbers aren't the same. In the converted output
+file it'll have the Trail number, not the MVUM one. Something to
+consider around editing time.</p>
 <h1 id="kept-fields">Kept Fields<a class="headerlink" href="#kept-fields" title="Permanent link">&para;</a></h1>
 <p>The two primary fields are <em>TRAIL_NO</em>, which is used for the
 <em>ref:usfs</em> tags, and <em>TRAIL_NAME</em>, which is the name of the trail. In
@@ -1560,7 +1573,8 @@ future.</p>
 </ul>
 <h2 id="dropped-fields_1">Dropped Fields<a class="headerlink" href="#dropped-fields_1" title="Permanent link">&para;</a></h2>
 <p>These fields are dropped as unnecessary for OSM. Most only have a
-NULL value anyway, so useless.</p>
+NULL value anyway, so useless. Some of the entries also have no
+geometry, so they are also dropped.</p>
 <ul>
 <li>GIS_MILES</li>
 <li>Geometry Column</li>
@@ -1595,7 +1609,6 @@ NULL value anyway, so useless.</p>
 <div class="highlight"><pre><span></span><code>-h, --help            show this help message and exit
 -v, --verbose         verbose output
 -i INFILE, --infile INFILE input data file
--c, --convert         Convert feature to OSM feature
 -o OUTFILE, --outfile OUTFILE Output GeoJson file
 </code></pre></div>
 

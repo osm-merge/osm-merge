@@ -184,11 +184,12 @@ work with national-wide sized files, so I usually start by tweaking the
 conversion till I'm happy with it. Then I download the boundary of the
 national park, forest, state, etc... that I want to work with. 
 
-This project  has a utility that does two key tasks. It'll use the
+This project has a utility that does two key tasks. It'll use the
 boundary and generate a grid of task squares. Each task is currently
-5000km sq, which is the limit for the HOT Tasking Manager. It's also a
-good size for working directly with the files and not using the
-Tasking Manager. The grid is clipped to the boundary.
+5000km sq, which is the limit for the [HOT Tasking
+Manager](https://tasks.hotosm.org/). It's also a good size for working
+directly with the files and not using the Tasking Manager. The grid is
+clipped to the boundary.
 
 Then the [tm-splitter utility](tm-splitter.md) will use that task grid
 and make data extracts from the converted GeoJson or OSM file, one for

@@ -226,6 +226,5 @@ geometry, so they are also dropped.
 	-h, --help            show this help message and exit
 	-v, --verbose         verbose output
 	-i INFILE, --infile INFILE input data file
-	-c, --convert         Convert feature to OSM feature
 	-o OUTFILE, --outfile OUTFILE Output GeoJson file
 

@@ -136,3 +136,28 @@ national dataset though is a bit sluggish, so I'll make a smaller
 extract and use that for the initial debugging of the
 conversion. Once I'm happen with processing the subset, then I'll run
 the full dataset to catch all the edge conditions.
+
+# Task Splitting
+
+A key part to processing large datasets is being able to chop them
+ihnto smaller more manageable files. All of the conversion scripts do
+work with nationalwide sized files, so I usually start by tweaking the
+conversion till I'm happy with it. Then I download the boundary of the
+national park, forest, state, etc... that I want to work with. 
+
+This project  has a utility that does two key tasks. It'll use the
+boundary and generate a grid of task squares. Each task is currently
+5000km sq, which is the limit for the HOT Tasking Manager. It's also a
+good size for working directly with the files and not using the
+Tasking Manager. The grid is clipped to the boundary.
+
+Then the [tm-splitter utility](tm-splitter.md) will use that task grid
+and make data extracts from the converted GeoJson or OSM file, one for
+each task. I then load the external data set for a task into JOSM,
+make a new layer and download OSM data, and then work my way through
+eacch feature in the external dataset.
+
+# Workshop!!
+
+There will be a workshop covering this process in detail at SOTM-US on
+Thursday, June 19, 2025.

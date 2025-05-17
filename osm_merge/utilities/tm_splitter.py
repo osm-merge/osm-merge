@@ -351,6 +351,8 @@ class TM_Splitter(object):
             if feature["geometry"] is None:
                 continue
             if feature["geometry"]["type"] == "LineString":
+                if len(feature["geometry"]["coordinates"]) <= 1:
+                    continue
                 geom = LineString(feature["geometry"]["coordinates"])
                 for task, metadata in outfiles.items():
                     if geom.within(metadata["geometry"]) or geom.intersects(metadata["geometry"]):

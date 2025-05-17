@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://osmmerge.org/trails/">
+        <link rel="canonical" href="https://osmmerge.org/extending/">
       
       
-        <link rel="prev" href="../mvum/">
+        <link rel="prev" href="../osmhighways/">
       
       
-        <link rel="next" href="../osmhighways/">
+        <link rel="next" href="../api/basemapper/">
       
       
       <link rel="icon" href="../assets/favicon.ico">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Trails - osm-merge</title>
+        <title>Extending For Other Datasets - osm-merge</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#national-park-service-trails" class="md-skip">
+        <a href="#extending-to-other-datasets" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Trails
+              Extending For Other Datasets
             
           </span>
         </div>
@@ -976,32 +976,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Trails
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../trails/" class="md-nav__link">
         
   
   
@@ -1012,79 +990,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="Page contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Page contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#processed-fields" class="md-nav__link">
-    <span class="md-ellipsis">
-      Processed Fields
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Processed Fields">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#trluse" class="md-nav__link">
-    <span class="md-ellipsis">
-      TRLUSE
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trlsurface" class="md-nav__link">
-    <span class="md-ellipsis">
-      TRLSURFACE
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dropped-fields" class="md-nav__link">
-    <span class="md-ellipsis">
-      Dropped Fields
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#national-forest-service-trails" class="md-nav__link">
-    <span class="md-ellipsis">
-      National Forest Service Trails
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1117,10 +1022,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../extending/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Extending For Other Datasets
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1131,6 +1058,61 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Configuration File
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Configuration File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#abbreviations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Abbreviations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-conversion-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Conversion Script
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1447,28 +1429,19 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#processed-fields" class="md-nav__link">
+  <a href="#the-configuration-file" class="md-nav__link">
     <span class="md-ellipsis">
-      Processed Fields
+      The Configuration File
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Processed Fields">
+    <nav class="md-nav" aria-label="The Configuration File">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#trluse" class="md-nav__link">
+  <a href="#abbreviations" class="md-nav__link">
     <span class="md-ellipsis">
-      TRLUSE
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trlsurface" class="md-nav__link">
-    <span class="md-ellipsis">
-      TRLSURFACE
+      Abbreviations
     </span>
   </a>
   
@@ -1480,18 +1453,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dropped-fields" class="md-nav__link">
+  <a href="#the-conversion-script" class="md-nav__link">
     <span class="md-ellipsis">
-      Dropped Fields
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#national-forest-service-trails" class="md-nav__link">
-    <span class="md-ellipsis">
-      National Forest Service Trails
+      The Conversion Script
     </span>
   </a>
   
@@ -1516,220 +1480,123 @@
   
 
 
-<h1 id="national-park-service-trails">National Park Service Trails<a class="headerlink" href="#national-park-service-trails" title="Permanent link">&para;</a></h1>
-<p>This processes both the National Park Service trails dataset, and the
-National Forest Service trail datasets. The schema of the two datasets
-is very similar. One of the differences is for Park Service Trails has
-two default tags in the output file which are <em>bicycle=no</em> and
-<em>motor_vehicle=no</em>. These default tags are <a href="https://wiki.openstreetmap.org/wiki/US_National_Park_Service_Tagging:_Trails">documented
-here</a>.</p>
-<p>This dataset is available in a variety of formats from the <a href="https://hub.arcgis.com/datasets/fedmaps::national-park-service-trails/about">ArcGIS
-Hub</a>. They
-use a NAD84 CRS, so don't have to be reprojected.</p>
-<h2 id="processed-fields">Processed Fields<a class="headerlink" href="#processed-fields" title="Permanent link">&para;</a></h2>
-<p>These are the fields extracted from the data that are converted to
-OpenStreetMap syntax so they can be conflated.</p>
-<ul>
-<li>OBJECTID becomes <strong>ref</strong></li>
-<li>TRLNAME becomes <strong>name</strong></li>
-<li>TRLALTNAME becomes <strong>alt_name</strong></li>
-<li>MAINTAINER becomes <strong>operator</strong> (although seems to only be the NPS)</li>
-<li>TRLUSE becomes <em>yes</em> for <strong>horse</strong>, <strong>bicycle</strong>, <strong>atv</strong>, etc...</li>
-<li>SEASONAL becomes <strong>seasonal</strong></li>
-<li>TRLSURFACE becomes <strong>surface</strong></li>
-</ul>
-<h3 id="trluse">TRLUSE<a class="headerlink" href="#trluse" title="Permanent link">&para;</a></h3>
-<p>This is a messy tag with multiple possible values, each separated by a
-vertical bar. Some values use a slash when the values may be similar,
-for example <strong>Hiker/Biker/Pedestrian</strong>, which for OSM will have only
-one value, <em>foot=yes</em>. There's also many variations on the values, but
-they do fall into the same group. When seen in the data, these values
-are converted into <em>="yes"</em> instead of <em>designated</em>. The values that
-refer to motorized access use <em>highway=track</em> instead of
-<em>highway=path</em>.</p>
-<ul>
-<li>Hiker, Pedestrian, Hike, Walking, Hiking becomes <strong>foot=</strong></li>
-<li>Bike, Biker, Biking, Bicycle becomes <strong>bicycle=</strong></li>
-<li>Horse, Horseback, Pack Or Saddle, Equestrian: becomes <strong>horse=</strong></li>
-<li>Snowshoe becomes <strong>snowshoe=</strong></li>
-<li>Cross-Country Ski becomes <strong>ski=nordic</strong></li>
-<li>Dog Sled becomes <strong>dog_sled=</strong>, but isn't a common OSM tag</li>
-<li>Trail/Admin Road becomes <strong>highway=service</strong></li>
-<li>Wheelchair Accessible Trail becomes <strong>wheelchair=</strong></li>
-<li>Watercraft becomes <strong>boat=</strong></li>
-<li>Motorized Watercraft becomes <strong>motorboat=</strong></li>
-<li>Non Motorized Watercraft becomes <strong>boat=</strong></li>
-<li>Motorized becomes <strong>motor_vehicle=</strong></li>
-<li>Motorcycle becomes <strong>motorcycle=</strong></li>
-<li>All-Terrain Vehicle becomes <strong>atv=</strong></li>
-<li>Snowmobile becomes <strong>snowmobile=</strong></li>
-</ul>
-<h3 id="trlsurface">TRLSURFACE<a class="headerlink" href="#trlsurface" title="Permanent link">&para;</a></h3>
-<p>This is another data field with multiple possible values, sometimes
-lower case, other times uppercase, so case insensitive string matching
-is used. These map directly to their OSM equivalent. There are some
-other weird values, but they are ignored as we only want to convert a
-data field when it has an OSM equivalent.</p>
-<ul>
-<li>Asphalt</li>
-<li>Bituminous</li>
-<li>Earth</li>
-<li>Grass</li>
-<li>Gravel</li>
-<li>Concrete</li>
-<li>Native</li>
-<li>Wood</li>
-<li>Snow</li>
-<li>Water</li>
-<li>Sand</li>
-<li>Stone</li>
-<li>Dirt</li>
-</ul>
-<h2 id="dropped-fields">Dropped Fields<a class="headerlink" href="#dropped-fields" title="Permanent link">&para;</a></h2>
-<p>These fields are all ignored, and are dropped from the output file.</p>
-<ul>
-<li>FEATUREID</li>
-<li>MAPLABEL</li>
-<li>TRLSTATUS</li>
-<li>TRLTYPE</li>
-<li>TRLCLASS</li>
-<li>PUBLICDISP</li>
-<li>DATAACCESS</li>
-<li>ACCESSNOTE</li>
-<li>ORIGINATOR</li>
-<li>UNITCODE</li>
-<li>UNITNAME</li>
-<li>UNITTYPE</li>
-<li>GROUPCODE</li>
-<li>GROUPNAME</li>
-<li>REGIONCODE</li>
-<li>CREATEDATE</li>
-<li>EDITDATE</li>
-<li>LINETYPE</li>
-<li>MAPMETHOD</li>
-<li>MAPSOURCE</li>
-<li>SOURCEDATE</li>
-<li>XYACCURACY</li>
-<li>GEOMETRYID</li>
-<li>FACLOCID</li>
-<li>FACASSETID</li>
-<li>IMLOCID</li>
-<li>OBSERVABLE</li>
-<li>ISEXTANT</li>
-<li>OPENTOPUBL</li>
-<li>ALTLANGNAM</li>
-<li>ALTLANG</li>
-<li>NOTES</li>
-</ul>
-<h2 id="national-forest-service-trails">National Forest Service Trails<a class="headerlink" href="#national-forest-service-trails" title="Permanent link">&para;</a></h2>
-<p>The US Forest Service makes much of their data publicly accessible,
-so it's been a source for imports for a long time. There is a nice
-detailed wiki page on the <a href="https://wiki.openstreetmap.org/wiki/US_Forest_Service_Data">Forest Service
-Data</a>. The
-conversion process handles most of the implementation details.</p>
-<p>These files all use a NAD83 CRS, so have to be reprojected to NAD84 to
-be spatially accurate. This can be fixed using QGIS, or on the command
-line using ogr2ogr:</p>
-<div class="highlight"><pre><span></span><code>ogr2ogr -t_srs EPSG:4326 -s_srs EPSG:4269 outfile infile
+<h1 id="extending-to-other-datasets">Extending to Other Datasets<a class="headerlink" href="#extending-to-other-datasets" title="Permanent link">&para;</a></h1>
+<p>This project is designed to be extensible for multiple external
+datasets, not just the remote highways and trails I've been focused
+on. There is some code duplicate between the conversion scripts to
+reduce complexity. The idea is to make adding support for a different
+dataset just copying an existing script and modifying it.</p>
+<p>The conversion process generates good OpenStreetMap tagging to make
+editing existing data, or for an import easier. To do this conversion
+manually is OK a few times, but gets tedious if you do it multiple
+times. The conversion scripts automate this process, so it's very easy
+to run the script multiple times while editing the configuration file
+till you get the output you want.</p>
+<p>Once you have good OpenStreetMap formatted data, you can do manual
+validation, and cut &amp; paste values from the external dataset into each
+OpenStreetMap feature. This can be done using QGIS, but JOSM is
+preferred as it has a data validator to catch any issues before
+uploading.</p>
+<h2 id="the-configuration-file">The Configuration File<a class="headerlink" href="#the-configuration-file" title="Permanent link">&para;</a></h2>
+<p>Each conversion script uses a text based configuration file in YAML
+format. There are two main categories, __abbreviations** and
+<strong>tags</strong>. These drive the entire conversion process. All map data
+metadata is just a tag/value pair, the first column is the value in
+the external dataset, and the second column is the value we want it to
+change to.</p>
+<p>Some values have additional criteria used when matching tags. For
+example the access tag has multiple possible values when processing
+trail data. Any value in the external dataset not in this list is
+dropped from the output file.</p>
+<div class="highlight"><pre><span></span><code>- TRLUSE: access
+
+- access:
+    - hiker: foot
+    - pedestrian: foot
+    - biker: bicycle
+    - bicycle: bicycle
+    - horse: bicycle
+    - snowshoe: snowshoe
 </code></pre></div>
-<h1 id="reference-numbers">Reference numbers<a class="headerlink" href="#reference-numbers" title="Permanent link">&para;</a></h1>
-<p>In a few areas I've looked at are in both the MVUM dataset, and the
-Trails (no vehicles) dataset, which is a bit confusing. The MVUM and
-the Trail reference nunbers aren't the same. In the converted output
-file it'll have the Trail number, not the MVUM one. Something to
-consider around editing time.</p>
-<h1 id="kept-fields">Kept Fields<a class="headerlink" href="#kept-fields" title="Permanent link">&para;</a></h1>
-<p>The two primary fields are <em>TRAIL_NO</em>, which is used for the
-<em>ref:usfs</em> tags, and <em>TRAIL_NAME</em>, which is the name of the trail. In
-addition to these</p>
-<h2 id="the-5-variations">The 5 Variations<a class="headerlink" href="#the-5-variations" title="Permanent link">&para;</a></h2>
-<p>For many of the features classes, there are 5 variations on each one
-which is used for access.</p>
-<ul>
-<li>Managed: Usage allowed and managed by the forest service</li>
-<li>Accepted: Usage is accepted year round</li>
-<li>Accepted/Discouraged: Usage is accepted, but discouraged</li>
-<li>Restricted: Usage is restricted</li>
-<li>Discouraged: Usage is discouraged</li>
-</ul>
-<p>These are converted to the appropriate value, but most are not in the
-output file as they don't really have an OSM equivalent. For a value,
-these use a date string, which becomes <strong>opening_hours</strong> in OSM. The
-prefix which is <em>HIKER</em>_, <em>ATV_</em>, etc... becomes the access tag,
-similar to the NPS values. For USFS trails, the values <em>designated</em>*
-is used instead of <em>yes</em>.</p>
-<ul>
-<li>Managed*  could set keyword to <strong>designated</strong></li>
-<li>Accepted* could set the keyword to <strong>yes</strong></li>
-<li>Discouraged* could set the keyword to <strong>discouraged</strong></li>
-<li>Accepted/Discouraged* could set the keyword to <strong>permissive</strong></li>
-<li>Restricted* sets the keyword to <strong>no</strong></li>
-</ul>
-<p>Many of the values for these are NULL, so ignored when generating the
-output file. If the value exists.</p>
-<ul>
-<li>PACK_SADDLE_ becomes <strong>horse=</strong></li>
-<li>BICYCLE_ becomes <strong>bicycle=</strong></li>
-<li>MOTORCYCLE_ becomes <strong>motorcycle=</strong></li>
-<li>ATV_ becomes <strong>atv=</strong></li>
-<li>FOURWD_ becomes <strong>4wd_only</strong></li>
-<li>SNOWMOBILE_ becomes <strong>snowmobile=</strong></li>
-<li>SNOWSHOE_ becomes <strong>snowshoe=</strong></li>
-<li>XCOUNTRY_SKI_ becomes <strong>ski=</strong></li>
-<li>HIKER_PEDESTRIAN becomes <strong>foot=</strong>, but is the default, so not needed</li>
-<li>MOTOR_WATERCRAFT becomes <strong>motorboat=</strong></li>
-<li>NONMOTOR_WATERCRAFT becomes <strong>boat</strong></li>
-</ul>
-<p>Currently these fields appear to be empty, but that may change in the
-future.</p>
-<ul>
-<li>SNOWCOACH_SNOWCAT_</li>
-<li>SNOWCOACH_SNOWCAT_</li>
-<li>E_BIKE_CLASS1_</li>
-<li>E_BIKE_CLASS2_</li>
-<li>E_BIKE_CLASS3_</li>
-</ul>
-<h2 id="dropped-fields_1">Dropped Fields<a class="headerlink" href="#dropped-fields_1" title="Permanent link">&para;</a></h2>
-<p>These fields are dropped as unnecessary for OSM. Most only have a
-NULL value anyway, so useless. Some of the entries also have no
-geometry, so they are also dropped.</p>
-<ul>
-<li>GIS_MILES</li>
-<li>Geometry Column</li>
-<li>TRAIL_TYPE</li>
-<li>TRAIL_CN</li>
-<li>BMP</li>
-<li>EMP</li>
-<li>SEGMENT_LENGTH</li>
-<li>ADMIN_ORG</li>
-<li>MANAGING_ORG</li>
-<li>SECURITY_ID</li>
-<li>ATTRIBUTESUBSET</li>
-<li>NATIONAL_TRAIL_DESIGNATION</li>
-<li>TRAIL_CLASS</li>
-<li>ACCESSIBILITY_STATUS</li>
-<li>TRAIL_SURFACE</li>
-<li>SURFACE_FIRMNESS</li>
-<li>TYPICAL_TRAIL_GRADE</li>
-<li>TYPICAL_TREAD_WIDTH</li>
-<li>MINIMUM_TRAIL_WIDTH</li>
-<li>TYPICAL_TREAD_CROSS_SLOPE</li>
-<li>SPECIAL_MGMT_AREA</li>
-<li>TERRA_BASE_SYMBOLOGY</li>
-<li>MVUM_SYMBOL</li>
-<li>TERRA_MOTORIZED</li>
-<li>SNOW_MOTORIZED</li>
-<li>WATER_MOTORIZED</li>
-<li>ALLOWED_TERRA_USE</li>
-<li>ALLOWED_SNOW_USE</li>
-</ul>
-<h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>-h, --help            show this help message and exit
--v, --verbose         verbose output
--i INFILE, --infile INFILE input data file
--c, --convert         Convert feature to OSM feature
--o OUTFILE, --outfile OUTFILE Output GeoJson file
+<p>In this example, the <strong>access</strong> keyword is not in the external
+dataset, it's generated internally. In the National Park Service trail
+data there is the <em>TRLUSE</em> keyword, which we set to <em>access</em>. Later
+when the conversion script sees the converted value to <em>access</em>, it
+then uses that list for the final value. This handles most data
+conversion needs.</p>
+<h3 id="abbreviations">Abbreviations<a class="headerlink" href="#abbreviations" title="Permanent link">&para;</a></h3>
+<p>OpenStreetMap prefers all abbreviations get expanded, and most
+external datasets use the abbreviations. This saves much manual
+editing if you want good OpenStreetMap syntax. Changing the list of
+abbreviations is very easy. For an example, here's a short list of
+common abbreviations.</p>
+<div class="highlight"><pre><span></span><code>- abbreviations:
+    - Fdr: FR
+    - Cr: Creek
+    - Crk: Creek
+    - Cg: Campground
+    - Th: Trailhead
+    - Tr: Trail
+    - Rd: Road
+    - Rd: Road
+    - Mt: Mountain 
+    - Mtn: Mountain
 </code></pre></div>
+<p>When processing each feature that has a name, this iterates through
+the string value and expands all the abbreviations. The large amount
+of variety of abbreviations means not everything gets
+expanded. Processing is relatively fast, so I just run the conversion
+script multiple times and add the abbreviations that got missed to the
+list in the configuration file till I catch everything. The few that
+slip through conversion can also be fixed manually when editing, but
+the whole goal is to reduce manual editing of data.</p>
+<p>There is an actual official list of abbreviations as used by the US
+Postal Service, but obviously nobody paid attention. Some of the
+abbreviations have embedded spaces, periods, quote marks, etc... It
+gets amusing after a while.</p>
+<h2 id="the-conversion-script">The Conversion Script<a class="headerlink" href="#the-conversion-script" title="Permanent link">&para;</a></h2>
+<p>The conversion scripts are where the final customization is for each
+external dataset. While the configuration file handles most of the
+details, each dataset usually has a few quirks to be worked
+around. Most of the corrections are just filtering strings. They are
+all in Python 3, and I try to not use too many cute coding tricks
+so the code is easy to read and modify.</p>
+<p>For example, the National Park Service trail data has 4 possible
+values for each access type, and OpenStreetMap only needs one
+value. In this case the conversion script has to search the string for
+the unique value, use that, and ignore the others as they are usually
+not set, or the same. It gets more interesting than that as each of
+the possible values we want in OpenStreetMap may have multiple
+values! The conversion script handles this by using the list in the
+configuration file to search for all possible values.</p>
+<p>While it would possible to have all the values in the configuration
+file, it adds much clutter, so handling it in the conversion script is
+less bloated, and allows for more flexibility.</p>
+<p>The existing conversion scripts are very flexible, and probably have
+an example you can use for anything you are trying to process that's
+a bit weird.</p>
+<h1 id="analyzing-external-datasets">Analyzing External Datasets<a class="headerlink" href="#analyzing-external-datasets" title="Permanent link">&para;</a></h1>
+<p>This assumes you are using GeoJson format, which is supported by most
+all GIS tools. I'm a terminal based developer, so these suggestions
+are all command line based. You can ignore this section if you are
+working with your own data.</p>
+<p>I use <em>ogrinfo</em> to read the file. Ogrinfo puts every data field in
+the external dataset on a separate line, making it easy to <em>grep</em> for
+all the variations of tag values. Since there are multiple features
+with the same value, I sort the output and then keep only unique
+entries. To find all the variations I just do this:</p>
+<div class="highlight"><pre><span></span><code>ogrinfo -ro -al [infile] | grep &quot;TRLUSE&quot; | sort | uniq
+</code></pre></div>
+<p>This is also useful as it prints the schema used by the dataset and
+the data type of each field. It also displays the projection, which is
+important as everything needs to be in NAD84 for the geometries to be
+correct.</p>
+<p>I do use QGIS and JOSM to visualize the data while working on
+converting to something I can then use for conflation. Editing a
+national dataset though is a bit sluggish, so I'll make a smaller
+extract and use that for the initial debugging of the
+conversion. Once I'm happen with processing the subset, then I'll run
+the full dataset to catch all the edge conditions.</p>
 
 
 
@@ -1750,7 +1617,7 @@ geometry, so they are also dropped.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="May 14, 2025 20:02:23">May 14, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="May 17, 2025 16:46:28">May 17, 2025</span>
   </span>
 
     

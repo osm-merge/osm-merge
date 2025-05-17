@@ -26,7 +26,7 @@
 
 #ifdef USE_PYTHON
 
-#define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
+// #define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
 #include <boost/python.hpp>
 #include <iostream>
 
@@ -34,16 +34,45 @@
 
 namespace logging = boost::log;
 using namespace boost::python;
+namespace python = boost::python;
 
-void make_foo(const std::string &wkt) {
-    std::cout << "FastClip::make_geometry(wkt) called" << std::endl;
-}
-
-BOOST_PYTHON_MODULE(fastclip)
+// An abstract base class
+class Base : public boost::noncopyable
 {
-    class_<FastClip, boost::noncopyable>("FastClip")
-        .def("make_foo", &make_foo);
+public:
+  virtual ~Base() {};
+  virtual std::string hello() = 0;
+};
+
+class CppDerived : public Base
+{
+public:
+  virtual ~CppDerived() {}
+  virtual std::string hello() { return "Hello from C++!";}
+};
+
+// Familiar Boost.Python wrapper class for Base
+struct BaseWrap : Base, python::wrapper<Base>
+{
+  virtual std::string hello()
+  {
+    return this->get_override("hello")();
+  }
+};
+
+// Pack the Base class wrapper into a module
+BOOST_PYTHON_MODULE(embedded_hello)
+{
+  python::class_<BaseWrap, boost::noncopyable> base("Base");
 }
+
+// int main(int argc, char **argv)
+// {
+//   std::string script = argv[1];
+//   // Initialize the interpreter
+//   Py_Initialize();
+// }
+
 #endif
 
 // local Variables:

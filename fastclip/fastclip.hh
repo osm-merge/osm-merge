@@ -60,6 +60,8 @@ using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 
 class FastClip {
 private:
+    std::shared_ptr<multipolygon_t> aoi;
+    osmium::geom::WKTFactory<> factory;
     osmium::nwr_array<osmium::TagsFilter> m_filters;
     osmium::nwr_array<osmium::index::IdSetDense<osmium::unsigned_object_id_type>> m_ids;
     // bool m_invert_match = false;

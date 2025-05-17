@@ -46,16 +46,18 @@ main(int argc, char *argv[])
     opts::positional_options_description p;
     opts::variables_map vm;
     opts::options_description desc("Allowed options");
+    std::string def;
+    // logging::add_file_log("fastclip.log");
 
-    logging::add_file_log("fastclip.log");
     try {
         // clang-format off
         desc.add_options()
             ("help,h", "display help")
             ("verbose,v", "Enable verbosity")
+            ("cache,c", "Create node cache")
             ("infile,i", opts::value<std::string>(), "Input data file"
                         "The file to be processed")
-            ("outfile,o", opts::value<std::string>(), "Output data file"
+            ("outfile,o", opts::value<std::string>(&def)->default_value("out.pbf"), "Output data file"
                 "The output boundaries")
             ("filter,f", "Filter for only highways")
             ("boundary,b", opts::value<std::string>(), "Boundary data file"
@@ -81,41 +83,33 @@ main(int argc, char *argv[])
     opts::store(opts::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
     opts::notify(vm);
 
-    // By default, write everything to the log file
-    logging::core::get()->set_filter(
-        logging::trivial::severity >= logging::trivial::debug
-        );
-    if (vm.count("verbose")) {
-        // Enable also displaying to the terminal
-        logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
-    }
+    // // By default, write everything to the log file
+    // logging::core::get()->set_filter(
+    //     logging::trivial::severity >= logging::trivial::debug
+    //     );
+
+    // if (vm.count("verbose")) {
+    //     // Enable also displaying to the terminal
+    //     logging::add_console_log(std::cout, boost::log::keywords::format = ">> %Message%");
+    // }
 
     std::string outfile;
     std::string infile;
     auto fastclip = FastClip();
 
+    // FIXME: this may not be necessary, I think add_node() handles this
+    if (vm.count("cache")) {
+        if (vm.count("infile") && vm.count("outfile")) {
+            infile = vm["infile"].as<std::string>();
+            outfile = vm["outfile"].as<std::string>();
+            fastclip.create_node_cache(infile, "node_cache");
+        }
+    }
+
     if (vm.count("boundary")) {
         std::string filespec = vm["boundary"].as<std::string>();
         auto boundary = fastclip.readAOI(filespec);
-        auto result = fastclip.make_geometry(boundary.as_object());
-        // std::cout << boost::geometry::wkt(*result) << std::endl;
-        switch(boundary.kind()) {
-          case json::kind::object: {
-              // std::cout  << "FIXME: OBJECT" << std::endl;
-          }
-          case json::kind::array: {
-              // std::cout << "FIXME: ARRAY" << std::endl;
-              auto const& arr = boundary.get_object();
-          }
-              // When reading in a GeoJson file containing a MultiPolygon,
-              // the first objects and an array are just the headers from
-              // the file. The actual data is in the string field.
-          case json::kind::string: {
-              // std::cout << "FIXME: STRING" << std::endl;
-              auto const& obj = boundary.get_object();
-              auto apoi = fastclip.make_geometry(obj);
-          }
-        }
+        // auto result = fastclip.make_geometry(boundary.as_object());
     }
 
     if (vm.count("filter")) {
@@ -124,7 +118,6 @@ main(int argc, char *argv[])
             outfile = vm["outfile"].as<std::string>();
             fastclip.filterFile(infile, outfile);
         }
-        exit(0);
     }
 
     // if (vm.count("outfile")) {
@@ -137,10 +130,6 @@ main(int argc, char *argv[])
     // m_vout << "About " << show_mbytes(mem) << " MBytes used for node location index (in main memory or on disk).\n";
     // show_memory_used();
     // m_vout << "Done.\n";
-
-    // BOOST_LOG_TRIVIAL(warning) << "An informational warning message";
-    // BOOST_LOG_TRIVIAL(error) << "An informational error message";
-    // BOOST_LOG_TRIVIAL(debug) << "An informational debug message";
 
     BOOST_LOG_TRIVIAL(info) << "Wrote " << outfile;
 }

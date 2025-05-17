@@ -3,15 +3,21 @@
 This project is designed to be extensible for multiple external
 datasets, not just the remote highways and trails I've been focused
 on. There is some code duplicate between the conversion scripts to
-reduce complexity. The idea is to add support for a different dataset
-is to just copy an existing script and just modifiy it.
+reduce complexity. The idea is to make adding support for a different
+dataset just copying an existing script and modifying it.
 
 The conversion process generates good OpenStreetMap tagging to make
 editing existing data, or for an import easier. To do this conversion
-manually is ok a few times, but gets tedious if you do it multiple
+manually is OK a few times, but gets tedious if you do it multiple
 times. The conversion scripts automate this process, so it's very easy
 to run the script multiple times while editing the configuration file
 till you get the output you want.
+
+Once you have good OpenStreetMap formatted data, you can do manual
+validation, and cut & paste values from the external dataset into each
+OpenStreetMap feature. This can be done using QGIS, but JOSM is
+preferred as it has a data validator to catch any issues before
+uploading.
 
 ## The Configuration File
 
@@ -27,6 +33,8 @@ example the access tag has multiple possible values when processing
 trail data. Any value in the external dataset not in this list is
 dropped from the output file.
 
+	- TRLUSE: access
+
 	- access:
 		- hiker: foot
 		- pedestrian: foot
@@ -36,12 +44,11 @@ dropped from the output file.
 		- snowshoe: snowshoe
 
 In this example, the **access** keyword is not in the external
-dataset, it's generated internall. In the National Park Service trail
+dataset, it's generated internally. In the National Park Service trail
 data there is the *TRLUSE* keyword, which we set to *access*. Later
-when the conversion script sees the converteed value to *access*, it
-then uses that list for the final value.
-
-	- TRLUSE: access
+when the conversion script sees the converted value to *access*, it
+then uses that list for the final value. This handles most data
+conversion needs.
 
 ### Abbreviations
 
@@ -69,11 +76,11 @@ of variety of abbreviations means not everything gets
 expanded. Processing is relatively fast, so I just run the conversion
 script multiple times and add the abbreviations that got missed to the
 list in the configuration file till I catch everything. The few that
-sslip through conversion can also be fixed manually when editing, but
+slip through conversion can also be fixed manually when editing, but
 the whole goal is to reduce manual editing of data.
 
 There is an actual official list of abbreviations as used by the US
-Postal Service, but obviosly nobody paid attention. Some of the
+Postal Service, but obviously nobody paid attention. Some of the
 abbreviations have embedded spaces, periods, quote marks, etc... It
 gets amusing after a while.
 
@@ -82,7 +89,9 @@ gets amusing after a while.
 The conversion scripts are where the final customization is for each
 external dataset. While the configuration file handles most of the
 details, each dataset usually has a few quirks to be worked
-around. Most of the corrections are just filtering strings.
+around. Most of the corrections are just filtering strings. They are
+all in Python 3, and I try to not use too many cute coding tricks
+so the code is easy to read and modify.
 
 For example, the National Park Service trail data has 4 possible
 values for each access type, and OpenStreetMap only needs one
@@ -91,17 +100,17 @@ the unique value, use that, and ignore the others as they are usually
 not set, or the same. It gets more interesting than that as each of
 the possible values we want in OpenStreetMap may have multiple
 values! The conversion script handles this by using the list in the
-configuration file to looks for all possible values.
+configuration file to search for all possible values.
 
 While it would possible to have all the values in the configuration
 file, it adds much clutter, so handling it in the conversion script is
 less bloated, and allows for more flexibility.
 
 The existing conversion scripts are very flexible, and probably have
-an example you can use for anything you are tryihng to process that's
+an example you can use for anything you are trying to process that's
 a bit weird.
 
-# Analysing External Datasets
+# Analyzing External Datasets
 
 This assumes you are using GeoJson format, which is supported by most
 all GIS tools. I'm a terminal based developer, so these suggestions
@@ -117,7 +126,7 @@ entries. To find all the variations I just do this:
 	ogrinfo -ro -al [infile] | grep "TRLUSE" | sort | uniq 
 
 This is also useful as it prints the schema used by the dataset and
-the data type of each field. It also display the projection, which is
+the data type of each field. It also displays the projection, which is
 important as everything needs to be in NAD84 for the geometries to be
 correct.
 

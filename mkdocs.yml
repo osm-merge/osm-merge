@@ -92,6 +92,7 @@ nav:
       - MVUM: mvum.md
       - Trails: trails.md
       - OSM Highways: osmhighways.md
+      - Extending For Other Datasets: extending.md
   - API:
       - basemapper: api/basemapper.md
       - convert: api/convert.md

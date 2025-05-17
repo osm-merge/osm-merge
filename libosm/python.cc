@@ -30,8 +30,6 @@
 #include <boost/python.hpp>
 #include <iostream>
 
-#include "fastclip.hh"
-
 namespace logging = boost::log;
 using namespace boost::python;
 namespace python = boost::python;

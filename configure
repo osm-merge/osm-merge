@@ -20917,6 +20917,9 @@ LIBS+=" $(pkg-config --libs expat)"
 CPPFLAGS+=" $(pkg-config --cflags bzip2)"
 LIBS+=" $(pkg-config --libs bzip2)"
 
+CPPFLAGS+=" $(pkg-config --cflags sqlite3)"
+LIBS+=" $(pkg-config --libs sqlite3)"
+
 # Find the path for python modules
 
 
@@ -21906,12 +21909,15 @@ fi
 
 
 $(pkg-config --exists libxml++-5.0)
-if test $? -gt 0 ; then
+if test $? -eq 0 ; then
    CPPFLAGS+=" $(pkg-config --cflags libxml++-5.0)"
    LIBS+=" $(pkg-config --libs libxml++-5.0)"
 else
-  CPPFLAGS+=" $(pkg-config --cflags libxml++-3.0)"
-  LIBS+=" $(pkg-config --libs libxml++-3.0)"
+  $(pkg-config --exists libxml++-5.0)
+  if test $? -eq 0 ; then
+     CPPFLAGS+=" $(pkg-config --cflags libxml++-3.0)"
+     LIBS+=" $(pkg-config --libs libxml++-3.0)"
+  fi
 fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /usr/lib64/libosmpbf.so" >&5

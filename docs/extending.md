@@ -16,7 +16,7 @@ till you get the output you want.
 Once you have good OpenStreetMap formatted data, you can do manual
 validation, and cut & paste values from the external dataset into each
 OpenStreetMap feature. This can be done using QGIS, but JOSM is
-preferred as it has a data validator to catch any issues before
+preferred as it has a data validator to catch any final issues before
 uploading.
 
 ## The Configuration File
@@ -46,9 +46,48 @@ dropped from the output file.
 In this example, the **access** keyword is not in the external
 dataset, it's generated internally. In the National Park Service trail
 data there is the *TRLUSE* keyword, which we set to *access*. Later
-when the conversion script sees the converted value to *access*, it
+when the conversion script sees the converted value *access*, it
 then uses that list for the final value. This handles most data
 conversion needs.
+
+### OpenStreetMap Tagging
+
+For those new to OpenStreetMap, the flexibility of the OpenStreetMap
+data schema can get confusing, even for experienced mappers. There is
+no official data schema, but it's still good to follow community
+consensus on the most commonly used tags. The best source of community
+"approved" tags is on the [OpenStreetMap
+Wiki](https://wiki.openstreetmap.org/). This covers many tags and
+their common values in much detail.
+
+The other source is [Taginfo](https://taginfo.openstreetmap.org/), a
+searchable database of all of the currently used tags and values in
+OpenStreetMap. When trying to decide on the best values for the
+configuration file, try to pick one of the more common values. You can
+use the wiki to dig into the definition of each value. You can also
+download the taginfo database, which is in sqlite3 format, and do
+queries locally all you want. If you want to be simple, you can run
+*grep* on an OSM XML file of your area of interest, and see what is
+used locally.
+
+There is also the [Tagging email
+list](https://lists.openstreetmap.org/listinfo/tagging), which is
+guaranteed to generate a variety of responses. Be prepared to answer
+questions and be patient. Community consensus is not usually a fast
+process.
+
+When in doubt, don't worry about specific details if you aren't sure,
+and only use the data you are confident about. With an efficient
+data-flow, you can always make another update through the data as the
+details you aren't sure about become clear.
+
+If this is an import instead of editing existing data, read the
+[Import
+Guidelines](https://wiki.openstreetmap.org/wiki/Import/Guidelines). Following
+this process avoids creating large scale disruption and getting
+blocked and your data removed. Having a good format conversion from
+the external data source helps make the import discussion more
+efficient.
 
 ### Abbreviations
 
@@ -140,8 +179,8 @@ the full dataset to catch all the edge conditions.
 # Task Splitting
 
 A key part to processing large datasets is being able to chop them
-ihnto smaller more manageable files. All of the conversion scripts do
-work with nationalwide sized files, so I usually start by tweaking the
+into smaller more manageable files. All of the conversion scripts do
+work with national-wide sized files, so I usually start by tweaking the
 conversion till I'm happy with it. Then I download the boundary of the
 national park, forest, state, etc... that I want to work with. 
 
@@ -155,7 +194,7 @@ Then the [tm-splitter utility](tm-splitter.md) will use that task grid
 and make data extracts from the converted GeoJson or OSM file, one for
 each task. I then load the external data set for a task into JOSM,
 make a new layer and download OSM data, and then work my way through
-eacch feature in the external dataset.
+each feature in the external dataset.
 
 # Workshop!!
 

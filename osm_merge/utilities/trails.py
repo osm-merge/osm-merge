@@ -107,7 +107,10 @@ def processDataThread(config: dict,
                             tmp = v2.split('=')
                             props[tmp[0]] = tmp[1]
                         else:
-                            props[v2] = "yes"
+                            if "OBJECTID" in entry["properties"]:
+                                props[v2] = "yes"
+                            else:
+                                props[v2] = "designated"
             if key not in config["tags"]:
                 continue
             # print(f"FIXME: \'{key}\' = {value}")

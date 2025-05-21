@@ -1,0 +1,56 @@
+- survey:
+  - groups:
+    - first_screen:
+      - select_one: datamodel
+      - select_one: historic
+      - select_one: archaeological_site
+      - text: What is the name if it has one ?
+      - geopoint: Take a GPS location
+      - image: Take a Picture
+      - text: Any other comments about this feature ?
+
+- questions:
+  - archaeological_site:
+    - title: Archaeological Site
+    - question: What kind of Archaeological Site is this ?
+    - default: ruins
+    - appearance: minimal
+  - historic:
+    - title: Historical Site
+    - question: What kind of historical site is this ?
+    - appearance: minimal
+  - datamodel:
+    - title: Data Model
+    - question: Data Model Level
+    - default: basic
+    - appearance: minimal
+  - name:
+    - title: Feature Name
+    - question: If this feature has a name, what is it ?
+    - appearance: minimal
+
+- choices:
+  - datamodel:
+    - basic: Basic Model
+    - extended: Extended Model
+  - archaeological_site:
+      - petroglyphs: Petrogyphs
+      - cliff_dwelling: Cliff Dwelling
+  - historic:
+    - ruins: Ruins
+    - heritage: Heritage
+    - fort: Fort
+    - building: Building
+    - milestone: Milestone
+    - church: Church
+    - mine: Mine
+    - tomb: Tomb
+    - monument: Monument
+    - wayside_shrine: Wayside Shrine
+    - memorial: Memorial
+    - cemetery: Cemetery
+
+- settings:
+  - form_id: historical
+  - form_title: Historical
+  - version: 0.1

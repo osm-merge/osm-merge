@@ -104,7 +104,132 @@ class Yaml2XForm(object):
         self.add_geopoint(lang)
         self.add_instance(model)
         self.add_choices(itext)
+        self.add_nodeset(itext)
         print(etree.tostring(self.root, pretty_print=True).decode())
+
+    def lookup_value(self,
+                     value: str,
+                     ) -> str:
+        """
+        """
+        for group in self.config["survey"]["groups"]:
+            for entry in group:
+                for item in group[entry]:
+                    [[k, v]] = item.items()
+                    return f"/data/{entry}/{v}"
+
+    def add_nodeset(self,
+                      element: etree.Element,
+                      ):
+        """
+        Create the bind section
+        """
+        # bind attributes are:
+        # nodeset, type, readonly, required, relevant, constraint, calculate,
+        # saveIncomplete, jr:requiredMsg, jr:constraintMsg, jr:preload,
+        # jr:preloadParams
+        #
+        # Data Types are string, int, boolean, decimal, date, time, dateTime
+        # geopoint, geotrace, geoshape, binary, barcode, intent
+
+        # These are the header block, internal ODK Coll\lect variables
+        # so we have information about each chunk of data that is collected.
+        for item in self.config["survey"]["header"]:
+            [[k, v]] = item.items()
+            if v == "dateTime":
+                bind = etree.Element("bind",
+                                     nodeset=f"/data/{k}",
+                                     jr_preload="timestamp",
+                                     type=v,
+                                     jr_preloadParams=k)
+                element.append(bind)
+            elif v == "geopoint":
+                # bind = etree.Element("bind", odk_setpoint="", ref="", event="")
+                bind = etree.Element("bind", nodeset=f"/data/{k}", type="geopoint")
+                element.append(bind)
+                pass
+            elif v == "int":
+                pass
+            elif v == "boolean":
+                pass
+            elif v == "string":
+                bind = etree.Element("bind", nodeset=f"/data/{k}",
+                                     jr_preload="property",
+                                     type="string",
+                                     jr_preloadParams=k)
+                element.append(bind)
+
+        # These are the questions to ask
+        # default, required, parameters, apperance
+        defaults = {"nodeset": "",
+                    # "jr_preload": "",
+                    "type": "",
+                    # "jr_preloadParams": ""
+                }
+
+        # Get the list of groups
+        # punc = ("=", "!=", "<", ">")
+        punc = ("=")
+        for item in self.config["survey"]["groups"]:
+            [[k, v]] = item.items()
+            for entry in v:
+                [[k2, v2]] = entry.items()
+                if k2[:7] != "select_":
+                    continue
+                defaults["nodeset"] = f"/data/{k}/{v2}"
+                for attribute in self.config["questions"][v2]:
+                    [[k3, v3]] = attribute.items()
+                    print(f"FIXME: {k3} = {v3}")
+                    if k3 == "required" or k3 == "readonly":
+                        defaults[k2] = "true()"
+                    if k3 == "relevant":
+                        value = str()
+                        if v3.find(" or ") > 0:
+                            for i in v3.split(" or "):
+                                for test in punc:
+                                    if i.find(test) > 0:
+                                        tmp = i.split(test)
+                                        xpath = self.lookup_value(i.split(tmp[0]))
+                                        value += f"{xpath} {test}'{tmp[1]}' or "
+                                        break
+                        if v3.find(" and ") > 0:
+                            for i in v3.split(" and "):
+                                for test in punc:
+                                    if i.find(test) > 0:
+                                        tmp = i.split(test)
+                                        xpath = self.lookup_value(i.split(tmp[0]))
+                                        value += f"{xpath} {test}'{tmp[1]}' and )"
+                                        break
+                        # Drop the trailing conditional
+                        if value[-1:] == " ":
+                            pos = value[:-1].rfind(" ")
+                        defaults[k3] = value[:pos]
+
+            bind = etree.Element("bind")
+            for key, value in defaults.items():
+                bind.set(key, value)
+            element.append(bind)
+
+        # for key, value in self.config["questions"].items():
+        #     # These are the deself.config["questions"][v2]faults
+        #     if key == "required" or key == "readonly":
+        #         defaults[key] = "true()"
+        #     elif key == "geopoint":
+        #         bind = etree.Element("odk_setgeopoint", ref="", event="")
+        #         continue
+        #     elif key == "image":
+        #         bind = etree.Element("bind", nodeset="", type="", orx_max_pixels="")
+        #         continue
+        #     if key == "relevant":
+        #         # FIXME: this needs xpath support
+        #         defaults[k] = ""
+
+        #     bind = etree.Element("bind",
+        #                          nodeset="",
+        #                          jr_preload="",
+        #                          type="",
+        #                          jr_preloadParams="")
+        #     element.append(bind)
 
     def add_choices(self,
                       element: etree.Element,

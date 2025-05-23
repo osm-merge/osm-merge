@@ -23,7 +23,7 @@ import os
 
 # import lxml
 from lxml import etree
-import xml.etree.ElementTree as treepair
+from lxml.builder import E
 
 from osm_merge.yamlfile import YamlFile
 
@@ -62,37 +62,30 @@ class Yaml2XForm(object):
         # yaml.dump()
 
         self.defaults = dict()
-        xmln = {
-            "xmlns": "http://www.w3.org/2002/xforms",
-            "xmlns:h": "http://www.w3.org/1999/xhtml",
-            "xmlns:ev": "http://www.w3.org/2001/xml-events",
-            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-            "xmlns:jr": "http://openrosa.org/javarosa",
-            "xmlns:orx": "http://openrosa.org/xforms",
-            "xmlns:odk": "http://www.opendatakit.org/xforms",
+        self.xmln = {
+            # "xmlns": "http://www.w3.org/2002/xforms",
+            "h": "http://www.w3.org/1999/xhtml",
+            "ev": "http://www.w3.org/2001/xml-events",
+            "xsd": "http://www.w3.org/2001/XMLSchema",
+            "jr": "http://openrosa.org/javarosa",
+            "orx": "http://openrosa.org/xforms",
+            "odk": "http://www.opendatakit.org/xforms",
         }
 
         self.parse_config()
 
         # Register the namespaces
-        self.root = etree.Element('xml', version="1.0")
+        self.root = etree.Element('xml', version="1.0", nsmap=self.xmln)
+        # self.root = etree.Element('xml', version="1.0")
         head = etree.Element('head')
         body = etree.Element('body')
         self.root.append(head)
         self.root.append(body)
-        for key, value in xmln.items():
-            if key.find(':') > 0:
-                colon = key.split(':')
-                etree.register_namespace(colon[1], value)
-            else:
-                etree.register_namespace(key, value)
-
-
         title = etree.Element("title")
-        title.text = "Hello World!"
+        title.text = self.config["settings"]["form_title"]
         head.append(title)
         model = etree.Element("model")
-        model.set("xforms-version", "")
+        model.set("odk_xforms-version", "1.0.0")
         head.append(model)
         itext = etree.Element("itext")
         lang = etree.Element("translation", lang="")
@@ -105,7 +98,14 @@ class Yaml2XForm(object):
         self.add_instance(model)
         self.add_choices(itext)
         self.add_nodeset(itext)
-        print(etree.tostring(self.root, pretty_print=True).decode())
+        file = open("out.xml", "w")
+        out = etree.tostring(self.root, pretty_print=True).decode()
+        # print(etree.tostring(self.root, pretty_print=True).decode())
+        # FIXME: python doesn't allow you to use the colon character,
+        # which was screwing up the attributes with a namespace. So
+        # we fix the output string as it's simple.
+        out = etree.tostring(self.root, pretty_print=True).decode()
+        file.write(out.replace("jr_", "jr:").replace("odk_", "odk:").replace("orx_", "orx:"))
 
     def lookup_value(self,
                      value: str,
@@ -122,7 +122,7 @@ class Yaml2XForm(object):
                       element: etree.Element,
                       ):
         """
-        Create the bind section
+        Create the bind section.
         """
         # bind attributes are:
         # nodeset, type, readonly, required, relevant, constraint, calculate,
@@ -141,7 +141,8 @@ class Yaml2XForm(object):
                                      nodeset=f"/data/{k}",
                                      jr_preload="timestamp",
                                      type=v,
-                                     jr_preloadParams=k)
+                                     jr_preloadParams=k,
+                                     )
                 element.append(bind)
             elif v == "geopoint":
                 # bind = etree.Element("bind", odk_setpoint="", ref="", event="")
@@ -157,6 +158,9 @@ class Yaml2XForm(object):
                                      jr_preload="property",
                                      type="string",
                                      jr_preloadParams=k)
+                #preload = etree.SubElement(self.root, '{http://openrosa.org/javarosa}preload')timestamp"
+                # foo = etree.Element(etree.QName('{http://openrosa.org/javarosa}preload', "timestamp"))
+                # bind.append(foo)
                 element.append(bind)
 
         # These are the questions to ask
@@ -179,7 +183,7 @@ class Yaml2XForm(object):
                 defaults["nodeset"] = f"/data/{k}/{v2}"
                 for attribute in self.config["questions"][v2]:
                     [[k3, v3]] = attribute.items()
-                    print(f"FIXME: {k3} = {v3}")
+                    # print(f"FIXME: {k3} = {v3}")
                     if k3 == "required" or k3 == "readonly":
                         defaults[k2] = "true()"
                     if k3 == "relevant":

@@ -290,12 +290,15 @@ class Yaml2XForm(object):
                         [[k, v]] = item.items()
                         if k in ignore:
                             continue
-                        if k == "text":
-                            element.append(self.make_text(v))
-                            continue
-                        v2 = etree.Element(v)
-                        if v in self.defaults:
-                            v2.text = self.defaults[v]
+                        if type(v) == list:
+                            breakpoint()
+                        else:
+                            # element.append(self.make_text(v))
+                            if k == "label":
+                                continue
+                            v2 = etree.Element(v)
+                            if v in self.defaults:
+                                v2.text = self.defaults[v]
 
                         screen.append(v2)
 
@@ -331,10 +334,22 @@ class Yaml2XForm(object):
         screen = dict()
         for group in self.config["survey"]["groups"]:
             [[k, v]] = group.items()
+            element.append(self.make_text(v[0]["label"], f"/data/{k}:label"))
             for entry in v:
                 [[k2, v2]] = entry.items()
-                screen[v2] = f"/data/{k}"
-                pass
+                # Groups have a label, but it's njot used anywhere.
+                if k2 == "label":
+                    continue
+                if k2[:7] == "select_":
+                    screen[v2] = f"/data/{k}"
+                else:
+                    # screen[k2] = f"/data/{k}"
+                    for item in v2:
+                        [[k3, v3]] = item.items()
+                        if k3 != "label":
+                            continue
+                    element.append(self.make_text(v3, f"/data/{k}/{k2}:label"))
+
         for key, value in self.config["questions"].items():
             # index = 0
             if type(value) == list:

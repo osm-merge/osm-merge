@@ -23,7 +23,6 @@ import os
 
 # import lxml
 from lxml import etree
-from lxml.builder import E
 
 from osm_merge.yamlfile import YamlFile
 
@@ -77,11 +76,11 @@ class Yaml2XForm(object):
         # Register the namespaces
         self.root = etree.Element('xml', version="1.0", nsmap=self.xmln)
         # self.root = etree.Element('xml', version="1.0")
-        head = etree.Element('head')
+        head = etree.Element('h_head')
         body = etree.Element('body')
         self.root.append(head)
         self.root.append(body)
-        title = etree.Element("title")
+        title = etree.Element("h_title")
         title.text = self.config["settings"]["form_title"]
         head.append(title)
         model = etree.Element("model")
@@ -105,7 +104,7 @@ class Yaml2XForm(object):
         # which was screwing up the attributes with a namespace. So
         # we fix the output string as it's simple.
         out = etree.tostring(self.root, pretty_print=True).decode()
-        file.write(out.replace("jr_", "jr:").replace("odk_", "odk:").replace("orx_", "orx:"))
+        file.write(out.replace("jr_", "jr:").replace("odk_", "odk:").replace("orx_", "orx:").replace("h_", "h:"))
 
     def lookup_value(self,
                      value: str,
@@ -145,7 +144,6 @@ class Yaml2XForm(object):
                                      )
                 element.append(bind)
             elif v == "geopoint":
-                # bind = etree.Element("bind", odk_setpoint="", ref="", event="")
                 bind = etree.Element("bind", nodeset=f"/data/{k}", type="geopoint")
                 element.append(bind)
                 pass
@@ -158,9 +156,6 @@ class Yaml2XForm(object):
                                      jr_preload="property",
                                      type="string",
                                      jr_preloadParams=k)
-                #preload = etree.SubElement(self.root, '{http://openrosa.org/javarosa}preload')timestamp"
-                # foo = etree.Element(etree.QName('{http://openrosa.org/javarosa}preload', "timestamp"))
-                # bind.append(foo)
                 element.append(bind)
 
         # These are the questions to ask
@@ -262,9 +257,10 @@ class Yaml2XForm(object):
         """
         Make the GeoPoint entry.
         """
-        element.append(self.make_text("Record the location where you are standing"))
-        for blank in range(0, 26):
-            element.append(self.make_text("-"))
+        # element.append(self.make_text("Record the location where you are standing"))
+        # for blank in range(0, 26):
+        #    element.append(self.make_text("-"))
+        pass
 
     def add_instance(self,
                       element: etree.Element,
@@ -312,14 +308,19 @@ class Yaml2XForm(object):
     def get_choices(self,
                     element: etree.Element,
                     ):
+        """
+        Get the list of choices labels.
+        """
         for key, value in self.config["choices"].items():
+            index = 0
             if type(value) == list:
                 for label in value:
                     if type(label) == str:
-                        element.append(self.make_text(label))
+                        element.append(self.make_text(label, f"{key}-{index}"))
                     else:
                         [[k, v]] = label.items()
-                        element.append(self.make_text(v))
+                        element.append(self.make_text(v, f"{key}-{index}"))
+                    index += 1
 
     def get_questions(self,
                     element: etree.Element,
@@ -327,22 +328,33 @@ class Yaml2XForm(object):
         """
         Get all the questions from the config file.
         """
+        screen = dict()
+        for group in self.config["survey"]["groups"]:
+            [[k, v]] = group.items()
+            for entry in v:
+                [[k2, v2]] = entry.items()
+                screen[v2] = f"/data/{k}"
+                pass
         for key, value in self.config["questions"].items():
+            # index = 0
             if type(value) == list:
                 for label in value:
                     [[k, v]] = label.items()
                     if k == "question":
-                        element.append(self.make_text(v))
+                        if key in screen:
+                            element.append(self.make_text(v, f"{screen[key]}/{key}:label"))
                     elif k == "default":
                         self.defaults[key] = v
+                    # index += 1
 
     def make_text(self,
-                  entry = str(),
+                  entry: str,
+                  id: str,
                   ) -> etree.Element:
         """
         Get all the choices from the config file.
         """
-        text = etree.Element("text", id="")
+        text = etree.Element("text", id=id)
         value = etree.Element("value")
         value.text = entry
         text.append(value)

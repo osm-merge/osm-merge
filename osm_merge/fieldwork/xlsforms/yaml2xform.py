@@ -20,11 +20,8 @@ import logging
 import re
 import sys
 import os
-
-# import lxml
 from lxml import etree
-
-from osm_merge.yamlfile import YamlFile
+import yaml
 
 import osm_merge as om
 rootdir = om.__path__[0]
@@ -53,9 +50,6 @@ class Yaml2XForm(object):
             if not os.path.exists(filespec):
                 log.error(f"{yamlspec} does not exist!")
                 quit()
-
-            yaml = YamlFile(filespec)
-            self.config = yaml.getEntries()
         else:
             logging.error("Need to specify a config file!")
         # yaml.dump()
@@ -71,13 +65,23 @@ class Yaml2XForm(object):
             "odk": "http://www.opendatakit.org/xforms",
         }
 
-        self.parse_config()
+        # self.parse_config()
+
+        filespec = yamlspec
+        if not os.path.exists(filespec):
+            log.error(f"{yamlspec} does not exist!")
+            quit()
+
+        self.data = dict()
+        self.file = open(filespec, "rb").read()
+        self.yaml = yaml.load(self.file, Loader=yaml.Loader)
+        self.config = self.getEntries()
 
         # Register the namespaces
         self.root = etree.Element('xml', version="1.0", nsmap=self.xmln)
         # self.root = etree.Element('xml', version="1.0")
         head = etree.Element('h_head')
-        body = etree.Element('body')
+        body = etree.Element('h_body')
         self.root.append(head)
         self.root.append(body)
         title = etree.Element("h_title")
@@ -91,12 +95,18 @@ class Yaml2XForm(object):
         itext.append(lang)
         model.append(itext)
 
+        # first is all the labels of the choices
         self.get_choices(lang)
-        self.get_questions(lang)
-        self.add_geopoint(lang)
+        # then they get a blank default as a placeholer
+        self.set_choices(lang)
+        # Then the instances
         self.add_instance(model)
+        self.add_geopoint(lang)
         self.add_choices(itext)
+        self.get_questions(lang)
         self.add_nodeset(itext)
+
+        self.add_appearance(body)
         file = open("out.xml", "w")
         out = etree.tostring(self.root, pretty_print=True).decode()
         # print(etree.tostring(self.root, pretty_print=True).decode())
@@ -105,6 +115,52 @@ class Yaml2XForm(object):
         # we fix the output string as it's simple.
         out = etree.tostring(self.root, pretty_print=True).decode()
         file.write(out.replace("jr_", "jr:").replace("odk_", "odk:").replace("orx_", "orx:").replace("h_", "h:"))
+
+    def getEntries(self):
+        """
+        Convert the list from the YAML file into a searchable data structure
+
+        Returns:
+            (dict): The parsed config file
+        """
+        columns = list()
+        for entry in self.yaml:
+            for key, values in entry.items():
+                self.data[key] = dict()
+                # values is a list of dicts which are tag/value pairs
+                for item in values:
+                    # print(f"YAML: {item}")
+                    [[k, v]] = item.items()
+                    if type(v) == str:
+                        self.data[key][k] = v
+                    elif type(v) == float or type(v) == int:
+                        self.data[key][k] = str(v)
+                    elif type(v) == list:
+                        self.data[key][k] = dict()
+                        for newval in v:
+                            if newval is None:
+                                continue
+                            [[k2, v2]] = newval.items()
+                            self.data[key][k][k2] = dict()
+                            if type(v2) == list:
+                                for subval in v2:
+                                    [[k3, v3]] = subval.items()
+                                    if k3[:7] != "select_":
+                                        self.data[key][k][k2][k3] = v3
+                                    else:
+                                        breakpoint()
+                                        for val in v3:
+                                            self.data[key][k][k2][k3]
+                                            pass
+                                    # self.data[] = ""
+                                    # breakpoint()
+                            else:
+                                self.data[key][k].update(newval)
+                    else:
+                        log.error(f"{type(v)} is not suported.")
+
+        # breakpoint()
+        return self.data
 
     def lookup_value(self,
                      value: str,
@@ -116,6 +172,53 @@ class Yaml2XForm(object):
                 for item in group[entry]:
                     [[k, v]] = item.items()
                     return f"/data/{entry}/{v}"
+
+    def add_appearance(self,
+                       element: etree.Element,
+                      ):
+        """
+        """
+        for k, v in self.config["survey"]["groups"].items():
+            if "appearance" in v:
+                appear = etree.Element("group",
+                                   appearance=v["appearance"],
+                                   ref=f"/data/{k}")
+                label = etree.Element("label",
+                                      ref=f"jr_itext('/data/{k}:label')")
+                appear.append(label)
+                element.append(appear)
+
+            for k2, v2 in v.items():
+                tmp = dict()
+                if type(v2) == str:
+                    tmp[k2] = v2
+                    continue
+                for k3 in v2:
+                    [[k4, v4]] = k3.items()
+                    tmp[k4] = v4
+                print(f"TMP: {tmp}")
+                if tmp["type"][:7] == "select_":
+                    select = etree.Element("select1",
+                                           appearance=tmp["appearance"],
+                                           ref=f"/data/{k}/{tmp["name"]}")
+                    label = etree.Element("label",
+                                          ref=f"jr_itext('/data/{k}/{tmp["name"]}:label')")
+                    select.append(label)
+                    for x in self.config["choices"][k2]:
+                        item = etree.Element("item")
+                        choice = etree.Element("label")
+                        choice.text = ""
+                        value = etree.Element("value")
+                        value.text = x
+                        item.append(choice)
+                        item.append(value)
+                        select.append(item)
+                    appear.append(select)
+                    element.append(appear)
+                for k2, v2 in v.items():
+                    select = etree.Element("select1", ref=f"jr_itext('/data/{k2}:label')")
+            else:
+                pass
 
     def add_nodeset(self,
                       element: etree.Element,
@@ -133,29 +236,27 @@ class Yaml2XForm(object):
 
         # These are the header block, internal ODK Coll\lect variables
         # so we have information about each chunk of data that is collected.
-        for item in self.config["survey"]["header"]:
-            [[k, v]] = item.items()
-            if v == "dateTime":
+        for key, value in self.config["survey"]["header"].items():
+            if value == "dateTime":
                 bind = etree.Element("bind",
-                                     nodeset=f"/data/{k}",
+                                     nodeset=f"/data/{key}",
                                      jr_preload="timestamp",
-                                     type=v,
-                                     jr_preloadParams=k,
+                                     type=value,
+                                     jr_preloadParams=key,
                                      )
                 element.append(bind)
-            elif v == "geopoint":
-                bind = etree.Element("bind", nodeset=f"/data/{k}", type="geopoint")
+            elif value == "geopoint":
+                bind = etree.Element("bind", nodeset=f"/data/{key}", type="geopoint")
                 element.append(bind)
+            elif value == "int":
                 pass
-            elif v == "int":
+            elif value == "boolean":
                 pass
-            elif v == "boolean":
-                pass
-            elif v == "string":
-                bind = etree.Element("bind", nodeset=f"/data/{k}",
+            elif value == "string":
+                bind = etree.Element("bind", nodeset=f"/data/{key}",
                                      jr_preload="property",
                                      type="string",
-                                     jr_preloadParams=k)
+                                     jr_preloadParams=key)
                 element.append(bind)
 
         # These are the questions to ask
@@ -169,14 +270,14 @@ class Yaml2XForm(object):
         # Get the list of groups
         # punc = ("=", "!=", "<", ">")
         punc = ("=")
-        for item in self.config["survey"]["groups"]:
-            [[k, v]] = item.items()
-            for entry in v:
-                [[k2, v2]] = entry.items()
+        for k, v in self.config["survey"]["groups"].items():
+            for k2, v2 in v.items():
                 if k2[:7] != "select_":
                     continue
                 defaults["nodeset"] = f"/data/{k}/{v2}"
                 for attribute in self.config["questions"][v2]:
+                    if not attribute:
+                        continue
                     [[k3, v3]] = attribute.items()
                     # print(f"FIXME: {k3} = {v3}")
                     if k3 == "required" or k3 == "readonly":
@@ -237,14 +338,13 @@ class Yaml2XForm(object):
             index = 0
             root = etree.Element(self.root.tag)
             instance = etree.Element("instance", id="")
-            for entry in value: 
+            for entry, val in value.items():
                 item = etree.Element("item")
-                [[k2, v2]] = entry.items()
                 itextid = etree.Element("itextId")
                 itextid.text = f"{key}-{index}"
                 item.append(itextid)
                 name = etree.Element("name")
-                name.text = k2
+                name.text = val
                 item.append(name)
                 index += 1
                 root.append(item)
@@ -268,8 +368,10 @@ class Yaml2XForm(object):
         """
         Create an instance and add it to the element tree.
         """
-        instance = etree.Element("instance")
-        data = etree.Element("data", id="", version="")
+        # These are all internal to ODK Collect
+        id =  self.config["settings"]["form_id"]
+        version =  self.config["settings"]["version"]
+        data = etree.Element("data", id=id, version=version)
         data.append(etree.Element("start"))
         data.append(etree.Element("end"))
         data.append(etree.Element("today"))
@@ -279,10 +381,11 @@ class Yaml2XForm(object):
         data.append(etree.Element("email"))
         data.append(etree.Element("warmup"))
 
+        instance = etree.Element("instance", id="")
         # ignore = ("geopoint", "geotrace", "image", "text", "select_one", "select_multiple")
         ignore = ("geopoint", "geotrace", "image", "text")
-        for entry in self.config["survey"]["groups"]:
-            for key, value in entry.items():
+        for group, values in self.config["survey"]["groups"].items():
+            for key, value in values.items():
                 screen = etree.Element(key)
                 data.append(screen)
                 if type(value) == list:
@@ -291,9 +394,9 @@ class Yaml2XForm(object):
                         if k in ignore:
                             continue
                         if type(v) == list:
-                            breakpoint()
+                            screen.append(etree.Element(k))
+                            # breakpoint()
                         else:
-                            # element.append(self.make_text(v))
                             if k == "label":
                                 continue
                             v2 = etree.Element(v)
@@ -325,6 +428,21 @@ class Yaml2XForm(object):
                         element.append(self.make_text(v, f"{key}-{index}"))
                     index += 1
 
+    def set_choices(self,
+                    element: etree.Element,
+                    ):
+        """
+        Get the list of choices labels.
+        """
+        for key, value in self.config["choices"].items():
+            index = 0
+            if type(value) == str:
+                element.append(self.make_text("-", f"{key}-{index}"))
+            else:
+                for item in value:
+                    element.append(self.make_text("-", f"{key}-{index}"))
+                    index += 1
+
     def get_questions(self,
                     element: etree.Element,
                     ):
@@ -332,28 +450,38 @@ class Yaml2XForm(object):
         Get all the questions from the config file.
         """
         screen = dict()
-        for group in self.config["survey"]["groups"]:
-            [[k, v]] = group.items()
-            element.append(self.make_text(v[0]["label"], f"/data/{k}:label"))
-            for entry in v:
-                [[k2, v2]] = entry.items()
-                # Groups have a label, but it's njot used anywhere.
-                if k2 == "label":
+        for group, values in self.config["survey"]["groups"].items():
+            # element.append(self.make_text(values[0]["label"], f"/data/{group}:label"))
+            for entry, val in values.items():
+                # Groups have a label, but it's not used anywhere.
+                print(f"2: {entry}, {val}")
+                if entry == "label":
                     continue
-                if k2[:7] == "select_":
-                    screen[v2] = f"/data/{k}"
-                else:
-                    # screen[k2] = f"/data/{k}"
-                    for item in v2:
+                elif type(val) == list:
+                    tmp = dict()
+                    # Convert the list to a dict
+                    for item in val:
                         [[k3, v3]] = item.items()
-                        if k3 != "label":
-                            continue
-                    element.append(self.make_text(v3, f"/data/{k}/{k2}:label"))
+                        tmp[k3] = v3
+                        if v3[:7] == "select_":
+                            screen[k3] = f"/data/{entry}"
+                        print(f"\t3: {k3}, {v3}")
+                        # if k3 != "label":
+                        #     continue
+                    if tmp["type"] == "geopoint":
+                        element.append(self.make_text("-", f"/data/{group}/{val}:hint"))
+                    else:
+                        if "name" in tmp:
+                            element.append(self.make_text(tmp["name"], f"/data/{group}/{val}:label"))
+                        else:
+                            element.append(self.make_text(entry, f"/data/{group}/{val}:label"))
 
         for key, value in self.config["questions"].items():
             # index = 0
             if type(value) == list:
                 for label in value:
+                    if not label:
+                        continue
                     [[k, v]] = label.items()
                     if k == "question":
                         if key in screen:
@@ -381,17 +509,21 @@ class Yaml2XForm(object):
         """
         for item in self.config["survey"]["groups"]:
             [[k, v]] = item.items()
+            print(f"FIXME1: {k} = {v}")
             if type(v) == list:
                 for entry in v:
                     if type(entry) == dict:
                         [[k2, v2]] = entry.items()
+                        print(f"FIXME2: {k2} = {v2}")
                         select_one = list()
                         if k2 == "select_one":
                             select_one = v2
                         elif k2 == "select_multiple":
                             # self.select_multiple(v2)
                             pass
-                        print(f"FIXME: {k2}, {v2}")
+                        if type(v2) == list:
+                            pass
+                        print(f"FIXME1: {k2}, {v2}")
                     else:
                         print(f"FIXME2: {k} {v}")
                         

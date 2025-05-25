@@ -91,22 +91,22 @@ class Yaml2XForm(object):
         model.set("odk_xforms-version", "1.0.0")
         head.append(model)
         itext = etree.Element("itext")
-        lang = etree.Element("translation", lang="")
+        lang = etree.Element("translation", lang="English(en)")
+        # first is all the labels of the choices
+        self.get_questions(lang)
         itext.append(lang)
         model.append(itext)
 
-        # first is all the labels of the choices
-        self.get_choices(lang)
-        # then they get a blank default as a placeholer
-        self.set_choices(lang)
         # Then the instances
         self.add_instance(model)
-        self.add_geopoint(lang)
-        self.add_choices(itext)
-        self.get_questions(lang)
-        self.add_nodeset(itext)
+        # then they get a blank default as a placeholer
+        # self.set_choices(model)
+        self.add_nodeset(model)
+        # self.get_choices(model)
+        # self.add_geopoint(lang)
+        # self.add_choices(model)
 
-        self.add_appearance(body)
+        # self.add_appearance(body)
         file = open("out.xml", "w")
         out = etree.tostring(self.root, pretty_print=True).decode()
         # print(etree.tostring(self.root, pretty_print=True).decode())
@@ -129,7 +129,6 @@ class Yaml2XForm(object):
                 self.data[key] = dict()
                 # values is a list of dicts which are tag/value pairs
                 for item in values:
-                    # print(f"YAML: {item}")
                     [[k, v]] = item.items()
                     if type(v) == str:
                         self.data[key][k] = v
@@ -140,22 +139,21 @@ class Yaml2XForm(object):
                         for newval in v:
                             if newval is None:
                                 continue
-                            [[k2, v2]] = newval.items()
-                            self.data[key][k][k2] = dict()
-                            if type(v2) == list:
-                                for subval in v2:
-                                    [[k3, v3]] = subval.items()
-                                    if k3[:7] != "select_":
-                                        self.data[key][k][k2][k3] = v3
-                                    else:
-                                        breakpoint()
-                                        for val in v3:
-                                            self.data[key][k][k2][k3]
+                            if type(newval) == dict:
+                                [[k2, v2]] = newval.items()
+                                if type(v2) == str:
+                                    self.data[key][k].update(newval)
+                                elif type(v2) == list:
+                                    self.data[key][k][k2] = dict()
+                                    for xxx in v2:
+                                        [[k3, v3]] = xxx.items()
+                                        if type(v3) == list:
+                                            self.data[key][k][k2][k3] = dict()
+                                            for foo in v3:
+                                                self.data[key][k][k2][k3].update(foo)
                                             pass
-                                    # self.data[] = ""
-                                    # breakpoint()
-                            else:
-                                self.data[key][k].update(newval)
+                                        else:
+                                            self.data[key][k][k2].update(xxx)
                     else:
                         log.error(f"{type(v)} is not suported.")
 
@@ -196,7 +194,6 @@ class Yaml2XForm(object):
                 for k3 in v2:
                     [[k4, v4]] = k3.items()
                     tmp[k4] = v4
-                print(f"TMP: {tmp}")
                 if tmp["type"][:7] == "select_":
                     select = etree.Element("select1",
                                            appearance=tmp["appearance"],
@@ -268,17 +265,15 @@ class Yaml2XForm(object):
                 }
 
         # Get the list of groups
-        # punc = ("=", "!=", "<", ">")
-        punc = ("=")
         for k, v in self.config["survey"]["groups"].items():
             for k2, v2 in v.items():
-                if k2[:7] != "select_":
-                    continue
-                defaults["nodeset"] = f"/data/{k}/{v2}"
-                for attribute in self.config["questions"][v2]:
-                    if not attribute:
+                if "name" in v2:
+                    defaults["nodeset"] = f"/data/{k}/{v2["name"]}"
+                else:
+                    defaults["nodeset"] = f"/data/{k}/{k2}"
+                for k3, v3 in self.config["questions"].items():
+                    if not v3:
                         continue
-                    [[k3, v3]] = attribute.items()
                     # print(f"FIXME: {k3} = {v3}")
                     if k3 == "required" or k3 == "readonly":
                         defaults[k2] = "true()"
@@ -337,7 +332,7 @@ class Yaml2XForm(object):
         for key, value in self.config["choices"].items():
             index = 0
             root = etree.Element(self.root.tag)
-            instance = etree.Element("instance", id="")
+            instance = etree.Element("instance")
             for entry, val in value.items():
                 item = etree.Element("item")
                 itextid = etree.Element("itextId")
@@ -381,29 +376,25 @@ class Yaml2XForm(object):
         data.append(etree.Element("email"))
         data.append(etree.Element("warmup"))
 
-        instance = etree.Element("instance", id="")
+        instance = etree.Element("instance")
         # ignore = ("geopoint", "geotrace", "image", "text", "select_one", "select_multiple")
         ignore = ("geopoint", "geotrace", "image", "text")
         for group, values in self.config["survey"]["groups"].items():
+            screen = etree.Element(group)
             for key, value in values.items():
-                screen = etree.Element(key)
+                # screen = etree.Element(key)
                 data.append(screen)
-                if type(value) == list:
-                    for item in value:
-                        [[k, v]] = item.items()
-                        if k in ignore:
-                            continue
-                        if type(v) == list:
-                            screen.append(etree.Element(k))
-                            # breakpoint()
-                        else:
-                            if k == "label":
-                                continue
-                            v2 = etree.Element(v)
-                            if v in self.defaults:
-                                v2.text = self.defaults[v]
-
-                        screen.append(v2)
+                # ignore the attributes for the group
+                if type(value) == str:
+                    continue
+                elif type(value) == dict:
+                    if "name" in value:
+                        name = etree.Element(value["name"])
+                    else:
+                        name = etree.Element(key)
+                    if "default" in self.config["questions"][key]:
+                        name.text = self.config["questions"][key]["default"]
+                    screen.append(name)
 
         meta = etree.Element("meta")
         meta.append(etree.Element("instanceID"))
@@ -451,44 +442,14 @@ class Yaml2XForm(object):
         """
         screen = dict()
         for group, values in self.config["survey"]["groups"].items():
-            # element.append(self.make_text(values[0]["label"], f"/data/{group}:label"))
-            for entry, val in values.items():
-                # Groups have a label, but it's not used anywhere.
-                print(f"2: {entry}, {val}")
-                if entry == "label":
-                    continue
-                elif type(val) == list:
-                    tmp = dict()
-                    # Convert the list to a dict
-                    for item in val:
-                        [[k3, v3]] = item.items()
-                        tmp[k3] = v3
-                        if v3[:7] == "select_":
-                            screen[k3] = f"/data/{entry}"
-                        print(f"\t3: {k3}, {v3}")
-                        # if k3 != "label":
-                        #     continue
-                    if tmp["type"] == "geopoint":
-                        element.append(self.make_text("-", f"/data/{group}/{val}:hint"))
-                    else:
-                        if "name" in tmp:
-                            element.append(self.make_text(tmp["name"], f"/data/{group}/{val}:label"))
-                        else:
-                            element.append(self.make_text(entry, f"/data/{group}/{val}:label"))
-
+            element.append(self.make_text(values["label"], f"/data/{group}:label"))
         for key, value in self.config["questions"].items():
-            # index = 0
-            if type(value) == list:
-                for label in value:
-                    if not label:
-                        continue
-                    [[k, v]] = label.items()
-                    if k == "question":
-                        if key in screen:
-                            element.append(self.make_text(v, f"{screen[key]}/{key}:label"))
-                    elif k == "default":
-                        self.defaults[key] = v
-                    # index += 1
+            print(key, value)
+            element.append(self.make_text(value["question"],
+                                f"/data/{group}/{key}:label"))
+                # if "default" in value:
+                #     self.defaults[key] = value["default"]
+                #     # index += 1
 
     def make_text(self,
                   entry: str,
@@ -503,30 +464,29 @@ class Yaml2XForm(object):
         text.append(value)
         return text
 
-    def parse_config(self):
-        """
-        Parse the YAML config file.
-        """
-        for item in self.config["survey"]["groups"]:
-            [[k, v]] = item.items()
-            print(f"FIXME1: {k} = {v}")
-            if type(v) == list:
-                for entry in v:
-                    if type(entry) == dict:
-                        [[k2, v2]] = entry.items()
-                        print(f"FIXME2: {k2} = {v2}")
-                        select_one = list()
-                        if k2 == "select_one":
-                            select_one = v2
-                        elif k2 == "select_multiple":
-                            # self.select_multiple(v2)
-                            pass
-                        if type(v2) == list:
-                            pass
-                        print(f"FIXME1: {k2}, {v2}")
-                    else:
-                        print(f"FIXME2: {k} {v}")
-                        
+    # def parse_config(self):
+    #     """
+    #     Parse the YAML config file.
+    #     """
+    #     for item in self.config["survey"]["groups"]:
+    #         [[k, v]] = item.items()
+    #         print(f"FIXME1: {k} = {v}")
+    #         if type(v) == list:
+    #             for entry in v:
+    #                 if type(entry) == dict:
+    #                     [[k2, v2]] = entry.items()
+    #                     print(f"FIXME2: {k2} = {v2}")
+    #                     select_one = list()
+    #                     if k2 == "select_one":
+    #                         select_one = v2
+    #                     elif k2 == "select_multiple":
+    #                         # self.select_multiple(v2)
+    #                         pass
+    #                     if type(v2) == list:
+    #                         pass
+    #                     print(f"FIXME1: {k2}, {v2}")
+    #                 else:
+    #                     print(f"FIXME2: {k} {v}")
 
 #
 # This script can be run standalone for debugging purposes. It's easier to debug

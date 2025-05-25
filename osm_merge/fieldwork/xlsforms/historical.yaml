@@ -1,33 +1,78 @@
 - survey:
+  # These are defined internally in ODK Collect
+  - header:
+    - start: dateTime
+    - end: dateTime
+    - warmup: geopoint
+    - date: date
+    - deviceid: string
+    - phonenumber: string
+    - username: string
+    - email: string
   - groups:
     - first_screen:
-      - select_one: datamodel
-      - select_one: historic
-      - select_one: archaeological_site
-      - text: What is the name if it has one ?
-      - geopoint: Take a GPS location
-      - image: Take a Picture
-      - text: Any other comments about this feature ?
+      - label: First Screen
+      - appearance: field-list
+      - datamodel:
+        - label: Data Model
+        - type: select_one
+        - name: modelX
+        - appearance: minimal
+      - historic:
+        - label: Historical Site
+        - type: select_one
+        - name: historicX
+        - appearance: minimal
+      - archaeological_site:
+        - label: Archaeological Site
+        - type: select_one
+        - name: archaeological_siteX
+        - appearance: minimal
+      - name:
+        - label: Feature Name
+        - type: text
+        - appearance: minimal
+      - location:
+        - type: geopoint
+        - appearance: minimal
+      - photo:
+        - label: Picture
+        - type: image
+        - appearance: minimal
+      - comment:
+        - label: Additional Comment
+        - appearance: minimal
+        - type: text
 
 - questions:
   - archaeological_site:
-    - title: Archaeological Site
     - question: What kind of Archaeological Site is this ?
     - default: ruins
-    - appearance: minimal
+    - relevant: datamodel=extended or historic=ruin
   - historic:
     - title: Historical Site
     - question: What kind of historical site is this ?
-    - appearance: minimal
+    - # hint: This is a hint for testing
   - datamodel:
-    - title: Data Model
     - question: Data Model Level
     - default: basic
-    - appearance: minimal
   - name:
-    - title: Feature Name
     - question: If this feature has a name, what is it ?
-    - appearance: minimal
+    - required: no
+    - type: string
+  - photo:
+    - question: Take a picture
+    - required: no
+    - type: string
+  - location:
+    - title: Location
+    - question: Take a GPS location where you are standing
+    - required: no
+    - type: string
+  - comment:
+    - question: Anything you need to add not covered by the form ?
+    - required: no
+    - type: string
 
 - choices:
   - datamodel:

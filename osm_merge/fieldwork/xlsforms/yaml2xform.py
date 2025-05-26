@@ -56,7 +56,7 @@ class Yaml2XForm(object):
 
         self.defaults = dict()
         self.xmln = {
-            # "xmlns": "http://www.w3.org/2002/xforms",
+            # "": "http://www.w3.org/2002/xforms",
             "h": "http://www.w3.org/1999/xhtml",
             "ev": "http://www.w3.org/2001/xml-events",
             "xsd": "http://www.w3.org/2001/XMLSchema",
@@ -80,7 +80,7 @@ class Yaml2XForm(object):
         # Register the namespaces
         self.root = etree.Element('xml', version="1.0", nsmap=self.xmln)
         # self.root = etree.Element('xml', version="1.0")
-        head = etree.Element('h_head')
+        head = etree.Element('h_head', nsmap=self.xmln)
         body = etree.Element('h_body')
         self.root.append(head)
         self.root.append(body)
@@ -114,7 +114,8 @@ class Yaml2XForm(object):
         # which was screwing up the attributes with a namespace. So
         # we fix the output string as it's simple.
         out = etree.tostring(self.root, pretty_print=True).decode()
-        file.write(out.replace("jr_", "jr:").replace("odk_", "odk:").replace("orx_", "orx:").replace("h_", "h:"))
+        file.write('<?xml version="1.0"?>\n')
+        file.write(out.replace("jr_", "jr:").replace("odk_", "odk:").replace("orx_", "orx:").replace("h_", "h:").replace("<xml xmlns:h=", '<h:html xmlns="http://www.w3.org/2002/xforms'))
 
     def getEntries(self):
         """

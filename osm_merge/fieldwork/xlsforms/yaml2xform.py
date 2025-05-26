@@ -207,7 +207,13 @@ class Yaml2XForm(object):
                     element.append(appear)
                     continue
                 else:
-                    input = etree.Element("input",
+                    if v2["type"] == "image":
+                        input = etree.Element("upload",
+                                        mediatype="image",
+                                        appearance=v2["appearance"],
+                                        ref=f"/data/{k}/{k2})")
+                    else:
+                        input = etree.Element("input",
                                         appearance=v2["appearance"],
                                         ref=f"/data/{k}/{k2})")
                     label = etree.Element("label",

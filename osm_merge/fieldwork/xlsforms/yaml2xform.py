@@ -205,10 +205,16 @@ class Yaml2XForm(object):
                         select.append(item)
                     appear.append(select)
                     element.append(appear)
-                for k2, v2 in v.items():
-                    select = etree.Element("select1", ref=f"jr_itext('/data/{k2}:label')")
-            else:
-                pass
+                    continue
+                else:
+                    input = etree.Element("input",
+                                        appearance=v2["appearance"],
+                                        ref=f"/data/{k}/{k2})")
+                    label = etree.Element("label",
+                                          ref=f"jr_itext('/data/{k}/{k2}:label')")
+                    input.append(label)
+                    etree.dump(input)
+                appear.append(input)
 
     def add_nodeset(self,
                       element: etree.Element,
@@ -318,27 +324,6 @@ class Yaml2XForm(object):
                                  ref="/data/warmup",
                                  )
             element.append(bind)
-
-        # for key, value in self.config["questions"].items():
-        #     # These are the deself.config["questions"][v2]faults
-        #     if key == "required" or key == "readonly":
-        #         defaults[key] = "true()"
-        #     elif key == "geopoint":
-        #         bind = etree.Element("odk_setgeopoint", ref="", event="")
-        #         continue
-        #     elif key == "image":
-        #         bind = etree.Element("bind", nodeset="", type="", orx_max_pixels="")
-        #         continue
-        #     if key == "relevant":
-        #         # FIXME: this needs xpath support
-        #         defaults[k] = ""
-
-        #     bind = etree.Element("bind",
-        #                          nodeset="",
-        #                          jr_preload="",
-        #                          type="",
-        #                          jr_preloadParams="")
-        #     element.append(bind)
 
     def add_choices(self,
                       element: etree.Element,

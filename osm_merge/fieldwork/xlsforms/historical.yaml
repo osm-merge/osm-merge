@@ -67,8 +67,8 @@
   - location:
     - title: Location
     - question: Take a GPS location where you are standing
-    - required: no
-    - type: string
+    - required: yes
+    - type: geopoint
   - comment:
     - question: Anything you need to add not covered by the form ?
     - required: no

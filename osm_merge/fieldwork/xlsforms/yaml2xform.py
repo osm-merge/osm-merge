@@ -106,7 +106,7 @@ class Yaml2XForm(object):
         # self.add_geopoint(lang)
         # self.add_choices(model)
 
-        # self.add_appearance(body)
+        self.add_appearance(body)
         file = open("out.xml", "w")
         out = etree.tostring(self.root, pretty_print=True).decode()
         # print(etree.tostring(self.root, pretty_print=True).decode())
@@ -165,11 +165,8 @@ class Yaml2XForm(object):
                      ) -> str:
         """
         """
-        for group in self.config["survey"]["groups"]:
-            for entry in group:
-                for item in group[entry]:
-                    [[k, v]] = item.items()
-                    return f"/data/{entry}/{v}"
+        for group, entry in self.config["survey"]["groups"].items():
+            return f"/data/{group}/{entry[value]["name"]}"
 
     def add_appearance(self,
                        element: etree.Element,
@@ -189,17 +186,13 @@ class Yaml2XForm(object):
             for k2, v2 in v.items():
                 tmp = dict()
                 if type(v2) == str:
-                    tmp[k2] = v2
                     continue
-                for k3 in v2:
-                    [[k4, v4]] = k3.items()
-                    tmp[k4] = v4
-                if tmp["type"][:7] == "select_":
+                if v2["type"][:7] == "select_":
                     select = etree.Element("select1",
-                                           appearance=tmp["appearance"],
-                                           ref=f"/data/{k}/{tmp["name"]}")
+                                           appearance=v2["appearance"],
+                                           ref=f"/data/{k}/{v2["name"]}")
                     label = etree.Element("label",
-                                          ref=f"jr_itext('/data/{k}/{tmp["name"]}:label')")
+                                          ref=f"jr_itext('/data/{k}/{v2["name"]}:label')")
                     select.append(label)
                     for x in self.config["choices"][k2]:
                         item = etree.Element("item")
@@ -264,45 +257,66 @@ class Yaml2XForm(object):
                     # "jr_preloadParams": ""
                 }
 
+        punc = ("=")
         # Get the list of groups
         for k, v in self.config["survey"]["groups"].items():
             for k2, v2 in v.items():
+                if type(v2) == str:
+                    continue
                 if "name" in v2:
                     defaults["nodeset"] = f"/data/{k}/{v2["name"]}"
+                    defaults["type"] = v2["type"]
                 else:
                     defaults["nodeset"] = f"/data/{k}/{k2}"
                 for k3, v3 in self.config["questions"].items():
                     if not v3:
                         continue
-                    # print(f"FIXME: {k3} = {v3}")
-                    if k3 == "required" or k3 == "readonly":
+                    # print(f"FIXME: {k3} = {v3.keys()}")
+                    if "required" in v3 or "readonly" in v3:
                         defaults[k2] = "true()"
-                    if k3 == "relevant":
+                    if "relevantX" in v3:
                         value = str()
-                        if v3.find(" or ") > 0:
-                            for i in v3.split(" or "):
+                        relevant = v3["relevant"]
+                        if relevant.find(" or ") > 0:
+                            for i in relevant.split(" or "):
                                 for test in punc:
                                     if i.find(test) > 0:
                                         tmp = i.split(test)
-                                        xpath = self.lookup_value(i.split(tmp[0]))
+                                        xpath = self.lookup_value(tmp[0])
                                         value += f"{xpath} {test}'{tmp[1]}' or "
                                         break
-                        if v3.find(" and ") > 0:
-                            for i in v3.split(" and "):
+                        if relevant.find(" and ") > 0:
+                            for i in relevant.split(" and "):
                                 for test in punc:
                                     if i.find(test) > 0:
                                         tmp = i.split(test)
-                                        xpath = self.lookup_value(i.split(tmp[0]))
+                                        xpath = self.lookup_value(tmp[0])
                                         value += f"{xpath} {test}'{tmp[1]}' and )"
                                         break
                         # Drop the trailing conditional
                         if value[-1:] == " ":
                             pos = value[:-1].rfind(" ")
                         defaults[k3] = value[:pos]
+                    else:
+                        if "type" in v3:
+                            defaults["type"] = v3["type"]
+                        # breakpoint()
+                bind = etree.Element("bind")
+                for key, value in defaults.items():
+                    bind.set(key, value)
+                    element.append(bind)
 
-            bind = etree.Element("bind")
-            for key, value in defaults.items():
-                bind.set(key, value)
+            bind = etree.Element("bind",
+                                 jr_preload="uid",
+                                 readonly="true()",
+                                 type="string",
+                                 nodeset="/data/meta/instanceID",
+                                 )
+            element.append(bind)
+            bind = etree.Element("odk_setgeopoint",
+                                 event="odk-instance-first-load",
+                                 ref="/data/warmup",
+                                 )
             element.append(bind)
 
         # for key, value in self.config["questions"].items():

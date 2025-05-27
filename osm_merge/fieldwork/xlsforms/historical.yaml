@@ -34,7 +34,7 @@
         - appearance: minimal
       - location:
         - type: geopoint
-        - appearance: minimal
+        - appearance: placement-map
       - photo:
         - label: Picture
         - type: image

@@ -22,7 +22,7 @@ uploading.
 ## The Configuration File
 
 Each conversion script uses a text based configuration file in YAML
-format. There are two main categories, __abbreviations** and
+format. There are two main categories, __abbreviations__ and
 **tags**. These drive the entire conversion process. All map data
 metadata is just a tag/value pair, the first column is the value in
 the external dataset, and the second column is the value we want it to

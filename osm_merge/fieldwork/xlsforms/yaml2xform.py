@@ -78,7 +78,7 @@ class Yaml2XForm(object):
         self.config = self.getEntries()
 
         # Register the namespaces
-        self.root = etree.Element('xml', version="1.0", nsmap=self.xmln)
+        self.root = etree.Element('xml', nsmap=self.xmln)
         # self.root = etree.Element('xml', version="1.0")
         head = etree.Element('h_head', nsmap=self.xmln)
         body = etree.Element('h_body')
@@ -115,7 +115,7 @@ class Yaml2XForm(object):
         # we fix the output string as it's simple.
         out = etree.tostring(self.root, pretty_print=True).decode()
         file.write('<?xml version="1.0"?>\n')
-        file.write(out.replace("jr_", "jr:").replace("odk_", "odk:").replace("orx_", "orx:").replace("h_", "h:").replace("<xml xmlns:h=", '<h:html xmlns="http://www.w3.org/2002/xforms'))
+        file.write(out.replace("jr_", "jr:").replace("odk_", "odk:").replace("orx_", "orx:").replace("h_", "h:").replace("<xml xmlns:h=", '<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h=').replace("</xml>", "</h:html>"))
 
     def getEntries(self):
         """
@@ -262,29 +262,30 @@ class Yaml2XForm(object):
                                      jr_preloadParams=key)
                 element.append(bind)
 
-        # These are the questions to ask
-        # default, required, parameters, apperance
-        defaults = {"nodeset": "",
-                    # "jr_preload": "",
-                    "type": "",
-                    # "jr_preloadParams": ""
-                }
-
         punc = ("=")
         # Get the list of groups
         for k, v in self.config["survey"]["groups"].items():
+            # These are the questions to ask
+            # default, required, parameters, apperance
+            defaults = {"nodeset": "",
+                    # "jr_preload": "",
+                    "type": "string",
+                    # "jr_preloadParams": ""
+            }
             for k2, v2 in v.items():
                 if type(v2) == str:
                     continue
+                if "type" in v2:
+                    if v2["type"] == "binary" or v2["type"][:3] == "geo":
+                        defaults["type"] = v2["type"]
                 if "name" in v2:
                     defaults["nodeset"] = f"/data/{k}/{v2["name"]}"
-                    defaults["type"] = v2["type"]
                 else:
                     defaults["nodeset"] = f"/data/{k}/{k2}"
                 for k3, v3 in self.config["questions"].items():
                     if not v3:
                         continue
-                    # print(f"FIXME: {k3} = {v3.keys()}")
+                    # print(f"FIXME: {k3} = {v3}")
                     if "required" in v3 or "readonly" in v3:
                         defaults[k2] = "true()"
                     if "relevantX" in v3:
@@ -310,10 +311,7 @@ class Yaml2XForm(object):
                         if value[-1:] == " ":
                             pos = value[:-1].rfind(" ")
                         defaults[k3] = value[:pos]
-                    else:
-                        if "type" in v3:
-                            defaults["type"] = v3["type"]
-                        # breakpoint()
+
                 bind = etree.Element("bind")
                 for key, value in defaults.items():
                     bind.set(key, value)

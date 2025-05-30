@@ -193,7 +193,7 @@ class Yaml2XForm(object):
                                            appearance=v2["appearance"],
                                            ref=f"/data/{k}/{v2["name"]}")
                     label = etree.Element("label",
-                                          ref=f"jr_itext('/data/{k}/{v2["name"]}:label')")
+                                          ref=f"jr_itext('/data/{k}/{v2["name"]}:label'")
                     select.append(label)
                     for x in self.config["choices"][k2]:
                         item = etree.Element("item")
@@ -212,11 +212,11 @@ class Yaml2XForm(object):
                         input = etree.Element("upload",
                                         mediatype="image",
                                         appearance=v2["appearance"],
-                                        ref=f"/data/{k}/{k2})")
+                                        ref=f"/data/{k}/{k2}")
                     else:
                         input = etree.Element("input",
                                         appearance=v2["appearance"],
-                                        ref=f"/data/{k}/{k2})")
+                                        ref=f"/data/{k}/{k2}")
                     label = etree.Element("label",
                                           ref=f"jr_itext('/data/{k}/{k2}:label')")
                     input.append(label)

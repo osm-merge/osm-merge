@@ -240,6 +240,14 @@ class TM_Splitter(object):
                     geojson.dump(feat, fd)
                     log.debug(f"Wrote {outfile}")
                     fd.close()
+                elif "UNIT_NAME" in task["properties"]:
+                    name = task["properties"]["UNIT_NAME"].replace(" ", "_").replace(".", "").replace("-", "_").replace('/', '_')
+                    outfile = f"{outdir}/{name}.geojson"
+                    fd = open(outfile, "w")
+                    feat = Feature(geometry=geom, properties= {"name": name})
+                    geojson.dump(feat, fd)
+                    log.debug(f"Wrote {outfile}")
+                    fd.close()
         else:
             # The forest or park output files are a MultiPolygon feature
             index = 1
@@ -322,7 +330,7 @@ class TM_Splitter(object):
                     try:
                         polys.append(Polygon(task['geometry']['coordinates'][0]))
                     except:
-                        logging.error(f"Bad task Polygon! {task.properties.get("name")}")
+                        logging.error(f"Bad task Polygon! {task.properties.get('name')}")
                         continue
                 elif task.geometry.type == "MultiPolygon":
                     for poly in task.geometry.coordinates:
@@ -341,9 +349,10 @@ class TM_Splitter(object):
         if len(dir) == 0:
             dir = "."
         for poly in polys:
-            dataout = f"{dir}/MVUM_Highways_Task_{index}.geojson"
+            tmp =  dataout.split('.')[0]
+            outdata = f"{dir}/{tmp}_Task_{index}.geojson"
             # else: dataout = 
-            outfiles[index] = {"task": index, "outfile": fiona.open(dataout, 'w', **meta), "geometry": poly}
+            outfiles[index] = {"task": index, "outfile": fiona.open(outdata, 'w', **meta), "geometry": poly}
             index += 1
 
         for feature in data:
@@ -399,7 +408,7 @@ class TM_Splitter(object):
                     try:
                         polys.append(Polygon(task['geometry']['coordinates'][0]))
                     except:
-                        logging.error(f"Bad task Polygon! {task.properties.get("name")}")
+                        logging.error(f"Bad task Polygon! {task.properties.get('name')}")
                         continue
                 elif task.geometry.type == "MultiPolygon":
                     for poly in task.geometry.coordinates:

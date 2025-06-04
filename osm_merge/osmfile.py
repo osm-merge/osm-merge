@@ -220,7 +220,6 @@ class OsmFile(object):
         """
         negid = -100
         out = str()
-        #newmvum = list()
         nodes = str()
         ways = str()
         self.file = open(filespec, "w")
@@ -233,7 +232,11 @@ class OsmFile(object):
         for entry in indata:
             spin.next()
             version = 1
+            gtype = entry["geometry"]["type"]
             tags = entry["properties"]
+            if type(tags) == list:
+                breakpoint()
+                continue
             if "ref" in entry["properties"]:
                 # FIXME: from GeoJson file
                 pass
@@ -257,6 +260,7 @@ class OsmFile(object):
             if "version" in tags:
                 del tags["version"]
             item = {"attrs": attrs, "tags": tags}
+            # breakpoint()
             if "timestamp" in item["tags"]:
                 item["attrs"]["timestamp"] = item["tags"]["timestamp"]
                 del item["tags"]["timestamp"]
@@ -264,10 +268,13 @@ class OsmFile(object):
             # out = str()
             # GeoJson input files have a geometry.
             if entry["geometry"] is not None:
-                refnodes, refs = self.geom_to_nodes(entry)
-                nodes += refnodes
-                item["refs"] = refs
-                ways += self.createWay(item, True) + '\n'
+                item["attrs"]["lon"] = entry["geometry"]["coordinates"][0]
+                item["attrs"]["lat"] = entry["geometry"]["coordinates"][1]
+                ways += self.createNode(item, True) + '\n'
+                # else:
+                #     refnodes, refs = self.geom_to_nodes(entry)
+                #     nodes += refnodes
+                #     ways += self.createWay(item, True) + '\n'
             else:
                 # OSM ways don't have a geometry, just references to node IDs.
                 # The OSM XML file won't have any nodes, so at first won't
@@ -298,7 +305,7 @@ class OsmFile(object):
 
     def createWay(
         self,
-        way: dict,
+        way: Feature,
         modified: bool = False,
     ):
         """This creates a string that is the OSM representation of a node.
@@ -374,6 +381,7 @@ class OsmFile(object):
             line += "%s=%r " % (ref, str(value))
         osm += "  <way " + line + ">"
 
+        breakpoint()
         if "refs" in way:
             for ref in way["refs"]:
                 osm += '\n    <nd ref="%s"/>' % ref
@@ -394,37 +402,9 @@ class OsmFile(object):
 
         return osm
 
-    def featureToNode(
-        self,
-        feature: dict,
-    ):
-        """Convert a GeoJson feature into the data structures used here.
-
-        Args:
-            feature (dict): The GeoJson feature to convert
-
-        Returns:
-            (dict): The data structure used by this file
-        """
-        osm = dict()
-        ignore = ("label", "title")
-        tags = dict()
-        attrs = dict()
-        for tag, value in feature["properties"].items():
-            if tag == "id":
-                attrs["osm_id"] = value
-            elif tag not in ignore:
-                tags[tag] = value
-        coords = feature["geometry"]["coordinates"]
-        attrs["lat"] = coords[1]
-        attrs["lon"] = coords[0]
-        osm["attrs"] = attrs
-        osm["tags"] = tags
-        return osm
-
     def createNode(
         self,
-        node: dict,
+        node: Feature,
         modified: bool = False,
     ):
         """This creates a string that is the OSM representation of a node.
@@ -563,11 +543,15 @@ class OsmFile(object):
         out = str()
         refs = list()
         if gtype == "Point":
+            item = {"attrs": dict(), "tags": dict()}
+            item["attrs"]["version"] = 1
+            item["attrs"]["lon"] = feature["geometry"]["coordinates"][0]
+            item["attrs"]["lat"] = feature["geometry"]["coordinates"][1]
             out =  self.createNode(item, False) + '\n'
         elif gtype == "LineString":
+            item = {"attrs": dict(), "tags": dict(), "refs": list()}
             coords = feature["geometry"]["coordinates"]
             for node in coords:
-                item = {"attrs": dict(), "tags": dict(), "refs": list()}
                 refs.append(self.osmid)
                 # item["attrs"]["id"] = self.osmid
                 item["attrs"]["version"] = 1

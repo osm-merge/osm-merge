@@ -343,13 +343,14 @@ class ODKParsers(Convert):
                     item = self.convertEntry(base, value)
                     if item is None or len(item) == 0:
                         continue
-                    if len(props) == 0:
-                        props = item[0]
-                    else:
-                        if type(item) == list:
-                            # log.debug(f"list Item {item}")
-                            props.update(item[0])
-                        elif type(item) == dict:
-                            # log.debug(f"dict Item {item}")
-                            props.update(item)
+                    # breakpoint()
+                    # if len(props) == 0:
+                    #    props = item
+                    #else:
+                    if type(item) == list:
+                        # log.debug(f"list Item {item}")
+                        props.update(item[0])
+                    elif type(item) == dict:
+                        # log.debug(f"dict Item {item}")
+                        props.update(item)
         return Feature(geometry=geom, properties=props)

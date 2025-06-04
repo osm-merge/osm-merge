@@ -204,7 +204,7 @@ class TM_Splitter(object):
                         features.append(poly)
             aoi = MultiPolygon(features)
         else:
-            aoi = shape(data["geometry"])
+            aoi = shape(self.data["geometry"])
 
         grid = self.splitBySquare(aoi, meters)
 

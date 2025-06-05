@@ -335,7 +335,10 @@ class TM_Splitter(object):
                 elif task.geometry.type == "MultiPolygon":
                     for poly in task.geometry.coordinates:
                         polys.append(Polygon(poly[0]))
+                elif task.geometry.type == "LineString":
+                    polys.append(Polygon(task['geometry']['coordinates']))
 
+        breakpoint()
         logging.debug(f"There are {len(polys)} polygons in the boundary AOI")
         # input data
         data = fiona.open(datain)
@@ -350,7 +353,7 @@ class TM_Splitter(object):
             dir = "."
         for poly in polys:
             tmp =  dataout.split('.')[0]
-            outdata = f"{dir}/{tmp}_Task_{index}.geojson"
+            outdata = f"{tmp}_Task_{index}.geojson"
             # else: dataout = 
             outfiles[index] = {"task": index, "outfile": fiona.open(outdata, 'w', **meta), "geometry": poly}
             index += 1

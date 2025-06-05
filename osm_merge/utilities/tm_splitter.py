@@ -338,7 +338,6 @@ class TM_Splitter(object):
                 elif task.geometry.type == "LineString":
                     polys.append(Polygon(task['geometry']['coordinates']))
 
-        breakpoint()
         logging.debug(f"There are {len(polys)} polygons in the boundary AOI")
         # input data
         data = fiona.open(datain)

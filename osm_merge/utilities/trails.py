@@ -99,8 +99,7 @@ def processDataThread(config: dict,
                 if len(hours) > 0:
                     props["seasonal"] = "yes"
                     props["opening_hours"] = hours
-                for access in config["tags"]["type"]:
-                    [[k2, v2]] = access.items()
+                for k2, v2 in config["tags"]["type"].items():
                     pat = re.compile(f".*{k2}.*")
                     if pat.search(key.lower()):
                         if v2.find('=') > 0:

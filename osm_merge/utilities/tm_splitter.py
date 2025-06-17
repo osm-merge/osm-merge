@@ -228,12 +228,21 @@ class TM_Splitter(object):
                 os.mkdir(outdir)
         else:
             outdir = "./"
-        if "name" in self.data or "NAME" in self.data:
+        breakpoint()
+        if "name" in self.data or "NAME" in self.data or "NCA_NAME" in self.data[0]["properties"]:
             # Adminstriative boundaries use FeatureCollection
             for task in self.data["features"]:
                 geom = task["geometry"]
                 if "FORESTNAME" in task["properties"]:
                     name = task["properties"]["FORESTNAME"].replace(" ", "_").replace(".", "").replace("-", "_")
+                    outfile = f"{outdir}/{name}.geojson"
+                    fd = open(outfile, "w")
+                    feat = Feature(geometry=geom, properties= {"name": name})
+                    geojson.dump(feat, fd)
+                    log.debug(f"Wrote {outfile}")
+                    fd.close()
+                elif "NCA_NAME" in task["properties"]:
+                    name = task["properties"]["NCA_NAME"].replace(" ", "_").replace(".", "").replace("-", "_").replace('/', '_')
                     outfile = f"{outdir}/{name}.geojson"
                     fd = open(outfile, "w")
                     feat = Feature(geometry=geom, properties= {"name": name})
@@ -484,7 +493,7 @@ class TM_Splitter(object):
                 for task, metadata in outfiles.items():
                     if contains(metadata["geometry"], geom) or intersects(metadata["geometry"], geom):
                         # breakpoint()
-                        # log.debug(f"Adding {obj.id}")
+                        # log.debug(f"Adding way {obj.id}")
                         metadata["outfile"].add_way(obj)
             # writer.close()
         timer.stop()

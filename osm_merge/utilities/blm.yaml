@@ -2,6 +2,8 @@
 - abbreviations:
     - RD: Road
     - RD.: Road
+    - DR: Drive
+    - LN: Lane
     - CT: Court
     - ST: Street
     - Mtn: Mountain
@@ -13,16 +15,31 @@
 - tags:
     - ROUTE_PRIMARY_NM: name
     - ROUTE_PRMRY_NM: name
-    - ROUTE_SCNDRY_SPCL_DSGNTN_NM: ref
+    - ROUTE_PLAN_ID: ref
     - PLAN_MODE_TRNSPRT:
-        - Motorized: motorvehicle=yes
-        - Non-Mechanized:  motorvehicle=no
+      - Motorized: motorvehicle=yes
+      - Non-Mechanized:  motorvehicle=no
     - OBSRVE_ROUTE_USE_CLASS:
-        - ATV: atv=yes
-        - UTV: utv=yes
-        - Over Snow Vehicle: snowmobile=yes
-        - Motorized Single Track: motocycle=yes
-        - 4WD Low: 4wd_only=yes
-        - 4wd High Clearance: 4wd_only=yes
-        - Primitive Road: 4wd_only=yes
-        - Impassable: smoothness=horrible
+      - ATV: atv=yes
+      - UTV: utv=yes
+      - Over Snow Vehicle: snowmobile=yes
+      - Motorized Single Track: motocycle=yes
+      - 4WD Low: 4wd_only=yes
+      - 4wd High Clearance: 4wd_only=yes
+      - Primitive Road: 4wd_only=yes
+      - Impassable: smoothness=horrible
+      - 4WD High Clearance/Specialized: 4wd_only=yes
+      - PLAN_ROUTE_DSGNTN_AUTH: operator
+    - operator:
+      - BLM: Bureau Of Land Management
+      - FS: Forest Service
+      - NPS: National Park Service
+      - FS: Forest Service
+    - surface:
+      - Aggregate: paved
+      - Natural: dirt
+      - Gravel/Aggregate: gravel
+      - Paved: paved
+      - Solid: compacted
+      - Snow: snow
+        

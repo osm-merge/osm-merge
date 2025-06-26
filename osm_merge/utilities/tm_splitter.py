@@ -54,6 +54,7 @@ import os
 import shapely
 import sys
 import pyproj
+from progress.bar import Bar, PixelBar
 
 # Instantiate logger
 log = logging.getLogger(__name__)
@@ -222,49 +223,43 @@ class TM_Splitter(object):
             outdir (str): Output directory for the output files
         """
         index = 1
+        # Official datasets use a variety of name fields, find the one thats used
+        names = ("NAME", "ADMU_NAME", "FORESTNAME", "NCA_NAME")
+        for namefield in names:
+            if namefield in self.data["features"][0]["properties"]:
+                break
         if template.find('/') > 1:
             outdir = os.path.dirname(template)
             if not os.path.exists(outdir):
                 os.mkdir(outdir)
         else:
             outdir = "./"
-        breakpoint()
-        if "name" in self.data or "NAME" in self.data or "NCA_NAME" in self.data[0]["properties"]:
+        # breakpoint()
+        if "name" in self.data or namefield in self.data or namefield in self.data[0]["properties"]:
+            spin = Bar('Processing...', max=len(self.data['features']))
+
             # Adminstriative boundaries use FeatureCollection
             for task in self.data["features"]:
+                spin.next()
                 geom = task["geometry"]
-                if "FORESTNAME" in task["properties"]:
-                    name = task["properties"]["FORESTNAME"].replace(" ", "_").replace(".", "").replace("-", "_")
-                    outfile = f"{outdir}/{name}.geojson"
-                    fd = open(outfile, "w")
-                    feat = Feature(geometry=geom, properties= {"name": name})
-                    geojson.dump(feat, fd)
-                    log.debug(f"Wrote {outfile}")
-                    fd.close()
-                elif "NCA_NAME" in task["properties"]:
-                    name = task["properties"]["NCA_NAME"].replace(" ", "_").replace(".", "").replace("-", "_").replace('/', '_')
-                    outfile = f"{outdir}/{name}.geojson"
-                    fd = open(outfile, "w")
-                    feat = Feature(geometry=geom, properties= {"name": name})
-                    geojson.dump(feat, fd)
-                    log.debug(f"Wrote {outfile}")
-                    fd.close()
-                elif "NAME" in task["properties"]:
-                    name = task["properties"]["NAME"].replace(" ", "_").replace(".", "").replace("-", "_").replace('/', '_')
-                    outfile = f"{outdir}/{name}.geojson"
-                    fd = open(outfile, "w")
-                    feat = Feature(geometry=geom, properties= {"name": name})
-                    geojson.dump(feat, fd)
-                    log.debug(f"Wrote {outfile}")
-                    fd.close()
-                elif "UNIT_NAME" in task["properties"]:
-                    name = task["properties"]["UNIT_NAME"].replace(" ", "_").replace(".", "").replace("-", "_").replace('/', '_')
-                    outfile = f"{outdir}/{name}.geojson"
-                    fd = open(outfile, "w")
-                    feat = Feature(geometry=geom, properties= {"name": name})
-                    geojson.dump(feat, fd)
-                    log.debug(f"Wrote {outfile}")
-                    fd.close()
+                if namefield in task["properties"]:
+                    name = task["properties"][namefield].replace(" ", "_").replace(".", "").replace("-", "_").replace("/", "_").title()
+                else:
+                    try:
+                        name = task["properties"]["PARENT_NAME"].replace(" ", "_").replace(".", "").replace("-", "_").replace("/", "_").title()
+                    except:
+                        continue
+                        # breakpoint()
+                outfile = f"{outdir}/{name}.geojson"
+                fd = open(outfile, "w")
+                if geom.type == 'LineString':
+                    poly = Polygon(geom["coordinates"])
+                else:
+                    poly = geom
+                feat = Feature(geometry=poly, properties= {"name": name})
+                geojson.dump(feat, fd)
+                # log.debug(f"Wrote {outfile}")
+                fd.close()
         else:
             # The forest or park output files are a MultiPolygon feature
             index = 1

@@ -101,6 +101,7 @@ class BLM(object):
         spin = Bar('Processing...', max=len(data['features']))
 
         highways = list()
+        suffix = str()
         config = self.yaml.getEntries()
         for entry in data["features"]:
             spin.next()
@@ -108,6 +109,11 @@ class BLM(object):
             id = 0
             surface = str()
             name = str()
+            if "PLAN_ASSET_CLASS" in entry:
+                if entry["PLAN_ASSET_CLASS"].find("Trail") > 0:
+                    suffix = "Road"
+                else:
+                    suffix = "Trail"
             props = {"highway": "unclassified"}
             for key, value in entry["properties"].items():
                 # Don't convert all fields
@@ -135,9 +141,17 @@ class BLM(object):
                     else:
                         props["ref"] = f"BLM {value}"
                     continue
+                if config["tags"][key] == "operator":
+                    props["operator"] =  config["tags"]["operator"][value]
+                if config["tags"][key] == "surface":
+                    props["surface"] =  config["tags"]["surface"][value]
+
                 if config["tags"][key] == "name":
                     if value.isnumeric():
                         props["ref"] = f"BLM {value}"
+                        continue
+                    elif value.find("BLM ") > 0:
+                        props["ref"] = value
                         continue
 
                     # props["name"] = newvalue.title()
@@ -157,7 +171,7 @@ class BLM(object):
                         if alt.lower() != props["name"].lower():
                             props["alt_name"] = f"{alt} Road"
                         if props["name"].lower().find("road") <= 0:
-                            props["name"] += " Road"
+                            props["name"] += f" {suffix}"
                     elif value.isalnum():
                         props["ref"] = f"BLM {value}"
                         if value.lower() == props["name"].lower():
@@ -179,10 +193,18 @@ class BLM(object):
                                 new = config["abbreviations"][word.upper()]
                                 props["name"] = props["alt_name"].replace(word,abbrev)
             if geom is not None:
-                # props["highway"] = "unclassified"
-                if len(props) > 0:
-                    # breakpoint()
+                if "name" in props:
+                    if props["name"].find("Trail") > 0:
+                        props["highway"] = "path"
+                    else:
+                        props["highway"] = "unclassified"
+                simple = shapely.simplify(shape(geom), tolerance=0.0001) # preserve_topology=True
+                # Short roads may get simplified down to a single node.
+                # In that case, use the original geometry.
+                if shapely.count_coordinates(simple) <= 1:
                     highways.append(Feature(geometry=geom, properties=props))
+                else:
+                    highways.append(Feature(geometry=simple, properties=props))
             # print(props)
 
         return FeatureCollection(highways)

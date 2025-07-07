@@ -16,11 +16,15 @@
     - E: East
     - S: South
     - W: West
-    - Mt: Mountain
+    - MT: Mountain
     - FWY: Freeway
     - WY: Highway
+    - HWY: Highway
     - Ave: Avenue
     - CT: Court
+    - BLVD: Boulevard
+    - TRL: Trail
+    - PT: Point
 
 - tags:
     - access:

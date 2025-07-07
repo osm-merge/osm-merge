@@ -36,4 +36,5 @@
     # - surf_type: surface
     - surfname: surface
     - routename: name
+    - St_FullNm: name
 

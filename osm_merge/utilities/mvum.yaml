@@ -113,6 +113,8 @@
   - operator:
     - BLM: Bureau Of Land Management
     - FS: Forest Service
+    - NPS: National Park Service
+    - FS: Forest Service
 
 # - fix:
 #     - "Medicine Bow National Forest"

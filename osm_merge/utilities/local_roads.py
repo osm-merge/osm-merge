@@ -163,7 +163,16 @@ class LocalRoads(object):
                             continue
                         props["ref"] = props["name"].replace("County Road", "CR")
                         # County roads are a ref, not a name
-                        del props["name"]
+                        # del props["name"]
+                    if "Forest Road" in props["name"]:
+                        # these have no reference number
+                        if len(props["name"]) == len("Forest Road"):
+                            continue
+                        props["ref"] = props["name"].replace("Forest Road", "FR")
+                        # Forest roads are a ref, not a name
+                        # del props["name"]
+            if "ref" not in props:
+                continue
             if geom is not None:
                 # props["highway"] = "unclassified"
                 if len(props) > 0:

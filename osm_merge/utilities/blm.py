@@ -147,13 +147,15 @@ class BLM(object):
                     props["surface"] =  config["tags"]["surface"][value]
 
                 if config["tags"][key] == "name":
+                    # Sometimes the ref is in the name field
+                    pat = re.compile("^BLM.*")
+                    result = re.match(pat, value)
                     if value.isnumeric():
                         props["ref"] = f"BLM {value}"
                         continue
-                    elif value.find("BLM ") > 0:
+                    elif result:
                         props["ref"] = value
                         continue
-
                     # props["name"] = newvalue.title()
                     newvalue = str()
                     if value.find(':') <= 0 and value.find('=') <= 0:
@@ -205,7 +207,7 @@ class BLM(object):
                     highways.append(Feature(geometry=geom, properties=props))
                 else:
                     highways.append(Feature(geometry=simple, properties=props))
-            # print(props)
+                # print(props)
 
         return FeatureCollection(highways)
     
@@ -220,7 +222,7 @@ This program processes the state highway data. It will convert the
 dataset to using OSM tagging schema so it can be conflated. Abbreviations
 are discouraged in OSM, so they are expanded. Most entries in the
 dataset fields are ignored. There often isn't much here beyond state
-and county highway name, but it is another dataset.
+nand county highway name, but it is another dataset.
 
     For Example: 
         local-roads.py -v --convert --infile LocalRoads.geojson

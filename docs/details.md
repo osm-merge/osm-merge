@@ -167,3 +167,9 @@ For some reason, some of the reference numbers have a __000__
 appended, making the reference numbers wrong. This applies to paved
 roads, not just remote jeep tracks.
 
+## BLM Data
+
+Most of the field in the BLM dataset are NULL, so not very
+useful. Since I'm primarily focused on location information, the
+*name* and *id* fields are enough. The *id* does include the __BLM__
+prefix already, so no conversion to a proper OSM *ref*.

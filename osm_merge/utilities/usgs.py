@@ -25,12 +25,19 @@ from osm_merge.osmfile import OsmFile
 from progress.bar import Bar, PixelBar
 from osm_merge.yamlfile import YamlFile
 import geojson
-from geojson import Feature, FeatureCollection, load, LineString
+# from geojson import Feature, FeatureCollection, load, LineString
+import fiona
+from fiona import Feature, Geometry
+from pathlib import Path
+
 import osm_merge as om
 rootdir = om.__path__[0]
 
 # Instantiate logger
 log = logging.getLogger(__name__)
+
+# shut off verbose messages from fiona
+logging.getLogger("fiona").setLevel(logging.WARNING)
 
 # https://wiki.openstreetmap.org/wiki/United_States_roads_tagging#Tagging_Forest_Roads
 
@@ -76,24 +83,24 @@ class USGS(object):
             state (str): The 2 letter state abbreviation
 
         """
-        # FIXME: read in the whole file for now
-        if filespec is not None:
-            file = open(filespec, "r")
-        else:
-            file = self.file
-        data = geojson.load(file)
-
+        path = Path(filespec)
         config = self.yaml.getEntries()
+        if filespec is not None:
+            data = fiona.open(filespec, "r")
+            meta = data.meta
+
+        out = fiona.open(f"{path.stem}-out.geojson", 'w', **meta)
         highways = list()
-        spin = Bar('Processing...', max=len(data['features']))
-        for entry in data["features"]:
+        spin = Bar('Processing...', max=len(data))
+        for entry in data:
             geom = entry["geometry"]
             if geom is None or not geom["type"]:
                 continue
             # We don't care about POIs for now
             if geom["type"] == "Point":
                 continue
-            props = dict()
+            # Add a default value
+            props = {"highway": "unclassified"}
             spin.next()
             operator = str()
             for key, value in entry["properties"].items():
@@ -116,29 +123,76 @@ class USGS(object):
 
                 # print(f"FIXME: {key} = {value}")
                 if key == "name":
-                    # Look for USFS reference numbers
-                    pat = re.compile("[0-9]+[a-z]*")
-                    # Look for USGS reference numbers
+                    # First look for county roads
+                    # some name fields don't have the reference
+                    if "County Road" == value:
+                        continue
+                    # Some actually have a reference number
+                    pat = re.compile("^County Road .*")
+                    if re.match(pat, value) is not None:
+                        props["ref"] = f"CR{value.split(' ')[2]}"
+                        # logging.debug(f"Converted(1) {value} to {props["ref"]}")
+                        continue
+                    # This is the same
+                    pat = re.compile(".*Co Rd.*")
+                    if re.match(pat, value) is not None:
+                        pos = value.rfind(' ')
+                        props["ref"] = f"CR {value[pos+1:]}"
+                        # logging.debug(f"Converted(1) {value} to {props["ref"]}")
+                        continue
+                    # This is the same
+                    pat = re.compile("^Rd .*")
+                    if re.match(pat, value) is not None:
+                        pos = value.rfind(' ')
+                        props["ref"] = f"CR {value[pos+1:]}"
+                        # logging.debug(f"Converted(1a) {value} to {props["ref"]}")
+                        continue
+
+                    pat = re.compile("^State .*")
                     if re.match(pat, value.lower()) is not None:
-                        # Common roads like "2nd Street" all have a space
-                        if value.find(' ') > 0:
-                            newvalue = str()
-                            for word in value.split():
-                                # Fix some common abbreviations
-                                abbrevs = config["abbreviations"]
-                                if word in abbrevs:
-                                    newvalue += abbrevs[word]
-                                else:
-                                    newvalue += word
-                                    newvalue += ''
-                            props["name"] = f"{newvalue.title()} Road"
-                        else:
-                            # breakpoint()
-                            props["ref"] = f"{value.upper()}"
-                    elif "County Road" in value:
-                        props["ref"] = value.replace("County Road", "CR")
+                        pos = value.rfind(' ')
+                        props["ref"] = f"ST {value[pos+1:]}"
+                        logging.debug(f"Converted(2) {value} to {props["ref"]}")
+                        continue
+
+                    # Then look for USFS roads
+                    pat = re.compile("^usfs .*")
+                    if re.match(pat, value.lower()) is not None:
+                        pos = value.rfind(' ')
+                        props["ref"] = f"FR {value[pos+1:]}"
+                        logging.debug(f"Converted(3) {value} to {props["ref"]}")
+                        continue
+
+                    # Common roads like "2nd Street" all have a space
+                    if value.find(' ') > 0:
+                        props["name"] = value.title()
+                        # logging.debug(f"Got a name! {value}")
+                        words = list()
+                        for word in value.split():
+                            # Fix some common abbreviations
+                            abbrevs = config["abbreviations"]
+                            upper = word.upper()
+                            if upper in abbrevs:
+                                words.append(abbrevs[upper])
+                            else:
+                                words.append(word)
+
+                        newvalue = str()
+                        for new in words:
+                            newvalue += f"{new} "
+                        props["name"] = f"{newvalue.rstrip().title()}"
+                        # logging.debug(f"Converted(4) {value} to {props["name"]}")
+                        continue
                     else:
-                        props["name"] = f"{value.title()} Road"
+                        props["name"] = f"{newvalue.rstrip().title()}"
+                        props["highway"] = "path"
+
+                    # Look for USGS reference numbers
+                    pat = re.compile("^[0-9.a-z]*")
+                    if re.match(pat, value.lower()) is not None:
+                        props["ref"] = f"FR {value}"
+                        logging.debug(f"Converted(5) {value} to {props}")
+                        continue
 
                 elif config["tags"][key] == "ref":
                     # breakpoint()
@@ -175,8 +229,11 @@ class USGS(object):
                             del props["ref"]
 
             if len(props) > 0:
+                # out.write(Feature(geometry=geom, properties=props))
+                fiona.model.Feature()
                 highways.append(Feature(geometry=geom, properties=props))
 
+        #out.writerecords(highways)
         return FeatureCollection(highways)
 
 def main():

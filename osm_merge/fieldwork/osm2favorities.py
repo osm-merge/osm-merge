@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2021, 2022, 2023, 2024 OpenStreetMap US
+# Copyright (c) 2021, 2022, 2023, 2024, 2025 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as

@@ -33,7 +33,7 @@ this using QGIS are on the [OSM
 Wiki](https://wiki.openstreetmap.org/wiki/How_to_transform_data_from_NAD83_to_WGS84). To
 use ogr2ogr, this is the command line I use.
 
-	ogr2ogr -progress -t_srs EPSG:4326 -s_srs EPSG:4269 [DEST] -makevalid -explodecollections [SRC]
+	ogr2ogr -progress -t_srs EPSG:4326 -s_srs EPSG:4269 [DEST] -makevalid [SRC]
 
 ## Smoothness Tag values
 

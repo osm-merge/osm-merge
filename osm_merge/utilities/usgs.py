@@ -25,10 +25,11 @@ from osm_merge.osmfile import OsmFile
 from progress.bar import Bar, PixelBar
 from osm_merge.yamlfile import YamlFile
 import geojson
-# from geojson import Feature, FeatureCollection, load, LineString
+from geojson import Feature, FeatureCollection
 import fiona
-from fiona import Feature, Geometry
+from fiona import Feature, Geometry, collection
 from pathlib import Path
+from shapely.geometry import mapping, shape, LineString, MultiLineString
 
 import osm_merge as om
 rootdir = om.__path__[0]
@@ -89,18 +90,28 @@ class USGS(object):
             data = fiona.open(filespec, "r")
             meta = data.meta
 
-        out = fiona.open(f"{path.stem}-out.geojson", 'w', **meta)
+        schema = {
+            'geometry': 'MultiLineString',
+            'properties': dict([
+                ('name','str'),
+                ('highway','str'),
+                ('ref','str')
+            ])
+        }
+
+        out = fiona.open(f"{path.stem}-outX.geojson", 'w',
+                         schema = schema, crs = "EPSG:4326")
         highways = list()
         spin = Bar('Processing...', max=len(data))
         for entry in data:
             geom = entry["geometry"]
-            if geom is None or not geom["type"]:
+            if geom is None:
                 continue
             # We don't care about POIs for now
             if geom["type"] == "Point":
                 continue
             # Add a default value
-            props = {"highway": "unclassified"}
+            props = {"highway": "unclassified", "name": str(), "ref": str()}
             spin.next()
             operator = str()
             for key, value in entry["properties"].items():
@@ -152,7 +163,7 @@ class USGS(object):
                     if re.match(pat, value.lower()) is not None:
                         pos = value.rfind(' ')
                         props["ref"] = f"ST {value[pos+1:]}"
-                        logging.debug(f"Converted(2) {value} to {props["ref"]}")
+                        # logging.debug(f"Converted(2) {value} to {props["ref"]}")
                         continue
 
                     # Then look for USFS roads
@@ -188,11 +199,14 @@ class USGS(object):
                         props["highway"] = "path"
 
                     # Look for USGS reference numbers
-                    pat = re.compile("^[0-9.a-z]*")
+                    pat = re.compile("^[0-9]+[a-z]*")
                     if re.match(pat, value.lower()) is not None:
-                        props["ref"] = f"FR {value}"
-                        logging.debug(f"Converted(5) {value} to {props}")
-                        continue
+                        pat = re.compile("^[0-9]+th")
+                        if re.match(pat, value.lower()) is not None:
+                            continue
+                        else:
+                            props["ref"] = f"FR {value}"
+                            logging.debug(f"Converted(5) '{value}' to {props}")
 
                 elif config["tags"][key] == "ref":
                     # breakpoint()
@@ -229,11 +243,18 @@ class USGS(object):
                             del props["ref"]
 
             if len(props) > 0:
-                # out.write(Feature(geometry=geom, properties=props))
-                fiona.model.Feature()
+                obj = shape(geom)
+                if obj.geom_type == "LineString":
+                    multi = MultiLineString([obj])
+                elif obj.geom_type == "MultiLineString":
+                    multi = geom
+                else:
+                    print(f"ERROR: Points and polygons not supported!! {obj}")
+                    continue
+                record = {'properties': props, 'geometry': multi}
+                out.write(record)
                 highways.append(Feature(geometry=geom, properties=props))
 
-        #out.writerecords(highways)
         return FeatureCollection(highways)
 
 def main():

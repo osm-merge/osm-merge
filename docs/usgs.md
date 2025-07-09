@@ -28,25 +28,20 @@ information, atv, horses, etc...
 # US Topographical Trails
 
 * *name* which becomes __name__
-* *trailnumber* which becomes _-ref__
+* *trailnumber* which becomes __ref=XXX__
 * *primarytrailmaintainer* which becomes __operator__
-* *hikerpedestrian* which becomes 
-* *bicycle* which becomes 
-* *packsaddle* which becomes 
-* *atv* which becomes 
-* *motorcycle* which becomes 
-* *ohvover50inches* which becomes 
-* *snowshoe* which becomes 
-* *crosscountryski* which becomes 
-* *motorcycle* which becomes 
-* *ohvover50inches* which becomes 
-* *snowshoe* which becomes 
-* *crosscountryski* which becomes 
-* *dogsled* which becomes 
-* *snowmobile* which becomes 
-* *nonmotorizedwatercraft* which becomes 
-* *motorizedwatercraft* which becomes 
-* *primarytrailmaintainer* which becomes 
+* *hikerpedestrian* which becomes __access=yes__
+* *bicycle* which becomes __bicycle=designated__
+* *packsaddle* which becomes __horse=designated__
+* *atv* which becomes __atv=designated__
+* *motorcycle* which becomes __motorcycle=designated__
+* *snowshoe* which becomes __snowshoe=designated__
+* *crosscountryski* which becomes __nordic=designated__
+* *dogsled* which becomes __dogsled=designated__
+* *snowmobile* which becomes __snowmobile=designated__
+* *nonmotorizedwatercraft* which becomes __motorboat=designated__
+* *motorizedwatercraft* which becomes __boat=designated__
+* *primarytrailmaintainer* which becomes __operator=XXX__
 
 ### Ignored Data Fields
 
@@ -62,6 +57,7 @@ information, atv, horses, etc...
 * nationaltraildesignation
 * lengthmiles
 * networklength
+* ohvover50inches
 
 ## US Topographical Highways
 

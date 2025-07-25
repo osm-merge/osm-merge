@@ -16,8 +16,16 @@
 AUTOMAKE_OPTIONS = dejagnu subdir-objects
 ACLOCAL_AMFLAGS = -I m4
 PROJECTS = fastclip libosm
-
+DOXYGEN := @DOXYGEN@
 all:
 	for dir in $(PROJECTS); do \
 		cd $${dir}/ && make && cd ..; \
 	done
+
+if ENABLE_DOXYGEN
+apidoc:
+	cd docs && $(DOXYGEN)
+
+update:
+	rsync -avrp docs/apidocs/html/* osmmerge.org:/var/www/html/osm-merge/docs/
+endif

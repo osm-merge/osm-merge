@@ -63,6 +63,9 @@ dnl the node cache uses sqlite3
 CPPFLAGS+=" $(pkg-config --cflags sqlite3)"
 LIBS+=" $(pkg-config --libs sqlite3)"
 
+AC_PATH_PROG(DOXYGEN, doxygen)
+AM_CONDITIONAL(ENABLE_DOXYGEN, [ test x"$DOXYGEN" != x ])
+
 # Find the path for python modules
 AM_PATH_PYTHON([3])
 
@@ -109,6 +112,7 @@ dnl protobuf, osmpbf
 AC_CONFIG_FILES([
 fastclip/Makefile
 libosm/Makefile
+Makefile
 ])
 
 AC_OUTPUT

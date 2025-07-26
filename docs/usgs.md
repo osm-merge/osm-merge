@@ -29,7 +29,7 @@ information, atv, horses, etc...
 
 * *name* which becomes __name__
 * *trailnumber* which becomes __ref=XXX__
-* *primarytrailmaintainer* which becomes __operator__
+* *primarytrailmaintainer* which becomes __operator=XXX__
 * *hikerpedestrian* which becomes __access=yes__
 * *bicycle* which becomes __bicycle=designated__
 * *packsaddle* which becomes __horse=designated__

@@ -154,7 +154,10 @@ def conflateThread(primary: list,
             # FIXME: debug
             if existing["geometry"]["type"] == "Point":
                 continue
-            foo = f'ID: {existing["properties"]["id"]}, '
+            if "id" in existing["properties"]:
+                foo = f'ID: {existing["properties"]["id"]}, '
+            else:
+                foo = str()
             if "name" in existing["properties"]:
                 foo += f'name: {existing["properties"]["name"]}, '
             if "highway" in existing["properties"]:

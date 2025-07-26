@@ -363,9 +363,13 @@ class TM_Splitter(object):
         if len(dir) == 0:
             dir = "."
         # breakpoint()
+        if dataout.find("Trail") > 0:
+            otype = "Trails"
+        else:
+            otype = "Highways"
         for poly in polys:
             tmp =  dataout.split('.')[0].replace("_Tasks", "")
-            outdata = f"{tmp}_Task_{index}.geojson"
+            outdata = f"{tmp}_{otype}_Task_{index}.geojson"
             # else: dataout = 
             outfiles[index] = {"task": index, "outfile": fiona.open(outdata, 'w', **meta), "geometry": poly}
             index += 1
@@ -571,8 +575,8 @@ for clipping with other tools like ogr2ogr, osmium, or osmconvert.
             parser.print_help()
             quit()
 
-        # data = tm.extract_data(args.extract, args.outfile)
-        data = tm.extract_data(args.extract, args.infile)
+        data = tm.extract_data(args.extract, args.outfile)
+        # data = tm.extract_data(args.extract, args.infile)
         log.info(f"Wrote clipped file {args.outfile}")
         quit()
     elif args.grid:

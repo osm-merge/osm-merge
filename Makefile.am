@@ -24,8 +24,8 @@ all:
 
 if ENABLE_DOXYGEN
 apidoc:
-	cd docs && $(DOXYGEN)
+	$(DOXYGEN) docs/Doxyfile
 
-update:
-	rsync -avrp docs/apidocs/html/* osmmerge.org:/var/www/html/osm-merge/docs/
+update: apidoc
+	rsync -avrp apidocs/html/* osmmerge.org:/var/www/html/osm-merge/docs/
 endif

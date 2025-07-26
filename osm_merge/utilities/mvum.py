@@ -176,6 +176,8 @@ def processDataThread(config: dict,
 
                 if len(value.strip()) == 0:
                     continue
+                if value[:2] == "NA":
+                    continue
                 index = int(value[:1])
                 if index >= 3:
                     props["4wd_only"] = "yes"

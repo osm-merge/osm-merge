@@ -66,8 +66,8 @@ nav:
       - About: about.md
       - License: LICENSE.md
       - Changelog: CHANGELOG.md
-      - Code of Conduct: https://docs.hotosm.org/code-of-conduct
-      - Versioning: https://docs.hotosm.org/dev-guide/repo-management/version-control/#creating-releases
+#      - Code of Conduct: https://docs.hotosm.org/code-of-conduct
+#      - Versioning: https://docs.hotosm.org/dev-guide/repo-management/version-control/#creating-releases
   - Data Flow: dataflow.md
   - Setup Infrastructure: setup.md
   - Conflation Guides:
@@ -104,3 +104,4 @@ nav:
       - parsers: api/parsers.md
       - dbextract: api/dbextract.md
       - conflator: api/conflator.md
+      - Doxygen API: https://osmmerge.org/docs/index.html

@@ -258,18 +258,19 @@ BOOST_SYSTEM_LIB = -lboost_system
 BOOST_THREAD_LIB = -lboost_thread -lpthread
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O0
+CFLAGS = -g -O2
 CPPFLAGS =  -I/usr/include/gdal    -I/usr/include/libxml++-5.0 -I/usr/lib64/libxml++-5.0/include -I/usr/include/libxml2 -DWITH_GZFILEOP
 CSCOPE = cscope
 CTAGS = ctags
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O0
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = false
+DOXYGEN = /usr/bin/doxygen
 DSYMUTIL = 
 DUMPBIN = 
 ECHO_C = 

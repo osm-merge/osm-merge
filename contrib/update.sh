@@ -30,55 +30,15 @@ source states.sh
 
 # Top level for boundaries, allow to set via env variable
 if test x"${BOUNDARIES}" = x; then
-    boundaries="/work/Boundaries/"
+    boundaries="/play/Boundaries/"
 else
     boundaries="${BOUNDARIES}"
 fi
 
-utah="Dixie_National_Forest \
-      Bryce_Canyon_National_Park \
-      Zion_National_Park \
-      Capitol_Reef_National_Park \
-      Arches_National_Park \
-      Manti_La_Sal_National_Forest \
-      Canyonlands_National_Park \
-      Uinta_Wasatch_Cache_National_Forest \
-      Fishlake_National_Forest \
-      Ashley_National_Forest"
-
-colorado="Arapaho_and_Roosevelt_National_Forests \
-          Medicine_Bow_Routt_National_Forests \
-          Grand_Mesa_Uncompahgre_and_Gunnison_National_Forests \
-          Rio_Grande_National_Forest \
-          San_Juan_National_Forest \
-	  White_River_National_Forest \
-	  Pike_and_San_Isabel_National_Forests \
-          Rocky_Mountain_National_Park \
-	  Great_Sand_Dunes_National_Park \
-	  Mesa_Verde_National_Park \
-	  Black_Canyon_of_the_Gunnison_National_Park \
-	  Kremmling_Field_Office \
-	  Dillon_Field_Office \
-	  Grand_Junction_Field_Office \
-	  San_Luis_Valley_Field_Office \
-	  Little_Snake_Field_Office \
-	  Colorado_River_Valley_Field_Office \
-	  Uncompahgre_Field_Office \
-	  Gunnison_Field_Office"
-
-wyoming="Bighorn_National_Forest \
-         Bridger_Teton_National_Forest \
-         Ashley_National_Forest \
-         Caribou_Targhee_National_Forest \
-         Shoshone_National_Forest \
-         Black_Hills_National_Forest \
-         Yellowstone_National_Park \
-         Grand_Teton_National_Park"
-
 # Use an absolute path to avoid problems with whichever
 # directory we are executing code in.
 if test x"${SOURCEDATA}" = x; then
-    sources="/work/SourceData"
+    sources="/play/SourceData"
 else
     sources="${SOURCEDATA}"
 fi
@@ -94,9 +54,10 @@ topotrails="${sources}/USGS_Topo_Trails-out.geojson"
 usfstrails="${sources}/USFS_Trails-out.geojson"
 
 # BLM Datasets
-blmroads="${sources}/BLM_Public_Motorized_Roads.geojson"
-blmtrails="${sources}/BLM_Public_Motorized_Trails.geojson"
-blmrec="${sources}/BLM_National_Recreation_Site_Points.geojson"
+blmall="${sources}/BLM_Everything-out.geojson"
+blmroads="${sources}/BLM_Public_Motorized_Roads-out.geojson"
+blmtrails="${sources}/BLM_Public_Motorized_Trails-out.geojson"
+# blmrec="${sources}/BLM_National_Recreation_Site_Points.geojson"
 
 # These are state only files
 # Colorado, which is my focus since I live here.
@@ -112,10 +73,11 @@ datasets["BLM"]="${blmroads} ${blmtrails}"
 datasets["Roads"]="${coroads}"
 datasets["New_Mexico"]="${newmexico}"
 datasets["South_Dakota"]="${southdakota}"
+datasets["Montana"]="${montana}"
 
 
 # The rest of the country
-datasets["Washington"]="${washington}"
+# datasets["Washington"]="${washington}"
 # datasets["Nevada"]="${nevada}"
 # datasets["Arizona"]="${arizona}"
 # datasets["Idaho"]="${idaho}"
@@ -192,12 +154,8 @@ get_path() {
     path["state"]="${state}"
     path["region"]="${region}"
     path["short"]="$(echo ${region} | sed -e 's/_National.*//')"
+    path["short"]="$(echo ${region} | sed -e 's/_Field_Office.*//')"
     path["tasks"]="${path["short"]}_Tasks.geojson"
-    # path["land"]="$(echo ${file} | cut -d '/' -f 2 | sed -e 's/_Task.*//')"
-    # path["basename"]="$(basename ${file} | cut -d '.' -f 1)"
-    # path["suffix"]="$(basename ${file} | cut -d '.' -f 2)"
-    # path["task"]="$(echo ${file} | cut -d '/' -f 3)"
-    # path["num"]="$(echo ${file} | grep -o "[0-9]*" | tail -1)"
     if test $(echo ${region} | grep -ci "Park") -gt 0; then
 	path["type"]="park"
 	path["aoi"]="NationalParks/${region}.geojson"
@@ -214,7 +172,7 @@ get_path() {
 	path["type"]="wilderness"
 	path["aoi"]="NationalWilderness/${region}.geojson"
     fi
-    if test $(echo ${region} | grep -ci "Field Office") -gt 0; then
+    if test $(echo ${region} | grep -ci "Field") -gt 0; then
 	path["type"]="blm"
 	path["aoi"]="BLM/${region}.geojson"
     fi
@@ -239,7 +197,7 @@ make_extract() {
 	${tmsplitter} --extract ${npstrails} --infile ${boundaries}${path["aoi"]} --outfile ${path["state"]}/${path["region"]}/NPS_Trails.geojson
     fi
     if test x"${path["type"]}" == x"blm"; then
-        ${tmsplitter} --extract ${blmhighways} --infile ${boundaries}${path["aoi"]} --outfile ${path["state"]}/${path["region"]}/BLM_Highways.geojson
+        ${tmsplitter} --extract ${blmall} --infile ${state}/BLM/${path["region"]}/${path["short"]}_Tasks.geojson --outfile ${path["state"]}/BLM/${path["region"]}/${path["short"]}_BLM.geojson
     fi
     if test x"${path["type"]}" == x"forest"; then
 	${tmsplitter} --extract ${mvumhighways} --infile ${boundaries}${path["aoi"]} --outfile ${path["state"]}/${path["region"]}/MVUM_Highways.geojson
@@ -247,75 +205,33 @@ make_extract() {
     fi
 
     # Delete extracts for tasks with no data.
-    empty=$(find ${path["state"]}/${path["region"]} -type f -size -170c)
-    rm -f ${empty}
+    if test x"${path["type"]}" == x"blm"; then
+	empty=$(find ${path["state"]}/BLM/${path["region"]} -type f -size -180c)
+    else
+	empty=$(find ${path["state"]}/${path["region"]} -type f -size -180c)
+    fi
+    ${dryrun} rm -f ${empty}
 
     return 0
 }
 
 split_aoi() {
     # $1 is an optional state to be the only one processed
-    # $2 is an optional nartional forest or park to be the only one processed
     # These are mostly useful for debugging, by default everything is processed
     get_path ${1}
     if test -d ${path["dir"]}; then
 	echo "FOO"
     fi
-    # dataset="${2:-all}"
-    # for ${path["state"] in ${region}; do
-    # 	if test ! -e ${state}; then
-    # 	    mkdir ${state}
-    # 	fi
     echo "Splitting ${state} into a task grid"
     # This generates a grid of roughly 5000sq km tasks,
     # which is the maximum TM supports. Some areas are
     # smaller than this, so only one polygon.
     # ${tmsplitter} --grid --infile ${aoi} --threshold 0.7 -o ${dir}/${short}_Tasks.geojson
-    ${tmsplitter} --grid --infile ${boundaries}${path["aoi"]} -o ${path["state"]}/${path["region"]}/${path["tasks"]}
-}
-
-make_tasks() {
-    # Split the multipolygon from tm-splitter into indivigual files
-    # for ogr2ogr and osmium.
-    # $1 is an optional state to be the only one processed
-    # $2 is an optional national forest or park to be the only one processed
-    # These are mostly useful for debugging, by default everything is processed
-    region="${1:-${states}}"
-    dataset="${2:-all}"
-    for state in ${region}; do
-	echo "Making task boundaries for for ${state}..."
-	for land in ${datasets["${state}"]}; do
-	    if test x"${dataset}" != x"all" -a x"${dataset}" != x"${land}"; then
-	       continue
-	    fi
-	    short="$(get_short_name ${land})"
-	    for task in ${state}/${land}_Tasks/${short}_Tasks.geojson; do
-		get_path ${task}
-		echo "    Making task boundaries for clipping to ${land}"
-		${tmsplitter} -v -s -i ${task} -o ${path["dir"]}/${path["short"]}_Task
-	     	echo "Wrote tasks for ${task} ..."
-	    done
-	done
-    done
-}
-
-make_baseset() {
-    declare -A datasets
-    datasets["Utah"]="${utah}"
-    datasets["Colorado"]="${colorado}"
-    datasets["Wyoming"]="${wyoming}"
-  
-    for base in ${states}; do
-	echo "Processing ${base} public lands..."
-	for land in ${datasets["${base}"]}; do
-	    echo "    Making baseset for ${land}"
-	    for file in ${source}; do
-		rm -f ${forest}_Tasks/${forest}_USFS_MVUM_Roads.geojson
-		echo ${ogropts} -nlt LINESTRING -clipsrc ${forest}.geojson ${forest}_Tasks/${forest}_USFS_MVUM_Roads.geojson /play/MapData/SourceData/Road_MVUM-out.geojson
-		echo $file
-	    done
-	done
-    done	
+    if test ${path["type"]} == "blm"; then
+	${tmsplitter} --grid --infile ${boundaries}${path["aoi"]} -o ${path["state"]}/BLM/${path["region"]}/${path["tasks"]}
+    else
+	${tmsplitter} --grid --infile ${boundaries}${path["aoi"]} -o ${path["state"]}/${path["region"]}/${path["tasks"]}
+    fi
 }
 
 fixnames() {
@@ -327,9 +243,9 @@ fixnames() {
 }
 
 clean_tasks() {
-    files=$(find -name \*_Tasks_[0-9]*.geojson)
+    files=$(find -name \*_Task_[0-9]*.geojson)
     # echo ${files}
-    rm -f ${files}
+    ${dryrun} rm -f ${files}
 }
 
 usage() {
@@ -344,7 +260,10 @@ usage() {
     echo "--only (-o): Only process one state"
     echo "--dryrun (-n): Don't actually write any datafiles"
     echo "--clean (-c): Remove generated task files"
-    echo "--update (-u): Update intitial conversion from official sources"
+    echo "--update (-u): Update initial conversion from official sources"
+
+    echo "For example, do this to create the gridded data extracts:"
+    echo "./update.sh -o New_Mexico -d Cibola_National_Forest -e"
 }
 
 if test $# -eq 0; then
@@ -372,25 +291,14 @@ while test $# -gt 0; do
 	    shift
 	    state=$1
 	    ;;
-	-s|--split)
-	    split_aoi ${state}/${region}
-	    break
-	    ;;
 	-d|--datasets)
 	    shift
 	    region=$1
 	    ;;
-	-t|--tasks)
-	    make_tasks ${region} ${dataset}
-	    # make_sub_tasks ${region} ${dataset}
-	    break
-	    ;;
 	-f|--filter)
 	    shift
 	    osm_highways $1
-	    # make_sub_mvum
 	    break
-	    # process_forests
 	    ;;
 	-c|--clean)
 	    clean_tasks

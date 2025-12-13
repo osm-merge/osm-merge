@@ -147,48 +147,48 @@ class BLM(object):
                     props["surface"] =  config["tags"]["surface"][value]
 
                 if config["tags"][key] == "name":
-                    # Sometimes the ref is in the name field
-                    pat = re.compile("^BLM.*")
-                    result = re.match(pat, value)
-                    if value.isnumeric():
-                        props["ref"] = f"BLM {value}"
-                        continue
-                    elif result:
+                    # The name field values are inconsistent, sometimes starting with a
+                    # number, then a colon, and then the name followed by "USGS" garbage.
+                    # Other values start with BLM, aznd a colon, followed by the road
+                    # name but without the USGS trailer.
+                    colon = value.find(':')
+                    if colon > 0:
+                        props["ref"] = value[:colon]
+                        props["name"] = f"{value[colon + 1:].title()}"
+                        pos = props["name"].lower().find("usgs")
+                        if pos > 0:
+                            props["name"] = props["name"][:pos]
+                    elif value.isnumeric():
                         props["ref"] = value
-                        continue
-                    # props["name"] = newvalue.title()
-                    newvalue = str()
-                    if value.find(':') <= 0 and value.find('=') <= 0:
-                        props["name"] = value.title()
+                    else:
+                        if value.find("BLM") >= 0:
+                            props["ref"] = value
+                        else:
+                            props["name"] = value
 
-                    if value.find(':') > 0:
-                        colon = value.find(':')
-                        props["ref"] = f"BLM {value[:colon]}"
-                        value = value[colon+1:]
-                    pos =  value.lower().find("usgs")
-                    if pos > 0:
-                        # breakpoint()
-                        props["name"] = f"{value[:pos].strip().title()}"
-                        alt = value[pos+5:].title()
-                        if alt.lower() != props["name"].lower():
-                            props["alt_name"] = f"{alt} Road"
-                        if props["name"].lower().find("road") <= 0:
-                            props["name"] += f" {suffix}"
-                    elif value.isalnum():
-                        props["ref"] = f"BLM {value}"
-                        if value.lower() == props["name"].lower():
-                            del props["name"]
+                    if "ref" in props and props["ref"].find("BLM") < 0:
+                        props["ref"] = f"BLM {props["ref"]}"
+                    if "name" in props and props["name"].find("Road") <= 0:
+                        if props["name"].find("Trail") <= 0:
+                            props["name"] = f"{props["name"].strip()} Road"
+
+                    if "name" in props:
+                        pos = props["name"].rfind("Ohv Trail")
+                        if pos > 0 and "ref" not in props:
+                            props["ref"] =  f"BLM {props["name"][pos + 10:]}"
+                            props["highway"] = "track"
                     # Expand abbreviations
                     if "name" in props:
+                        # breakpoint()
                         for word in props["name"].split(' '):
                             if word.upper() in config["abbreviations"]:
                                 abbrev = config["abbreviations"][word.upper()]
                                 props["name"] = props["name"].replace(word, abbrev)
-                        if "Trail" in props["name"]:
-                            pos = props["name"].rfind(' ')
-                            ref = props["name"][pos +1:]
-                            if ref != "Trail" and ref != "Trails":
-                                props["ref"] = f"BLM {ref}"
+                        # if "Trail" in props["name"]:
+                        #     pos = props["name"].rfind(' ')
+                        #     ref = props["name"][pos +1:]
+                        #     if ref != "Trail" and ref != "Trails":
+                        #         props["ref"] = f"BLM {ref}"
                     if "alt_name" in props:
                         for word in props["alt_name"].split(' '):
                             if word.upper() in config["abbreviations"]:

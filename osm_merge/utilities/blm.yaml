@@ -11,6 +11,7 @@
     - E: East
     - S: South
     - W: West
+    - TH: Trailhead
 
 - tags:
     - ROUTE_PRIMARY_NM: name

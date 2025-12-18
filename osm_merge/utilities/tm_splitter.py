@@ -521,6 +521,10 @@ file for each polygon within the grid. This file can then also be used
 for clipping with other tools like ogr2ogr, osmium, or osmconvert.
 
 	tm-splitter.py --split --infile tasks.geojson
+
+To generate the data extracts for each task from the MultiPolygon, do this:
+
+        tm-splitter -v -i Task_MultiPolygon.geojson -e [data file] -o [output name template]
 """
     )
     parser.add_argument("-v", "--verbose", action="store_true",

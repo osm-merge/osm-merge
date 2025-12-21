@@ -157,33 +157,32 @@ class BLM(object):
                         props["name"] = f"{value[colon + 1:].title()}"
                         pos = props["name"].lower().find("usgs")
                         if pos > 0:
-                            props["name"] = props["name"][:pos]
+                            props["name"] = props["name"][:pos].title()
                     elif value.isnumeric():
-                        props["ref"] = value
+                        props["ref"] = value.upper()
                     else:
                         if value.find("BLM") >= 0:
                             props["ref"] = value
                         else:
-                            props["name"] = value
+                            props["name"] = value.title()
 
+                    # Expand abbreviations
+                    if "name" in props:
+                        for word in props["name"].split(' '):
+                            if word.upper() in config["abbreviations"]:
+                                abbrev = config["abbreviations"][word.upper()]
+                                props["name"] = props["name"].replace(word, abbrev)
                     if "ref" in props and props["ref"].find("BLM") < 0:
-                        props["ref"] = f"BLM {props["ref"]}"
-                    if "name" in props and props["name"].find("Road") <= 0:
-                        if props["name"].find("Trail") <= 0:
+                        props["ref"] = f"BLM {props["ref"].upper()}"
+                    if "name" in props and props["name"].lower().find("road") <= 0:
+                        if props["name"].lower().find("trail") <= 0:
                             props["name"] = f"{props["name"].strip()} Road"
 
                     if "name" in props:
                         pos = props["name"].rfind("Ohv Trail")
                         if pos > 0 and "ref" not in props:
-                            props["ref"] =  f"BLM {props["name"][pos + 10:]}"
+                            props["ref"] =  f"BLM {props["name"][pos + 10:].upper()}"
                             props["highway"] = "track"
-                    # Expand abbreviations
-                    if "name" in props:
-                        # breakpoint()
-                        for word in props["name"].split(' '):
-                            if word.upper() in config["abbreviations"]:
-                                abbrev = config["abbreviations"][word.upper()]
-                                props["name"] = props["name"].replace(word, abbrev)
                         # if "Trail" in props["name"]:
                         #     pos = props["name"].rfind(' ')
                         #     ref = props["name"][pos +1:]

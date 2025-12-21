@@ -2,6 +2,7 @@
 - abbreviations:
     - RD: Road
     - RD.: Road
+    - Rd.: Road
     - DR: Drive
     - LN: Lane
     - CT: Court
@@ -12,6 +13,7 @@
     - S: South
     - W: West
     - TH: Trailhead
+    - Mtn: Mountain
 
 - tags:
     - ROUTE_PRIMARY_NM: name

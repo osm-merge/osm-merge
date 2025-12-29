@@ -7,7 +7,17 @@ utah="Dixie_National_Forest \
       Canyonlands_National_Park \
       Uinta_Wasatch_Cache_National_Forest \
       Fishlake_National_Forest \
-      Ashley_National_Forest"
+      Ashley_National_Forest \
+      Richfield_Field_Office.geojson \
+      Price_Field_Office.geojson \
+      Moab_Field_Office.geojson \
+      Salt_Lake_Field_Office.geojson \
+      St_George_Field_Office.geojson \
+      Monticello_Field_Office.geojson \
+      Vernal_Field_Office.geojson \
+      Kanab_Field_Office.geojson \
+      Cedar_City_Field_Office.geojson \
+      Grand_Staircase_Escalante_Field_Office.geojson"
 
 colorado="Arapaho_and_Roosevelt_National_Forests \
           Medicine_Bow_Routt_National_Forests \
@@ -37,7 +47,31 @@ wyoming="Bighorn_National_Forest \
          Shoshone_National_Forest \
          Black_Hills_National_Forest \
          Yellowstone_National_Park \
-         Grand_Teton_National_Park"
+         Grand_Teton_National_Park
+	 Cody_Field_Office \
+	 Buffalo_Field_Office \
+	 Casper_Field_Office \
+	 Kemmerer_Field_Office \
+	 Rawlins_Field_Office \
+	 Rock_Springs_Field_Office \
+	 Worland_Field_Office \
+	 Lander_Field_Office \
+	 Pinedale_Field_Office \
+	 Newcastle_Field_Office"
+
+newmexico="Carlsbad_Caverns_National_Park \
+	White_Sands_National_Park \
+	Carson_National_Forest \
+	Cibola_National_Forest \
+	Gila_National_Forest \
+	Lincoln_National_Forest \
+	Santa_Fe_National_Forest \
+	Taos_Field_Office \
+	Roswell_Field_Office \
+	Rio_Puerco_Field_Office \
+	Carlsbad_Field_Office \
+	Socorro_Field_Office \
+	Fargington_Field_Office"
 
 idaho="Boise_National_Forest \
        Kootenai_National_Forest \
@@ -47,7 +81,19 @@ idaho="Boise_National_Forest \
        Idaho_Panhandle_National_Forests \
        Caribou_Targhee_National_Forest \
        Sawtooth_National_Forest \
-       Bitterroot_National_Forest"
+       Bitterroot_National_Forest \
+       Shoshone_Field_Office \
+       Four_Rivers_Field_Office \
+       Cottonwood_Field_Office \
+       Jarbidge_Field_Office \
+       Burley_Field_Office \
+       Pocatello_Field_Office \
+       Salmon_Field_Office \
+       Coeur_d'Alene_Field_Office \
+       Vale_Malheur_Field_Office \
+       Bruneau_Field_Office \
+       Upper_Snake_Field_Office \
+       Challis_Field_Office"
 
 montana="Glacier_National_Park \
        Yellowstone_National_Park \
@@ -56,7 +102,17 @@ montana="Glacier_National_Park \
        Helena_Lewis_and_Clark_National_Forest \
        Flathead_National_Forest \
        Kootenai_National_Forest \
-       Lolo_National_Forest"
+       Lolo_National_Forest \
+       Lewistown_Field_Office \
+       Malta_Field_Office \
+       Billings_Field_Office \
+       Butte_Field_Office \
+       Upper_Missouri_River_Breaks_Field_Office \
+       Miles_City_Field_Office \
+       Dillon_Field_Office \
+       Missoula_Field_Office \
+       Havre_Field_Office \
+       Glasgow_Field_Office"
 
 oregon="Siuslaw_National_Forest \
 	Willamette_National_Forest \
@@ -107,14 +163,6 @@ arizona="Apache_Sitgreaves_National_Forests \
 
 nevada="Death_Valley_National_Park \
 	Great_Basin_National_Park"
-
-newmexico="Carlsbad_Caverns_National_Park \
-	White_Sands_National_Park \
-	Carson_National_Forest \
-	Cibola_National_Forest \
-	Gila_National_Forest \
-	Lincoln_National_Forest \
-	Santa_Fe_National_Forest"
 
 northdakota="Theodore_Roosevelt_National_Park"
 

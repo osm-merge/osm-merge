@@ -114,6 +114,36 @@ montana="Glacier_National_Park \
        Havre_Field_Office \
        Glasgow_Field_Office"
 
+nevada="Death_Valley_National_Park \
+	Great_Basin_National_Park
+	Black_Rock_Field_Office \
+	Mount_Lewis_Field_Office \
+	Basin_and_Range_NM_Field_Office \
+	Tuscarora_Field_Office \
+	Sierra_Front_Field_Office \
+	Bristlecone_Field_Office \
+	Pahrump_Field_Office \
+	Tonopah_Field_Office \
+	Stillwater_Field_Office \
+	Wells_Field_Office \
+	Humboldt_River_Field_Office \
+	Sierra_Front_Field_Office"
+
+arizona="Apache_Sitgreaves_National_Forests \
+        Coconino_National_Forest \
+	Coronado_National_Forest \
+	Kaibab_National_Forest \
+	Prescott_National_Forest \
+	Tonto_National_Forest \
+	Yuma_Field_Office \
+	Lake_havasu_Field_Office \
+	Hassayampa_Field_Office \
+	Safford_Field_Office \
+	Kingman_Field_Office \
+	Lower_Sonoran_Field_Office \
+	Tucson_Field_Office \
+	Arizona_Strip_Field_Office"
+
 oregon="Siuslaw_National_Forest \
 	Willamette_National_Forest \
 	Deschutes_National_Forest \
@@ -122,7 +152,30 @@ oregon="Siuslaw_National_Forest \
 	Siuslaw_National_Forest \
 	Wallowa_Whitman_National_Forest \
 	Rogue_River_Siskiyou_National_Forests \
-	Crater_Lake_National_Park"
+	Crater_Lake_National_Park \
+	roseburg_district_south_river_Field_Office \
+	spokane_border_Field_Office \
+	roseburg_district_swiftwater_Field_Office \
+	medford_grants_pass_Field_Office \
+	medford_ashland_Field_Office \
+	medford_butte_falls_Field_Office \
+	nw_oregon_siuslaw_Field_Office \ \
+	medford_grants_pass_Field_Office \
+	lakeview_klamath_falls_Field_Office \
+	vale_baker_Field_Office \
+	burns_andrews_Field_Office \
+	spokane_wenatchee_Field_Office \
+	nw_oregon_marys_peak_Field_Office \
+	burns_three_rivers_Field_Office \
+	nw_oregon_upper_willamette_Field_Office \
+	vale_malheur_Field_Office \
+	lakeview_district_lakeview_Field_Office \
+	prineville_deschutes_Field_Office \
+	nw_oregon_cascades_Field_Office \
+	nw_oregon_tillamook_Field_Office \
+	coos_bay_myrtlewood_Field_Office \
+	coos_bay_umpqua_Field_Office \
+	prineville_central_oregon_Field_Office"
 
 california="Channel_Islands_National_Park\_
 	Death_Valley_National_Park_\
@@ -152,17 +205,16 @@ california="Channel_Islands_National_Park\_
 	Sierra_National_Forest \
 	Six_Rivers_National_Forest \
 	Stanislaus_National_Forest \
-	Tahoe_National_Forest"
-
-arizona="Apache_Sitgreaves_National_Forests \
-        Coconino_National_Forest \
-	Coronado_National_Forest \
-	Kaibab_National_Forest \
-	Prescott_National_Forest \
-	Tonto_National_Forest"
-
-nevada="Death_Valley_National_Park \
-	Great_Basin_National_Park"
+	Tahoe_National_Forest \
+	Redding_Field_Office \
+	Arcata_Field_Office \
+	Applegate_Field_Office \
+	Bakersfield_Field_Office \
+	Ukiah_Field_Office \
+	Bishop_Field_Office \
+	Central_Coast_Field_Office \
+	Mother_Lode_Field_Office \
+	Eagle_Lake_Field_Office"
 
 northdakota="Theodore_Roosevelt_National_Park"
 

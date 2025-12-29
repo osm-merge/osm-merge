@@ -206,9 +206,9 @@ make_extract() {
 
     # Delete extracts for tasks with no data.
     if test x"${path["type"]}" == x"blm"; then
-	empty=$(find ${path["state"]}/BLM/${path["region"]} -type f -size -180c)
+	empty=$(find ${path["state"]}/BLM/${path["region"]} -type f -size -200c)
     else
-	empty=$(find ${path["state"]}/${path["region"]} -type f -size -180c)
+	empty=$(find ${path["state"]}/${path["region"]} -type f -size -200c)
     fi
     ${dryrun} rm -f ${empty}
 
@@ -219,9 +219,9 @@ split_aoi() {
     # $1 is an optional state to be the only one processed
     # These are mostly useful for debugging, by default everything is processed
     get_path ${1}
-    if test -d ${path["dir"]}; then
-	echo "FOO"
-    fi
+    # if test -d ${path["dir"]}; then
+    # 	echo "FOO"
+    # fi
     echo "Splitting ${state} into a task grid"
     # This generates a grid of roughly 5000sq km tasks,
     # which is the maximum TM supports. Some areas are

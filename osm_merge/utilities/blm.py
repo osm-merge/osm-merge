@@ -86,6 +86,21 @@ class BLM(object):
         file = open(yaml, "r")
         self.yaml = YamlFile(f"{yaml}")
 
+    def parse_values(self,
+                   entry: str,
+                   values: dict,
+                   ) -> dict:
+        tags = dict()
+        for key, value in values.items():
+            if entry != key:
+                continue
+            # breakpoint()
+            for item in value.split(','):
+                tmp = item.strip().split('=')
+                if len(tmp) > 1:
+                    tags[tmp[0]] = tmp[1]
+        return tags
+
     def convert(self,
                 filespec: str = None,
                 ) -> list:
@@ -105,33 +120,43 @@ class BLM(object):
         config = self.yaml.getEntries()
         for entry in data["features"]:
             spin.next()
+            props = {"operator": "BLM", "highway": "track"}
             geom = entry["geometry"]
             id = 0
             surface = str()
             name = str()
-            if "PLAN_ASSET_CLASS" in entry:
-                if entry["PLAN_ASSET_CLASS"].find("Trail") > 0:
-                    suffix = "Road"
-                else:
-                    suffix = "Trail"
-            props = {"highway": "unclassified"}
             for key, value in entry["properties"].items():
                 # Don't convert all fields
                 if key not in config["tags"]:
                     continue
-                # ignore various bad entries
                 if value is None:
                     continue
                 if len(value.strip()) == 0:
                     continue
-                # log.debug(f"{key} = {value}")
-                # These keywords only have a single value
-                if type(config["tags"][key]) == str():
-                    if config["tags"][key][value].find('=') > 0:
-                        tmp = config["tags"][key][value].split('=')
-                        if len(tmp) > 1:
-                            props[tmp[0]] = tmp[1]
-                        continue
+                if key == "OBSRVE_ROUTE_USE_CLASS":
+                    # breakpoint()
+                    if value == "Non-Mechanized":
+                        props["highway"] ="path"
+                        suffix = "Trail"
+                    elif value == "Motorized":
+                        suffix = "Road"
+                        props["highway"] = "track"
+                #print(f"key: {key}, {value}")
+                # ignore various bad entries
+                log.debug(f"{key} = \'{value}\'")
+                if type(config["tags"][key]) == dict:
+                    tags = self.parse_values(value, config["tags"][key])
+                    props.update(tags)
+                    # continue
+                elif type(config["tags"][key]) == str:
+                    # breakpoint()
+                    if config["tags"][key].find('=') > 0:
+                        for item in config["tags"][key].split(','):
+                            tmp = item.split('=')
+                            if len(tmp) > 1:
+                                props[tmp[0]] = tmp[1]
+                            break
+                    # continue
 
                 if value.lower() == "unnamed" or value is None:
                     continue
@@ -147,52 +172,59 @@ class BLM(object):
                     props["surface"] =  config["tags"]["surface"][value]
 
                 if config["tags"][key] == "name":
-                    # The name field values are inconsistent, sometimes starting with a
-                    # number, then a colon, and then the name followed by "USGS" garbage.
-                    # Other values start with BLM, aznd a colon, followed by the road
-                    # name but without the USGS trailer.
-                    colon = value.find(':')
-                    if colon > 0:
-                        props["ref"] = value[:colon]
-                        props["name"] = f"{value[colon + 1:].title()}"
-                        pos = props["name"].lower().find("usgs")
-                        if pos > 0:
-                            props["name"] = props["name"][:pos].title()
-                    elif value.isnumeric():
-                        props["ref"] = value.upper()
-                    else:
-                        if value.find("BLM") >= 0:
-                            props["ref"] = value
-                        else:
-                            props["name"] = value.title()
+                    # Sometimes the ref is in the name field
+                    pat = re.compile("^BLM.*")
+                    result = re.match(pat, value)
+                    if value.isnumeric():
+                        props["ref"] = f"BLM {value}"
+                        continue
+                    elif result:
+                        props["ref"] = value
+                        continue
+                    # props["name"] = newvalue.title()
+                    newvalue = str()
+                    if value.find(':') <= 0 and value.find('=') <= 0:
+                        props["name"] = value.title()
 
+                    if value.find(':') > 0:
+                        colon = value.find(':')
+                        props["ref"] = f"BLM {value[:colon]}"
+                        value = value[colon+1:]
+                    pos =  value.lower().find("usgs")
+                    if pos > 0:
+                        props["name"] = f"{value[:pos].strip().title()}"
+                        alt = value[pos+5:].title()
+                        if alt.lower() != props["name"].lower():
+                            if suffix == "Trail":
+                                props["alt_name"] = f"{alt} Trail"
+                            else:
+                                props["alt_name"] = f"{alt} Road"
+                        if props["name"].lower().find("road") <= 0:
+                            props["name"] += f" {suffix}"
+                    elif value.isalnum():
+                        props["ref"] = f"BLM {value}"
+                        if value.lower() == props["name"].lower():
+                            del props["name"]
                     # Expand abbreviations
                     if "name" in props:
                         for word in props["name"].split(' '):
                             if word.upper() in config["abbreviations"]:
                                 abbrev = config["abbreviations"][word.upper()]
                                 props["name"] = props["name"].replace(word, abbrev)
-                    if "ref" in props and props["ref"].find("BLM") < 0:
-                        props["ref"] = f"BLM {props["ref"].upper()}"
-                    if "name" in props and props["name"].lower().find("road") <= 0:
-                        if props["name"].lower().find("trail") <= 0:
-                            props["name"] = f"{props["name"].strip()} Road"
-
-                    if "name" in props:
-                        pos = props["name"].rfind("Ohv Trail")
-                        if pos > 0 and "ref" not in props:
-                            props["ref"] =  f"BLM {props["name"][pos + 10:].upper()}"
-                            props["highway"] = "track"
-                        # if "Trail" in props["name"]:
-                        #     pos = props["name"].rfind(' ')
-                        #     ref = props["name"][pos +1:]
-                        #     if ref != "Trail" and ref != "Trails":
-                        #         props["ref"] = f"BLM {ref}"
+                        if "Trail" in props["name"]:
+                            pos = props["name"].rfind(' ')
+                            ref = props["name"][pos +1:]
+                            if ref != "Trail" and ref != "Trails":
+                                props["ref"] = f"BLM {ref}"
                     if "alt_name" in props:
                         for word in props["alt_name"].split(' '):
                             if word.upper() in config["abbreviations"]:
                                 new = config["abbreviations"][word.upper()]
-                                props["name"] = props["alt_name"].replace(word,abbrev)
+                                props["alt_name"] = props["alt_name"].replace(word,abbrev)
+            if "name" in props:
+                if props["name"].lower().find("trail") < 0 or props["name"].lower().find("road") > 0:
+                    props["name"] = f"{props["name"]} {suffix}"
+
             if geom is not None:
                 if "name" in props:
                     if props["name"].find("Trail") > 0:
@@ -206,7 +238,7 @@ class BLM(object):
                     highways.append(Feature(geometry=geom, properties=props))
                 else:
                     highways.append(Feature(geometry=simple, properties=props))
-                # print(props)
+                print(props)
 
         return FeatureCollection(highways)
     

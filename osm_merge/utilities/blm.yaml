@@ -2,7 +2,6 @@
 - abbreviations:
     - RD: Road
     - RD.: Road
-    - Rd.: Road
     - DR: Drive
     - LN: Lane
     - CT: Court
@@ -12,21 +11,51 @@
     - E: East
     - S: South
     - W: West
-    - TH: Trailhead
-    - Mtn: Mountain
+    - Mt: Mountain
 
 - tags:
     - ROUTE_PRIMARY_NM: name
     - ROUTE_PRMRY_NM: name
     - ROUTE_PLAN_ID: ref
+    - OBSRVE_ROUTE_USE_CLASS:
+    - 2WD Low: 4wd_only=yes
+    - 4WD High Clearance/Specialized: 4wd_only=yes
+    - 4WD Low: 4wd_only=yes
+    - 4wd High Clearance / Specialized: 4wd_only=yes
+    - 4wd Low: 4wd_only=yes
+    - ATV: atv=designated
+    - Impassable: smothness=impassable
+    - Motorized Single Track: motorcycle=designated
+    - Over Snow Vehicle: snowmobile=designated
+    - Trail - Non Motorized: hiking=designated
+    - UTV: atv=designated
+    - PLAN_ALLOW_MODE_TRNSPRT:
+      - HIK_ONLY: hiking=designated
+      - ALL_MOTO_VEH: motorvehicle=designated
+      - BIKE_HIK_ONLY: hiking=designated, bicycle=designated
+      - BIKE_ONLY: bicycle=designated
+      - EQU_HIK_ONLY: hiking=designated, horse=designated
+      - EQU_ONLY: horse=designated
+      - MTC_ATV_ONLY: atv=designated, motorcycle=designated
+      - MTC_ATV_SHARED: atv=designated, motorcycle=designated
+      - MTC_ATV_UTV_ONLY: atv=designated, motorcycle=designated
+      - MTC_ATV_UTV_SHARED: atv=designated, motorcycle=designated
+      - MTC_ONLY: motorcycle=designated
+      - MTC_SHARED: atv=designated, motorcycle=designated
+      - SNOW_MOTO_ONLY: snowmobile=designated
+      - SNOW_MOTO_SHARED: snowmobile=designated
+# - SNOW_NON_MECH_SHARED:
+# - SNOW_NON_MOTO_SHARED:
+      - TECH_HI_CLEAR_VEH_ONLY: 4wd_only=yes
+      - Tech_Hi_Clear_VEH_ONLY: 4wd_only=yes
     - PLAN_MODE_TRNSPRT:
-      - Motorized: motorvehicle=yes
+      - Motorized: motorvehicle=designated
       - Non-Mechanized:  motorvehicle=no
     - OBSRVE_ROUTE_USE_CLASS:
-      - ATV: atv=yes
-      - UTV: utv=yes
-      - Over Snow Vehicle: snowmobile=yes
-      - Motorized Single Track: motocycle=yes
+      - ATV: atv=designated
+      - UTV: utv=designated
+      - Over Snow Vehicle: snowmobile=designated
+      - Motorized Single Track: motocycle=designated
       - 4WD Low: 4wd_only=yes
       - 4wd High Clearance: 4wd_only=yes
       - Primitive Road: 4wd_only=yes

@@ -222,7 +222,7 @@ class BLM(object):
                                 new = config["abbreviations"][word.upper()]
                                 props["alt_name"] = props["alt_name"].replace(word,abbrev)
             if "name" in props:
-                if props["name"].lower().find("trail") < 0 or props["name"].lower().find("road") > 0:
+                if props["name"].lower().find("trail") < 0 and props["name"].lower().find("road") < 0:
                     props["name"] = f"{props["name"]} {suffix}"
 
             if geom is not None:

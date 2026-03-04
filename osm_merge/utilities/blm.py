@@ -143,7 +143,7 @@ class BLM(object):
                         props["highway"] = "track"
                 #print(f"key: {key}, {value}")
                 # ignore various bad entries
-                log.debug(f"{key} = \'{value}\'")
+                # log.debug(f"{key} = \'{value}\'")
                 if type(config["tags"][key]) == dict:
                     tags = self.parse_values(value, config["tags"][key])
                     props.update(tags)

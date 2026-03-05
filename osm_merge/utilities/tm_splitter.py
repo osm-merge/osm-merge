@@ -224,7 +224,7 @@ class TM_Splitter(object):
         """
         index = 1
         # Official datasets use a variety of name fields, find the one thats used
-        names = ("NAME", "ADMU_NAME", "FORESTNAME", "NCA_NAME")
+        names = ("NAME", "name", "ADMU_NAME", "FORESTNAME", "NCA_NAME")
         for namefield in names:
             if namefield in self.data["features"][0]["properties"]:
                 break

@@ -133,15 +133,13 @@ class BLM(object):
                     continue
                 if len(value.strip()) == 0:
                     continue
-                if key == "OBSRVE_ROUTE_USE_CLASS":
-                    # breakpoint()
+                if key == "PLAN_MODE_TRNSPRT":
+                    # # breakpoint()
                     if value == "Non-Mechanized":
                         props["highway"] ="path"
-                        suffix = "Trail"
                     elif value == "Motorized":
                         suffix = "Road"
                         props["highway"] = "track"
-                #print(f"key: {key}, {value}")
                 # ignore various bad entries
                 # log.debug(f"{key} = \'{value}\'")
                 if type(config["tags"][key]) == dict:
@@ -225,6 +223,8 @@ class BLM(object):
                 if props["name"].lower().find("trail") < 0 and props["name"].lower().find("road") < 0:
                     props["name"] = f"{props["name"]} {suffix}"
 
+            if len(props) == 2:
+                continue
             if geom is not None:
                 if "name" in props:
                     if props["name"].find("Trail") > 0:

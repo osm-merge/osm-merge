@@ -1,0 +1,304 @@
+survey:
+- '#': Converted by yxf, from camping-nodata.xlsx. Edit the YAML file instead of the
+    Excel file.
+- type: today
+  name: today
+- type: deviceid
+  name: deviceid
+- type: username
+  name: username
+- type: start-geopoint
+  name: warmup
+- type: start
+  name: start
+- type: begin_group
+  name: all
+  label::English: Everything
+  appearance: field-list
+- type: select_one model
+  name: model
+  label::English: Data Model Level
+  appearance: minimal
+  default: ${last-saved#model}
+- type: select_one tourism
+  name: camptype
+  label::English: What type of camping is available ?
+  hint::English: Is this a camp ground POI or an individual campsite ?
+  appearance: minimal
+  default: camp_pitch
+  required: yes
+- type: begin_group
+  name: campsite
+  label::English: Individual campsite
+  appearance: minimal
+  relevant: ${camptype}=”camp_pitch”
+- type: integer
+  name: ref
+  label::English: Does this camp site have a reference number ?
+  appearance: minimal
+- type: select_multiple features
+  name: features
+  label::English: What features does this campsite have ?
+  hint::English: Multi selection test
+  appearance: minimal
+  default: ${last-saved#features}
+  required: yes
+- type: end_group
+  name: campsite
+- type: begin_group
+  name: campground
+  label::English: Official Campground
+  appearance: field-list
+  relevant: ${camptype}=”camp_site”
+- type: text
+  name: name
+  label::English: Campground name
+  appearance: minimal
+  required: yes
+- type: select_one yes_no
+  name: toilet
+  label::English: Does this campground have a toilet ?
+  appearance: minimal
+  default: ${last-saved#toilet}
+- type: select_one yes_no
+  name: showers
+  label::English: Are there showers available ?
+  appearance: minimal
+  default: ${last-saved#showers}
+- type: select_one yes_no
+  name: fee
+  label::English: Is there a fee ?
+  appearance: minimal
+  default: ${last-saved#fee}
+- type: select_one yes_no
+  name: internet_access
+  label::English: Is there a working cell connection ?
+  appearance: minimal
+  default: ${last-saved#internet_access}
+- type: select_one yes_no
+  name: drinking_water
+  label::English: Does this campground have drinking water available ?
+  appearance: minimal
+  relevant: ${model}='extended'
+  default: ${last-saved#drinking_water}
+- type: text
+  name: cost
+  label::English: How much does this campground cost in USD ?
+  appearance: minimal
+  relevant: "${model}='extended' and ${fee} = 'yes' "
+- type: select_one amenity
+  name: amenity
+  label::English: What type of building or amenity is this ?
+  hint::English: Multi selection test
+  appearance: minimal
+  relevant: ${model}='extended'
+  default: ${last-saved#amenity}
+  required: yes
+- type: select_one yes_no
+  name: group_only
+  label::English: Is this campground only for groups ?
+  appearance: minimal
+  relevant: ${model}='extended'
+  default: ${last-saved#group_only}
+- type: end_group
+  name: end of campground
+- type: geopoint
+  name: location
+  label::English: Please record a GPS point at the feature location.
+  appearance: placement-map
+  parameters: allow-mock-accuracy=true
+  required: yes
+- type: image
+  name: image
+  label::English: Take A Picture
+  appearance: minimal
+  relevant: ${model}='extended'
+  parameters: max-pixels=1000
+- type: text
+  name: comment
+  label::English: Any other comments about this feature ?
+  appearance: minimal
+- type: end_group
+  name: end of all
+choices:
+- list_name: model
+  name: basic
+  label::English: Basic Model
+- list_name: model
+  name: extended
+  label::English: Extended Model
+- list_name: leisure
+  name: firepit
+  label::English: Firepit
+- list_name: leisure
+  name: picnic_table
+  label::English: Picnic Table
+- list_name: features
+  name: fire_pit
+  label::English: Fire pit
+  camptype: campsite
+- list_name: features
+  name: picnic_table
+  label::English: Picnic Table
+  camptype: campsite
+- list_name: features
+  name: caravans
+  label::English: RV camping
+  camptype: campsite
+- list_name: features
+  name: platform
+  label::English: Tent Platform
+  camptype: campsite
+- list_name: features
+  name: shelter
+  label::English: Shelter
+  camptype: campsite
+- list_name: features
+  name: drinking_water
+  label::English: Drinking Water
+  camptype: campsite
+- list_name: features
+  name: power_supply
+  label::English: AC Power
+  camptype: campsite
+- list_name: features
+  name: view
+  label::English: Nice View
+  camptype: campsite
+- list_name: features
+  name: grill
+  label::English: BBQ Grill
+  camptype: campsite
+- list_name: features
+  name: bear_box
+  label::English: Bear Box
+  camptype: campsite
+- list_name: features
+  name: group_only
+  label::English: Group Campsite only
+  camptype: campsite
+- list_name: features
+  name: backcountry
+  label::English: Backcountry Campsite
+  camptype: campsite
+- list_name: features
+  name: shade
+  label::English: Shade from trees
+  camptype: campsite
+- list_name: amenity
+  name: toilets
+  label::English: Toilets
+  camptype: campground
+- list_name: amenity
+  name: outhouse
+  label::English: Outhouse
+  camptype: campground
+- list_name: amenity
+  name: drinking_water
+  label::English: Drinking Water
+  camptype: campground
+- list_name: amenity
+  name: showers
+  label::English: Showers
+  camptype: campground
+- list_name: amenity
+  name: booth
+  label::English: Registration Booth
+  camptype: campground
+- list_name: amenity
+  name: kitchen
+  label::English: Communal Kitchen
+  camptype: campground
+- list_name: amenity
+  name: kitchen
+  label::English: Communal Kitchen
+  camptype: campground
+- list_name: amenity
+  name: pavilion
+  label::English: Pavilion
+  camptype: campground
+- list_name: amenity
+  name: host
+  label::English: Campground Host Site
+  camptype: campground
+- list_name: amenity
+  name: gate
+  label::English: Campground Entrance Gate
+  camptype: campground
+- list_name: amenity
+  name: board
+  label::English: Registration Board
+  camptype: campground
+- list_name: amenity
+  name: volleyball
+  label::English: Volleyball Court
+  camptype: campground
+- list_name: amenity
+  name: playground
+  label::English: Playground
+  camptype: campground
+- list_name: amenity
+  name: dump
+  label::English: Dump Station
+  camptype: campground
+- list_name: amenity
+  name: laundry
+  label::English: Laundry Room
+  camptype: campground
+- list_name: amenity
+  name: hottub
+  label::English: Hot Tub
+  camptype: campground
+- list_name: yes_no
+  name: yes
+  label::English: Yes
+- list_name: yes_no
+  name: no
+  label::English: No
+- list_name: yes_no
+  name: unknown
+  label::English: Not sure
+- list_name: internet
+  name: cell
+  label::English: Cell Data, at least 3G
+- list_name: internet
+  name: wlan
+  label::English: Wifi
+- list_name: internet
+  name: none
+  label::English: Zero connectivity of any kind
+- list_name: tourism
+  name: camp_site
+  label::English: Campground
+- list_name: tourism
+  name: camp_pitch
+  label::English: Camp site
+settings:
+- form_id: camping-nodata
+  form_title: Camping
+  version: =NOW()
+  allow_choice_duplicates: yes
+yxf:
+  headers:
+    survey:
+    - '#'
+    - type
+    - name
+    - label::English
+    - hint::English
+    - appearance
+    - relevant
+    - choice_filter
+    - default
+    - parameters
+    - required
+    choices:
+    - list_name
+    - name
+    - label::English
+    - camptype
+    settings:
+    - form_id
+    - form_title
+    - version
+    - allow_choice_duplicates

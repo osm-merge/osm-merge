@@ -1,0 +1,1086 @@
+survey:
+- '#': Converted by yxf, from buildings-nodata.xlsx. Edit the YAML file instead of
+    the Excel file.
+- type: start
+  name: start
+- type: end
+  name: end
+- type: today
+  name: today
+- type: deviceid
+  name: deviceid
+- type: start-geopoint
+  name: warmup
+- type: begin group
+  name: all
+  label::English(en): Building Details
+  appearance: field-list
+- type: start
+  name: start
+- type: select_one model
+  name: model
+  label::English(en): Data Model Level
+  appearance: minimal
+  calculation: basic
+  default: ${last-saved#model}
+- type: begin_group
+  name: buildings
+  label::English(en): Building Types
+  appearance: field-list
+- type: select_one category
+  name: category
+  label::English(en): What type of Building is this ?
+  appearance: minimal
+  required: yes
+- type: text
+  name: name
+  label::English(en): What is the name if there is one ?
+  appearance: minimal
+  relevant: ${category}!=’’
+- type: select_one building:material
+  name: building_material
+  label::English(en): What are the walls made of ?
+  appearance: minimal
+  relevant: ${category}!=’’ and ${model}=’extended'
+- type: integer
+  name: building_levels
+  label::English(en): How many levels are in the building ?
+  appearance: minimal
+  relevant: ${category}!=’’ and ${model}=’extended'
+- type: select_one yes_no
+  name: convenience
+  label::English(en): Does this gas station also sell things ?
+  appearance: minimal
+  relevant: ${category}=’fuel’
+  default: ${last-saved#convenience}
+- type: select_one yes_no
+  name: diesel
+  label::English(en): Is there diesel fuel available ?
+  appearance: minimal
+  relevant: ${category}=’fuel’
+  default: ${last-saved#diesel}
+- type: select_one yes_no
+  name: fast_food
+  label::English(en): Is there food available ?
+  appearance: minimal
+  relevant: ${category}=’fuel’
+  default: ${last-saved#fast_food}
+- type: select_one religion
+  name: religion
+  label::English(en): What religion is practiced here ?
+  appearance: minimal
+  relevant: ${category}=’religious’
+  default: ${last-saved#religion}
+  required: yes
+- type: select_one denomination
+  name: denomination
+  label::English(en): What is the denomination ?
+  appearance: minimal
+  relevant: ${religion}=’christian’
+  default: ${last-saved#denomination}
+- type: select_one muslim
+  name: muslim
+  label::English(en): What is the Muslim Sect ?
+  appearance: minimal
+  relevant: ${religion}=’muslim’
+- type: select_one hindu
+  name: hindu
+  label::English(en): What is the Hindu Sect ?
+  appearance: minimal
+  relevant: ${religion}=’hindu’
+- type: select_one religious
+  name: religious
+  label::English(en): What type of religious building is this ?
+  appearance: minimal
+  relevant: ${category}=’religious’
+- type: select_one service
+  name: service
+  label::English(en): What type of services are available here ?
+  appearance: minimal
+  relevant: ${category}=’service’
+  default: ${last-saved#service}
+  required: yes
+- type: select_one shop
+  name: shop
+  label::English(en): What type of retail shop is this ?
+  appearance: minimal
+  relevant: ${category}=’retail’
+  default: ${last-saved#shop}
+  required: yes
+- type: select_one tourism
+  name: tourism
+  label::English(en): What type of tourist building is this ?
+  appearance: minimal
+  relevant: ${category}=’tourism’
+  choice_filter: category=${category}
+  default: ${last-saved#tourism}
+  required: yes
+- type: select_one amenity
+  name: education_details
+  label::English(en): What type of educational building is this ?
+  appearance: minimal
+  relevant: ${category}=’education’
+  choice_filter: category=${category}
+  default: ${last-saved#education_details}
+  required: yes
+- type: note
+  name: link
+  label::English(en): For more details about schools, please use the education XForm
+    instead.
+  relevant: ${category}=’education’
+- type: select_one amenity
+  name: government
+  label::English(en): What type of public building is this ?
+  appearance: minimal
+  relevant: ${category}=’government’
+  choice_filter: category=${category}
+  default: ${last-saved#government}
+  required: yes
+- type: select_one amenity
+  name: medical
+  label::English(en): What type of medical facility is this ?
+  appearance: minimal
+  relevant: ${category}=’medical’
+  choice_filter: category=${category}
+  default: ${last-saved#medical}
+  required: yes
+- type: select_multiple food
+  name: food
+  label::English(en): What type of food is available here ?
+  appearance: minimal
+  relevant: ${category}=’food’
+  default: ${last-saved#food}
+  required: yes
+- type: select_one cuisine
+  name: cuisine
+  label::English(en): What type of cuisine is served here ?
+  appearance: minimal
+  relevant: ${category}=’food’
+  default: ${last-saved#cuisine}
+- type: select_one historic
+  name: heritage
+  label::English(en): What type of historical building is this ?
+  appearance: minimal
+  relevant: ${category}=’historic’
+  choice_filter: category=${category}
+  required: yes
+- type: select_one amenity
+  name: emergency
+  label::English(en): What type of emergency services can you get here ?
+  appearance: minimal
+  relevant: ${category}=’emergency’
+  choice_filter: category=${category}
+- type: text
+  name: operator
+  label::English(en): What is the name of the operator ?
+  appearance: minimal
+  relevant: ${category}=’historic’ or ${housing}=’apartment'
+  required: yes
+- type: date
+  name: inscription
+  label::English(en): What is the data on the inscription ?
+  appearance: minimal
+  relevant: ${category}=’historic’ and ${model}=’extended'
+- type: select_one housing
+  name: housing
+  label::English(en): What type of living space is here ?
+  appearance: minimal
+  relevant: ${category}=’housing’
+  default: ${last-saved#housing}
+- type: text
+  name: provider
+  label::English(en): What is the name of the operator ?
+  appearance: minimal
+  relevant: ${housing}!=’residential’ and ${category}=’housing'
+- type: integer
+  name: rooms
+  label::English(en): How many rooms are available ?
+  appearance: minimal
+  relevant: ${housing}=’hotel’ or ${housing}=’hostel’  and ${model}=’extended'
+- type: integer
+  name: ref
+  label::English(en): What is the reference number for this camp site ?
+  appearance: minimal
+  relevant: ${housing}=’camp_pitch’
+- type: integer
+  name: building_neighbor
+  label::English(en): How many people are in the neighborhood ?
+  appearance: minimal
+  relevant: ${housing}=’residential’ and ${model}=’extended'
+- type: end_group
+  name: eof for buildings
+- type: begin_group
+  name: gps
+  label::English(en): GPS Coordinates
+  appearance: field-list
+  required: yes
+- type: geopoint
+  name: point
+  label::English(en): Please take a GPS point at the feature location.
+  hint::English(en): Where are we ?
+  appearance: Placement-map
+  required: yes
+- type: text
+  name: comment
+  label::English(en): Any other comments about this feature
+  appearance: minimal
+- type: image
+  name: image
+  label::English(en): Take A Picture
+  appearance: minimal
+  relevant: " ${model}=’extended'"
+  parameters: max-pixels=1000
+- type: begin_group
+  name: details
+  label::English(en): More Building Details
+  appearance: field-list
+  relevant: ${model}=’extended’
+- type: select_one yes_no
+  name: power
+  label::English(en): Does this building have electricity ?
+  appearance: minimal
+  default: ${last-saved#power}
+- type: select_one generator:source
+  name: generator_source
+  label::English(en): What is the primary power source ?
+  appearance: minimal
+  relevant: ${power}=’yes’
+  default: ${last-saved#generator_source}
+- type: select_one yes_no
+  name: generator
+  label::English(en): Does this building have a backup generator ?
+  appearance: minimal
+  relevant: (${category}=’medical’ or ${category}=’food') and  ${model}=’extended'
+  default: ${last-saved#generator}
+- type: select_one yes_no
+  name: water
+  label::English(en): Does this building have a water source ?
+  appearance: minimal
+  default: ${last-saved#water}
+- type: integer
+  name: age
+  label::English(en): Age of building
+  appearance: minimal
+- type: select_one yes_no
+  name: building_prefab
+  label::English(en): Is this a prefabricated building ?
+  appearance: minimal
+- type: select_one building:floor
+  name: building_floor
+  label::English(en): What is the floor made of ?
+  appearance: minimal
+  default: ${last-saved#building_floor}
+- type: select_one building:roof
+  name: building_roof
+  label::English(en): Is this building only a roof ?
+  appearance: minimal
+  default: ${last-saved#building_roof}
+- type: select_one building:condition
+  name: condition
+  label::English(en): What is the building condition ?
+  appearance: minimal
+  default: ${last-saved#condition}
+- type: select_one yes_no
+  name: access_roof
+  label::English(en): Is there access to the roof ?
+  appearance: minimal
+- type: text
+  name: levels_underground
+  label::English(en): How many levels are underground ?
+  appearance: minimal
+- type: end_group
+  name: gps
+- type: end_group
+  name: eof for details
+- type: end_group
+  name: eof for all
+choices:
+- list_name: model
+  name: basic
+  label::English(en): Basic Model
+- list_name: model
+  name: extended
+  label::English(en): Extended Model
+- list_name: category
+  name: fuel
+  label::English(en): A Gas station
+- list_name: category
+  name: housing
+  label::English(en): A place people live in
+- list_name: category
+  name: retail
+  label::English(en): Does this building sell things to the public ?
+- list_name: category
+  name: food
+  label::English(en): Can people get food or alcohol here ?
+- list_name: category
+  name: medical
+  label::English(en): A place that provides medical service
+- list_name: category
+  name: service
+  label::English(en): Does this building provides services ?
+- list_name: category
+  name: religious
+  label::English(en): Is this a building for religious services ?
+- list_name: category
+  name: tourism
+  label::English(en): Is this building for cultural or tourism purposes ?
+- list_name: category
+  name: government
+  label::English(en): Is this a public government building ?
+- list_name: category
+  name: emergency
+  label::English(en): Is this building used for emergencies ?
+- list_name: category
+  name: education
+  label::English(en): Is this building used for education ?
+- list_name: building:material
+  name: cement_block
+  label::English(en): Cement blocks
+- list_name: building:material
+  name: wood
+  label::English(en): Wood
+- list_name: building:material
+  name: brick
+  label::English(en): Bricks
+- list_name: building:material
+  name: concrete
+  label::English(en): Concrete
+- list_name: building:material
+  name: stone
+  label::English(en): Stone
+- list_name: building:material
+  name: glass
+  label::English(en): Glass
+- list_name: building:material
+  name: bamboo
+  label::English(en): Bamboo
+- list_name: building:material
+  name: iron_sheet
+  label::English(en): Iron Sheet
+- list_name: building:material
+  name: metal
+  label::English(en): Metal (Corrugated iron sheets)
+- list_name: building:material
+  name: nowalls
+  label::English(en): There are no walls
+- list_name: building:structure
+  name: confined_masonry
+  label::English(en): Confined Masonry
+- list_name: building:structure
+  name: steel_frame
+  label::English(en): Steel Frame
+- list_name: building:structure
+  name: wood_frame
+  label::English(en): Wood Frame
+- list_name: building:structure
+  name: bamboo_frame
+  label::English(en): Bamboo Frame
+- list_name: building:floor
+  name: ground
+  label::English(en): Ground
+- list_name: building:floor
+  name: wood
+  label::English(en): Wood
+- list_name: building:floor
+  name: cement
+  label::English(en): Cement
+- list_name: building:floor
+  name: tekhel
+  label::English(en): Tekhel
+- list_name: building:floor
+  name: ceramics
+  label::English(en): Ceramics
+- list_name: building:floor
+  name: carpet
+  label::English(en): Carpet
+- list_name: building:roof
+  name: metal
+  label::English(en): Metal (Corrugated iron sheets)
+- list_name: building:roof
+  name: concrete
+  label::English(en): Concrete
+- list_name: building:roof
+  name: tiles
+  label::English(en): Tiles
+- list_name: building:roof
+  name: wood
+  label::English(en): Wood
+- list_name: building:roof
+  name: bamboo
+  label::English(en): Bamboo
+- list_name: building:roof
+  name: iron_sheet
+  label::English(en): Iron Sheet
+- list_name: building:roof
+  name: thatch
+  label::English(en): Thatch
+- list_name: building:roof
+  name: clay_tiles
+  label::English(en): Clay Tiles
+- list_name: building:roof
+  name: stone
+  label::English(en): Stone
+- list_name: building:roof
+  name: shingles
+  label::English(en): Asphalt shingles
+- list_name: building:condition
+  name: good
+  label::English(en): Good
+- list_name: building:condition
+  name: average
+  label::English(en): Average
+- list_name: building:condition
+  name: poor
+  label::English(en): Poor
+- list_name: building:condition
+  name: disused
+  label::English(en): Disused
+- list_name: building
+  name: residential
+  label::English(en): Residential
+- list_name: building
+  name: commercial
+  label::English(en): Commercial
+- list_name: building
+  name: commercial;residential
+  label::English(en): Commercial and residential (mixed use)
+- list_name: building
+  name: office
+  label::English(en): Office Building
+- list_name: building
+  name: supermarket
+  label::English(en): Supermarket
+- list_name: building
+  name: service
+  label::English(en): Service (water, power, etc)
+- list_name: building
+  name: public
+  label::English(en): A public building
+- list_name: building
+  name: industrial
+  label::English(en): Industrial
+- list_name: building
+  name: kiosk
+  label::English(en): Kiosk (a small one-room retail building)
+- list_name: building
+  name: apartments
+  label::English(en): Apartment building
+- list_name: building
+  name: cabin
+  label::English(en): Cabin
+- list_name: building
+  name: hotel
+  label::English(en): Hotel
+- list_name: building
+  name: hut
+  label::English(en): Hut
+- list_name: building
+  name: train_station
+  label::English(en): Train Station
+- list_name: building
+  name: historic
+  label::English(en): A historical building
+- list_name: building
+  name: depot
+  label::English(en): Depot
+- list_name: shop
+  name: fuel
+  label::English(en): Gas station
+- list_name: shop
+  name: convenience
+  label::English(en): Convenience shop
+- list_name: shop
+  name: alcohol
+  label::English(en): Liquor Store
+- list_name: shop
+  name: dispensary
+  label::English(en): Dispensary
+- list_name: shop
+  name: hardware
+  label::English(en): Hardware Store
+- list_name: shop
+  name: general
+  label::English(en): General Discount Store
+- list_name: shop
+  name: supermarket
+  label::English(en): Supermarket
+- list_name: shop
+  name: car_parts
+  label::English(en): Car Parts
+- list_name: shop
+  name: greengrocer
+  label::English(en): Green Grocer
+- list_name: shop
+  name: kiosk
+  label::English(en): Kiosk
+- list_name: shop
+  name: pastry
+  label::English(en): Pastry
+- list_name: shop
+  name: department_store
+  label::English(en): Department Store
+- list_name: shop
+  name: tire_store
+  label::English(en): Tires & Repair
+- list_name: office
+  name: company
+  label::English(en): Company
+- list_name: office
+  name: government
+  label::English(en): Government
+- list_name: office
+  name: insurance
+  label::English(en): Insurance
+- list_name: office
+  name: lawyer
+  label::English(en): Lawyer
+- list_name: office
+  name: political_party
+  label::English(en): Political Party
+- list_name: office
+  name: charity
+  label::English(en): Charity
+- list_name: office
+  name: ngo
+  label::English(en): NGO
+- list_name: office
+  name: foundation
+  label::English(en): Foundation
+- list_name: office
+  name: union
+  label::English(en): Union
+- list_name: office
+  name: financial
+  label::English(en): Financial
+- list_name: religious
+  name: church
+  label::English(en): Church
+- list_name: religious
+  name: mosque
+  label::English(en): Mosque
+- list_name: religious
+  name: temple
+  label::English(en): Temple
+- list_name: religious
+  name: shrine
+  label::English(en): Shrine
+- list_name: religious
+  name: cathedral
+  label::English(en): Cathedral
+- list_name: religious
+  name: chapel
+  label::English(en): Chapel
+- list_name: religious
+  name: synagogue
+  label::English(en): Synagogue
+- list_name: religion
+  name: muslim
+  label::English(en): Muslim
+- list_name: religion
+  name: hindu
+  label::English(en): Hindu
+- list_name: religion
+  name: christian
+  label::English(en): Christian
+- list_name: religion
+  name: buddhist
+  label::English(en): Buddhist
+- list_name: religion
+  name: jewish
+  label::English(en): Jewish
+- list_name: religion
+  name: bahai
+  label::English(en): Baha’i
+- list_name: capacity_persons
+  name: <50
+  label::English(en): <50
+- list_name: capacity_persons
+  name: 50-100
+  label::English(en): 50-100
+- list_name: capacity_persons
+  name: 100-250
+  label::English(en): 100-250
+- list_name: capacity_persons
+  name: 250-500
+  label::English(en): 250-500
+- list_name: capacity_persons
+  name: '>500'
+  label::English(en): '>500'
+- list_name: denomination
+  name: protestant
+  label::English(en): Protestant
+- list_name: denomination
+  name: pentecostal
+  label::English(en): Pentecostal
+- list_name: denomination
+  name: catholic
+  label::English(en): Catholic
+- list_name: denomination
+  name: baptist
+  label::English(en): Baptist
+- list_name: denomination
+  name: methodist
+  label::English(en): Methodist
+- list_name: denomination
+  name: orthodox
+  label::English(en): Greek Orthodox
+- list_name: denomination
+  name: Presbyterian
+  label::English(en): Presbyterian
+- list_name: denomination
+  name: lutheran
+  label::English(en): Lutheran
+- list_name: denomination
+  name: Mormon
+  label::English(en): Mormon
+- list_name: denomination
+  name: evangelical
+  label::English(en): Evangelical
+- list_name: muslim
+  name: sunni
+  label::English(en): Sunni
+- list_name: muslim
+  name: sufi
+  label::English(en): Sufi
+- list_name: muslim
+  name: shia
+  label::English(en): Shia
+- list_name: hindu
+  name: vaishnavism
+  label::English(en): Vaishnavism
+- list_name: hindu
+  name: shaivism
+  label::English(en): Shaivism
+- list_name: hindu
+  name: shaktism
+  label::English(en): Shaktism
+- list_name: hindu
+  name: smartism
+  label::English(en): Smartism
+- list_name: water_source
+  name: water_works
+  label::English(en): Water works
+- list_name: water_source
+  name: manual_pump
+  label::English(en): Manual pump
+- list_name: water_source
+  name: powered_pump
+  label::English(en): Powered pump
+- list_name: water_source
+  name: groundwater
+  label::English(en): Groundwater
+- list_name: yes_no
+  name: yes
+  label::English(en): Yes
+- list_name: yes_no
+  name: no
+  label::English(en): No
+- list_name: historic
+  name: archaeological_site
+  label::English(en): Archaeological Site
+- list_name: historic
+  name: building
+  label::English(en): Unknown Building
+- list_name: historic
+  name: fort
+  label::English(en): Fort
+- list_name: historic
+  name: monument
+  label::English(en): Monument
+- list_name: historic
+  name: area
+  label::English(en): Historical area
+- list_name: housing
+  name: residential
+  label::English(en): Residential
+- list_name: housing
+  name: hotel
+  label::English(en): Hotel
+- list_name: housing
+  name: camp_site
+  label::English(en): A camp ground
+- list_name: housing
+  name: apartments
+  label::English(en): Apartment building
+- list_name: service
+  name: car_repair
+  label::English(en): Car repair, tire repair, etc…
+- list_name: service
+  name: electronics_repair
+  label::English(en): Electronics repair
+- list_name: service
+  name: welding
+  label::English(en): Welding
+- list_name: cuisine
+  name: 'breakfast '
+  label::English(en): Breakfast
+- list_name: cuisine
+  name: pizza
+  label::English(en): Pizza
+- list_name: cuisine
+  name: burger
+  label::English(en): Burger
+- list_name: cuisine
+  name: italian
+  label::English(en): Italian
+- list_name: cuisine
+  name: mexican
+  label::English(en): Mexican
+- list_name: cuisine
+  name: thai
+  label::English(en): Thai
+- list_name: cuisine
+  name: sandwich
+  label::English(en): Sandwich
+- list_name: cuisine
+  name: indian
+  label::English(en): Indian
+- list_name: cuisine
+  name: chinese
+  label::English(en): Chinese
+- list_name: cuisine
+  name: seafood
+  label::English(en): Seafood
+- list_name: cuisine
+  name: steak_house
+  label::English(en): Steak House
+- list_name: amenity
+  name: fire_station
+  label::English(en): Fire Station
+  category: emergency
+- list_name: amenity
+  name: police
+  label::English(en): Police Station
+  category: emergency
+- list_name: amenity
+  name: hospital
+  label::English(en): Hospital
+  category: emergency
+- list_name: amenity
+  name: clinic
+  label::English(en): Clinic
+  category: emergency
+- list_name: amenity
+  name: toilets
+  label::English(en): Public Toilet
+  category: emergency
+- list_name: amenity
+  name: coffee
+  label::English(en): Coffee shop
+  category: food
+- list_name: amenity
+  name: bar
+  label::English(en): Bar
+  category: food
+- list_name: amenity
+  name: brewery
+  label::English(en): Micro-Brewery
+  category: food
+- list_name: amenity
+  name: pub
+  label::English(en): Pub (a bar with food)
+  category: food
+- list_name: amenity
+  name: cafe
+  label::English(en): Cafe
+  category: food
+- list_name: amenity
+  name: fast_food
+  label::English(en): Fast Food (not a restaurant)
+  category: food
+- list_name: amenity
+  name: restaurant
+  label::English(en): Restaurant (not fast food)
+  category: food
+- list_name: amenity
+  name: bakery
+  label::English(en): Bakery
+  category: food
+- list_name: amenity
+  name: butcher
+  label::English(en): Butcher
+  category: food
+- list_name: amenity
+  name: deli
+  label::English(en): Deli
+  category: food
+- list_name: amenity
+  name: alcohol
+  label::English(en): Liquor Store
+  category: food
+- list_name: amenity
+  name: ice_cream
+  label::English(en): Ice Cream Store
+  category: food
+- list_name: amenity
+  name: food
+  label::English(en): Groceries
+  category: food
+- list_name: amenity
+  name: courthouse
+  label::English(en): Court House
+  category: government
+- list_name: amenity
+  name: library
+  label::English(en): Library
+  category: government
+- list_name: amenity
+  name: police
+  label::English(en): Police Station
+  category: government
+- list_name: amenity
+  name: post_office
+  label::English(en): Post Office
+  category: government
+- list_name: amenity
+  name: townhall
+  label::English(en): Town Hall
+  category: government
+- list_name: amenity
+  name: social_facility
+  label::English(en): Social Facility
+  category: government
+- list_name: amenity
+  name: toilet
+  label::English(en): Public Toilet
+  category: government
+- list_name: amenity
+  name: visitor_center
+  label::English(en): Visitor Center
+  category: government
+- list_name: amenity
+  name: clinic
+  label::English(en): Clinic
+  category: medical
+- list_name: amenity
+  name: dentist
+  label::English(en): Dentist
+  category: medical
+- list_name: amenity
+  name: doctors
+  label::English(en): Doctors
+  category: medical
+- list_name: amenity
+  name: hospital
+  label::English(en): Hospital
+  category: medical
+- list_name: amenity
+  name: pharmacy
+  label::English(en): Pharmacy
+  category: medical
+- list_name: amenity
+  name: veterinary
+  label::English(en): Veterinary
+  category: medical
+- list_name: amenity
+  name: cemetery
+  label::English(en): Cemetery
+  category: medical
+- list_name: amenity
+  name: dispensary
+  label::English(en): Dispensary
+  category: medical
+- list_name: amenity
+  name: place_of_worship
+  label::English(en): Place of Worship
+  category: religious
+- list_name: amenity
+  name: fuel
+  label::English(en): Fuel (petrol station; gas station; marine fuel)
+  category: retail
+- list_name: amenity
+  name: convenience
+  label::English(en): Convenience Store
+  category: retail
+- list_name: amenity
+  name: marketplace
+  label::English(en): Marketplace
+  category: retail
+- list_name: amenity
+  name: dispensary
+  label::English(en): Dispensary
+  category: retail
+- list_name: food
+  name: eat-in
+  label::English(en): Dine In
+  category: food
+- list_name: food
+  name: take-out
+  label::English(en): Take-out
+  category: food
+- list_name: food
+  name: convenience
+  label::English(en): Convenience shop
+  category: food
+- list_name: food
+  name: fast_food
+  label::English(en): Fast Food (not a restaurant)
+  category: food
+- list_name: food
+  name: restaurant
+  label::English(en): Restaurant (not fast food)
+  category: food
+- list_name: food
+  name: liquor_store
+  label::English(en): Liquor Store
+  category: food
+- list_name: amenity
+  name: atm
+  label::English(en): ATM
+  category: tourism
+- list_name: amenity
+  name: parking
+  label::English(en): Parking
+  category: tourism
+- list_name: amenity
+  name: toilets
+  label::English(en): Public Toilet
+  category: tourism
+- list_name: amenity
+  name: nursery
+  label::English(en): Nursery School
+  category: education
+- list_name: amenity
+  name: primary
+  label::English(en): Primary School
+  category: education
+- list_name: amenity
+  name: secondary
+  label::English(en): Secondary School
+  category: education
+- list_name: amenity
+  name: tertiary
+  label::English(en): Tertiary School
+  category: education
+- list_name: amenity
+  name: training
+  label::English(en): Technical Vocational Education
+  category: education
+- list_name: amenity
+  name: university
+  label::English(en): College/University
+  category: education
+- list_name: amenity
+  name: language_school
+  label::English(en): Language school
+  category: education
+- list_name: amenity
+  name: music_school
+  label::English(en): Music school
+  category: education
+- list_name: amenity
+  name: kindergarten
+  label::English(en): Kindergarten
+  category: education
+- list_name: amenity
+  name: childcare
+  label::English(en): Childcare
+  category: education
+- list_name: amenity
+  name: prep_school
+  label::English(en): Prep school
+  category: education
+- list_name: amenity
+  name: amenity
+  label::English(en): School
+  category: education
+- list_name: tourism
+  name: museum
+  label::English(en): Museum
+  category: tourism
+- list_name: tourism
+  name: attraction
+  label::English(en): Attraction
+  category: tourism
+- list_name: tourism
+  name: guest_house
+  label::English(en): Guest house
+  category: tourism
+- list_name: tourism
+  name: hotel
+  label::English(en): Hotel
+  category: tourism
+- list_name: tourism
+  name: hostel
+  label::English(en): Hostel
+  category: tourism
+- list_name: tourism
+  name: toilet
+  label::English(en): Public Toilet
+  category: tourism
+- list_name: tourism
+  name: information
+  label::English(en): Visitor Center
+  category: tourism
+- list_name: tourism
+  name: picnic_site
+  label::English(en): Picnic Site
+  category: tourism
+- list_name: generator:source
+  name: grid
+  label::English(en): Grid
+- list_name: generator:source
+  name: generator
+  label::English(en): Generator
+- list_name: generator:source
+  name: solar
+  label::English(en): Solar
+- list_name: generator:source
+  name: hydro
+  label::English(en): Hydro
+- list_name: opening_hours
+  name: 24/7
+  label::English(en): 24/7
+- list_name: opening_hours
+  name: mo-sa_08:00-18:00
+  label::English(en): Monday – Sat 08:00-18:00
+- list_name: opening_hours
+  name: mo-sa_09:00-17:00
+  label::English(en): Monday – Sat 09:00-17:00
+- list_name: opening_hours
+  name: mo-sa_09:00-18:00
+  label::English(en): Monday – Sat 09:00-18:00
+- list_name: opening_hours
+  name: mo-fr_09:00-17:00
+  label::English(en): Monday – Friday 09:00-17:00
+- list_name: opening_hours
+  name: mo-su_09:00-21:00
+  label::English(en): Monday - Sunday 09:00-21:00
+- list_name: opening_hours
+  name: mo-fr_08:00-18:00; Sa-Su 08:00-15:00
+  label::English(en): Monday - Friday 08:00-18:00; Sat - Sunday 08:00-15:00
+- list_name: opening_hours
+  name: by_appointment
+  label::English(en): By Appointment Only
+settings:
+- form_id: buildings-nodata
+  version: =NOW()
+  form_title: Buildings
+  allow_choice_duplicates: yes
+yxf:
+  headers:
+    survey:
+    - '#'
+    - type
+    - name
+    - label::English(en)
+    - hint::English(en)
+    - appearance
+    - relevant
+    - choice_filter
+    - calculation
+    - default
+    - parameters
+    - required
+    - required_message::English(en)
+    choices:
+    - list_name
+    - name
+    - label::English(en)
+    - category
+    settings:
+    - form_id
+    - version
+    - form_title
+    - allow_choice_duplicates

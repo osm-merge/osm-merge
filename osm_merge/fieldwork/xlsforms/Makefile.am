@@ -15,8 +15,8 @@
 
 FILES = buildings-nodata.xlsx \
 	camping-nodata.xlsx \
-	highways-nodata.xlsx \
-	historical.xlsx
+	highways-nodata.xlsx
+# historical.xlsx
 
 all: $(FILES)
 
@@ -24,4 +24,7 @@ all: $(FILES)
 %.xlsx: %.yaml
 	-yxf -f $<
 
-SUFFIXES: .xlsx .yaml
+%.xml: %.xlsx
+	-xls2xform $<
+
+SUFFIXES: .xlsx .yaml .xml

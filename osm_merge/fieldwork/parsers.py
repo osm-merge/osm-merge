@@ -25,7 +25,9 @@ from pathlib import Path
 from geojson import Point, Feature
 import flatdict
 import xmltodict
+import yaml
 
+from osm_merge.yamlfile import YamlFile
 from osm_merge.fieldwork.convert import Convert
 
 # Instantiate logger
@@ -354,3 +356,25 @@ class ODKParsers(Convert):
                         # log.debug(f"dict Item {item}")
                         props.update(item)
         return Feature(geometry=geom, properties=props)
+
+    def parseYaml(
+        self,
+        filespec: str,
+    ) -> dict:
+        """
+        Parse the source YAML if available to look for details we need.
+        """
+        file = open(filespec, "rb").read()
+        yamldata = yaml.load(file, Loader=yaml.Loader)
+        # There are 3 sections on the YAML file that duplicate the XLS file sheets.
+        for entry in yamldata["survey"]:
+            # ignore comments
+            if "#" in entry:
+                continue
+            self.types[entry["name"]] = entry["type"]
+
+        for entry in yamldata["choices"]:
+            self.defaults[entry["list_name"]] = entry["name"]
+
+        settings = yamldata["settings"]
+

@@ -8,6 +8,16 @@ docs/NOTES
 docs/html/
 docs/*.png
 README
+GPATH
+GRTAGS
+GTAGS
+BROWSE
+Makefile.in
+Makefile
+aclocal.m4
+depcomp
+missing
+libosm/Makefile
 autom4te.cache/
 .deps/
 */= .gdb_history
@@ -24,6 +34,7 @@ stamp-h1
 *.osm
 *.txt
 *.xml
+*.xlsx
 *.geojson
 *.pbf
 *.xml

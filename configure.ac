@@ -112,6 +112,7 @@ dnl protobuf, osmpbf
 AC_CONFIG_FILES([
 fastclip/Makefile
 libosm/Makefile
+osm_merge/fieldwork/xlsforms/Makefile
 Makefile
 ])
 

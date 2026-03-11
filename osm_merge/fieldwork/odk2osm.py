@@ -21,6 +21,7 @@ import logging
 import os
 import sys
 from pathlib import Path
+import magic
 
 from osm_merge.fieldwork.parsers import ODKParsers
 from osm_merge.osmfile import OsmFile
@@ -53,7 +54,15 @@ def main():
 
     toplevel = Path(args.infile)
     odk = ODKParsers(args.yaml)
-    odk.parseXLS(args.xlsfile)
+    result = magic.from_file(args.xlsfile)
+    print(f"MAGIC: {args.xlsfile} is {result}")
+    if result[:18] == "Composite Document":
+        odk.parseXLS(args.xlsfile)
+    elif result[:3] == "XML":
+        logging.error(f"XML files aren't supported!")
+        quit()
+    else:
+        odk.parseYaml(args.xlsfile)
     xmlfiles = list()
     data = list()
     # It's a wildcard, used for XML instance files

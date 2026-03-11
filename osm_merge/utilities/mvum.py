@@ -198,7 +198,8 @@ def processDataThread(config: dict,
                     # don't know if any other states use a 5 digit reference
                     # numbers
                     # props["ref:orig"] = f"FR {value}"
-                    props["ref"] = f"FR {value[1:]}"
+                    props["ref"] = f"FR {value}"
+                    # props["ref"] = f"FR {value[1:]}"
                     # props["note"] = f"Validate this changed ref!"
                     # logging.debug(f"Converted {value} to {props["ref"]}")
                 elif value.isalnum() and fixref:

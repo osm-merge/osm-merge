@@ -21,6 +21,7 @@ dependencies = [
     "shapely>=2.0.7",
     "tqdm>=4.67.1",
     "yxf>=0.4.0",
+    "pyxform>=4.3.0",
 ]
 requires-python = ">=3.9"
 readme = "README.md"

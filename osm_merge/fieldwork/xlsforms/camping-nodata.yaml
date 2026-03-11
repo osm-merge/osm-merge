@@ -275,7 +275,7 @@ choices:
   label::English: Camp site
 settings:
 - form_id: camping-nodata
-  form_title: Camping
+  form_title: Camping No Data
   version: =NOW()
   allow_choice_duplicates: yes
 yxf:

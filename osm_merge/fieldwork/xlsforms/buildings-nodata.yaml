@@ -149,13 +149,14 @@ survey:
   label::English(en): What type of food is available here ?
   appearance: minimal
   relevant: ${category}=’food’
+  choice_filter: category=${category}
   default: ${last-saved#food}
   required: yes
 - type: select_one cuisine
   name: cuisine
   label::English(en): What type of cuisine is served here ?
   appearance: minimal
-  relevant: ${category}=’food’
+  relevant: ${category}=’food’ and ${food}=’restaurant'
   default: ${last-saved#cuisine}
 - type: select_one historic
   name: heritage
@@ -520,9 +521,6 @@ choices:
 - list_name: shop
   name: department_store
   label::English(en): Department Store
-- list_name: shop
-  name: tire_store
-  label::English(en): Tires & Repair
 - list_name: office
   name: company
   label::English(en): Company
@@ -713,9 +711,6 @@ choices:
   name: welding
   label::English(en): Welding
 - list_name: cuisine
-  name: 'breakfast '
-  label::English(en): Breakfast
-- list_name: cuisine
   name: pizza
   label::English(en): Pizza
 - list_name: cuisine
@@ -846,10 +841,6 @@ choices:
   label::English(en): Public Toilet
   category: government
 - list_name: amenity
-  name: visitor_center
-  label::English(en): Visitor Center
-  category: government
-- list_name: amenity
   name: clinic
   label::English(en): Clinic
   category: medical
@@ -904,27 +895,12 @@ choices:
 - list_name: food
   name: eat-in
   label::English(en): Dine In
-  category: food
 - list_name: food
   name: take-out
   label::English(en): Take-out
-  category: food
 - list_name: food
   name: convenience
   label::English(en): Convenience shop
-  category: food
-- list_name: food
-  name: fast_food
-  label::English(en): Fast Food (not a restaurant)
-  category: food
-- list_name: food
-  name: restaurant
-  label::English(en): Restaurant (not fast food)
-  category: food
-- list_name: food
-  name: liquor_store
-  label::English(en): Liquor Store
-  category: food
 - list_name: amenity
   name: atm
   label::English(en): ATM
@@ -1056,7 +1032,7 @@ choices:
 settings:
 - form_id: buildings-nodata
   version: =NOW()
-  form_title: Buildings
+  form_title: Buildings No Data
   allow_choice_duplicates: yes
 yxf:
   headers:

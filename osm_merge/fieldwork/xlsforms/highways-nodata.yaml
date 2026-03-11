@@ -35,11 +35,14 @@ survey:
   default: residential
   required: yes
   relevant: ${highway_type} = 'highway'
+  calculation: ${xhighway}
+  trigger: ${existing}
   appearance: minimal
 - type: text
   name: name
   label::English(en): Does this feature have a name?
   relevant: ${highway_type} = 'highway'
+  calculation: instance('highways’)/root/item[id=${existing}]/title
   appearance: minimal
 - type: end_group
   name: end of feature
@@ -47,18 +50,23 @@ survey:
   name: Highway_group
   label::English(en): Highway
   relevant: ${highway_type} = 'highway'
+  trigger: ${existing}
   appearance: field-list
 - type: select_one surface
   name: surface
   label::English(en): What is the surface of this road?
   default: unpaved
   required: yes
+  calculation: ${xsurface}
+  trigger: ${existing}
   appearance: minimal
 - type: select_one smoothness
   name: smoothness
   label::English(en): How smooth is this road?
   default: good
   required: yes
+  calculation: ${xsmoothness}
+  trigger: ${existing}
   appearance: minimal
 - type: select_one oneway
   name: oneway
@@ -81,6 +89,7 @@ survey:
   name: tracktype
   label::English(en): What is the grade of this highway ?
   relevant: ${model}=’extended’
+  calculation: ${xtracktype}
   appearance: minimal
 - type: select_one sidewalk
   name: sidewalk
@@ -99,6 +108,8 @@ survey:
   name: sac_scale
   label::English(en): What is the difficulty of this path ?
   default: hiking
+  calculation: ${xsac_scale}
+  trigger: ${existing}
   appearance: minimal
 - type: select_one trail_visibility
   name: visibility
@@ -160,7 +171,7 @@ survey:
 - type: begin_group
   name: gps
   label::English(en): GPS Coordinates
-  relevant: " ${highway_type} !=’'"
+  relevant: ${xlocation}=’’ and ${highway_type} !=’'
   appearance: field-list
 - type: select_one gps_type
   name: gps_type
@@ -600,8 +611,8 @@ choices:
   label: Pipestem (shared driveway leads away from a main road toward several houses,
     each with their own shorter driveways)
 settings:
-- form_id: highways-nodata
-  form_title: Highways
+- form_id: highways
+  form_title: highways
   version: =NOW()
 yxf:
   headers:

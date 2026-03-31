@@ -91,6 +91,7 @@ nav:
       - Data Formats: formats.md
       - MVUM: mvum.md
       - Trails: trails.md
+      - BLM: blm.md
       - OSM Highways: osmhighways.md
       - Extending For Other Datasets: extending.md
   - API:

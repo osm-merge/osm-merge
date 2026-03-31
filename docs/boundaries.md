@@ -1,7 +1,7 @@
 # Boundaries
 
 Good boundaries are critical to being able to chop the large files
-into manageble pieces.
+into manageable pieces.
 
 # Boundary Sources
 
@@ -18,7 +18,7 @@ little manual cleanup.
 ## Administrative Sources
 
 I use official administrative boundary datasets. While these are all
-public domain, I have no interest in uploadinmg them to OSM, which
+public domain, I have no interest in uploading them to OSM, which
 would be a whole other project. And I only need them for data chopping
 anyway. You can get the official boundaries from these two sources.
 
@@ -30,27 +30,27 @@ These datasets are national wise, so need to be split into each forest
 or park. I wrote a program called 
 [tm-splitter](https://github.com/osm-merge/osm-merge/blob/main/osm_merge/utilities/tm-splitter.py)
 that reads in the large file, and then splits each forest and park into
-a standalone file. This standlone file is a MultiPolygon, as many
+a standalone file. This standalone file is a Multi-polygon, as many
 forests have multiple sections that aren't actually connected. But at
 this point, you have small enough boundaries to start on making data
 extracts for conflation.
 
 # Boundary Problems
 
-Most of the National Park boundaries are ofte a single polygon, as
+Most of the National Park boundaries are often a single polygon, as
 many national parks are smaller than national forests. National Forest
 boundaries have an interesting set of problems that need to be cleaned
 up before they're usable.
 
-## Small Outholdings
+## Small Out-holdings
 
 National Forests often have multiple small Polygons that are outside
 of the actual forest boundary. These appear to be administrative
 buildings. Ranger stations, visitors centers, etc... These are all
-useles for our goal of improving remote trails and highways.
+useless for our goal of improving remote trails and highways.
 
-When the tm-splitter utility parses each MultiPolygon into it's
-indivugal Polygons, these small outholdings are ignored, leaving only
+When the tm-splitter utility parses each Multi-polygon into it's
+individual Polygons, these small out-holdings are ignored, leaving only
 the actual forest boundaries.
 
 ## Inner Polygons

@@ -70,6 +70,7 @@ nav:
 #      - Versioning: https://docs.hotosm.org/dev-guide/repo-management/version-control/#creating-releases
   - Data Flow: dataflow.md
   - Setup Infrastructure: setup.md
+  - Improving XLSForms: xlsforms.md
   - Conflation Guides:
       - General: conflation.md
       - ODK: odkconflation.md

@@ -21,6 +21,16 @@ during conversion, other **Trail** is appended. And of course to keep
 things interesting occasionally Trail or Road is already in the name, so
 you have to check to avoid duplicates.
 
+### Road Maintenance
+
+In Utah, the references numbers have either a **B** or a **D**
+prefixed, which designates if the road is maintained by the county, or
+the BLM. All of the roads with a **B** prefix are also in all the
+official state datasets as well. Utah has many BLM roads all mixed with
+private property. Whether a road designated as a county road is
+actually maintained is hard to judge unless you go there and
+ground-truth it.
+
 ### Expanding Abbreviations
 
 All of the names have abbreviations and OpenStreetMap prefers these

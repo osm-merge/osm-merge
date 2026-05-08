@@ -1,6 +1,6 @@
 #!/bin/python3
 
-# Copyright (c) 2024, 2025 OpenStreetMap US
+# Copyright (c) 2024, 2025, 2026 OpenStreetMap US
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -325,11 +325,12 @@ class TM_Splitter(object):
                          ):
         """
         Extract data from a GeoJson file. This basically replicates using
-        ogr2ogr -t_srs EPSG:4326 -makevalid -explodecollections.
+        ogr2ogr -t_srs EPSG:4326 -makevalid -explodecollections. We use
+        fiona here since it's a wrapper over GDAL, so can input any file
 
         Args:
-            datain (str):
-            dataout (str):
+            datain (str): Input file
+            dataout (str): Output file
         """
         aoi = fiona.open(self.aoi, 'r')
         polys = list()
@@ -370,8 +371,9 @@ class TM_Splitter(object):
         for poly in polys:
             tmp =  dataout.split('.')[0].replace("_Tasks", "")
             outdata = f"{tmp}_{otype}_Task_{index}.geojson"
-            # else: dataout = 
-            outfiles[index] = {"task": index, "outfile": fiona.open(outdata, 'w', **meta), "geometry": poly}
+            file = open(outdata, 'w')
+            outfiles[index] = {"task": index, "outfile": file,
+                                   "geometry": poly, "features": list()}
             index += 1
 
         for feature in data:
@@ -384,15 +386,28 @@ class TM_Splitter(object):
                 geom = LineString(feature["geometry"]["coordinates"])
                 for task, metadata in outfiles.items():
                     if geom.within(metadata["geometry"]) or geom.intersects(metadata["geometry"]):
-                        # breakpoint()
-                        metadata["outfile"].write(feature)
+                        newfeat = {"geometry": geom, "properties": dict()}
+                        for tag, value in feature["properties"].items():
+                            if value is None:
+                                continue
+                            newfeat["properties"][tag] = value 
+                        metadata["features"].append(newfeat)
+
             elif feature["geometry"]["type"] == "MultiLineString":
                 geom = MultiLineString(feature["geometry"]["coordinates"])
                 for segment in geom.geoms:
                     for task, metadata in outfiles.items():
                         if geom.within(metadata["geometry"]):
-                            # breakpoint()
-                            metadata["outfile"].write(feature)
+                            newfeat = {"geometry": geom, "properties": dict()}
+                            for tag, value in feature["properties"].items():
+                                if value is None:
+                                    continue                                
+                                newfeat["properties"][tag] = value
+                                metadata["features"].append(newfeat)
+
+        for out, data in outfiles.items():
+            if len(data["features"]) > 0:
+                geojson.dump(FeatureCollection(data["features"]), data["outfile"])
 
     def extract_osm(self,
              infile: str,
@@ -581,7 +596,7 @@ To generate the data extracts for each task from the MultiPolygon, do this:
 
         data = tm.extract_data(args.extract, args.outfile)
         # data = tm.extract_data(args.extract, args.infile)
-        log.info(f"Wrote clipped file {args.outfile}")
+        log.info(f"Wrote clipped files {args.outfile}")
         quit()
     elif args.grid:
         grid = tm.make_grid(args.meters)

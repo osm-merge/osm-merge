@@ -324,9 +324,12 @@ class TM_Splitter(object):
                          dataout: str,
                          ):
         """
-        Extract data from a GeoJson file. This basically replicates using
-        ogr2ogr -t_srs EPSG:4326 -makevalid -explodecollections. We use
-        fiona here since it's a wrapper over GDAL, so can input any file
+        Extract data from a data file. This basically replicates using We use
+        fiona for the input file since it's a wrapper over GDAL and handles
+        multiple formats. Since we only want to output GeoJson files, and we
+        need to filter the data as each feature has a different amount of fields,
+        the Python GeoJson module is used since with fiona you can only write the
+        same fields as are in the input file. and many are None.
 
         Args:
             datain (str): Input file

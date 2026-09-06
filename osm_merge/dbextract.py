@@ -81,12 +81,12 @@ class DBExtract(object):
         Returns:
             (bool): Whether the view was create or not
         """
-        file = open(boundary, "r")
-        data = geojson.load(file)
-        aoi = shape(data["geometry"])
-        file.close()
         log.info(f"Creating a temporary table, this make take awhile...")
         if boundary:
+            file = open(boundary, "r")
+            data = geojson.load(file)
+            aoi = shape(data["geometry"])
+            file.close()
             sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
             # print(sql)
         else:
@@ -97,6 +97,7 @@ class DBExtract(object):
 
     def filter_rows(self,
                     rows: list,
+                    strip_refs: bool = True,
                     ) -> list:
         """
         Filter the rows to create a real geometry.
@@ -110,7 +111,7 @@ class DBExtract(object):
         features = list()
         pbar = tqdm.tqdm(rows)
 
-        log.info(f"Filtering the query outout to create real geometries")
+        log.info(f"Filtering the query output to create real geometries")
         for row in pbar:
             osm_id = row[0]
             version = row[1]
@@ -118,7 +119,10 @@ class DBExtract(object):
             refs = row[3]
             tags = row[4]
             geom = shapely.from_wkt(row[5])
-            data = {"osm_id": osm_id, "version": version, "refs": refs, "geom": geom}
+            if strip_refs:
+                data = {"osm_id": osm_id, "version": version}
+            else:
+                data = {"osm_id": osm_id, "version": version, "refs": refs}
             data.update(tags)
             # print(data)
             features.append(Feature(geometry=geom, properties=data))
@@ -172,13 +176,16 @@ def main():
     # Make a temporary view to reduce the data size
     if args.boundary:
         db.create_view(args.boundary)
-        # optionally clip by a boundary
+    else:
+        db.create_view()
 
+    # Query the database for what we want
     sql = f"SELECT osm_id,version,timestamp,refs,tags,ST_AsTEXT(geom) FROM highway_view WHERE tags->>'highway' IS NOT NULL;"
     rows = db.execute_query(sql)
 
     features = db.filter_rows(rows)
 
+    log.debug(f"Writing data to GeoJson file, this make take awhile...")
     file = open(args.outfile, "w")
     geojson.dump(FeatureCollection(features), file, indent=2, default=str)
     file.close()
@@ -187,6 +194,3 @@ def main():
 if __name__ == "__main__":
     """This is just a hook so this file can be run standalone during development."""
     main()
-#    loop = asyncio.new_event_loop()
-#    asyncio.set_event_loop(loop)
- #   loop.run_until_complete(main())

@@ -21,13 +21,16 @@ import logging
 import os
 import re
 import sys
-import asyncio
 import argparse
+from sys import argv
 from pathlib import Path
 import geojson
-from geojson import Feature, FeatureCollection, LineString
+from geojson import Feature, FeatureCollection, GeometryCollection, LineString, MultiPolygon, Polygon
+import re
+from geomet import wkt
 # from geojson import Point, Feature, FeatureCollection, LineString
-from shapely.geometry import LineString, shape
+from shapely.geometry import LineString, shape, Polygon
+# from shapely.geometry.polygon import Polygon
 import shapely
 import psycopg2
 from osm_merge.osmfile import OsmFile
@@ -85,15 +88,35 @@ class DBExtract(object):
         if boundary:
             file = open(boundary, "r")
             data = geojson.load(file)
-            aoi = shape(data["geometry"])
             file.close()
-            sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
+            index = 0
+            if "geometry" not in data:  # It's a FeatureCollection or MultiPolygon
+                polys = list()
+                for feature  in data["features"]:
+                    feat = feature["geometry"]
+                    foo = wkt.dumps(feat)
+                    # polys.append(feat)
+                    # aoi = wkt.dumps(data["features"])
+                    # foo = wkt.dumps(aoi["coordinates"])
+                    # aoi = MultiPolygon(map(wkt.loads, polys))
+                    sql = f"CREATE TEMP VIEW highway_view{index} AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{foo}'), geom)"
+                    self.curs.execute(sql)
+                    log.debug(f"Created temporary view highway_view{index}")
+                    index += 1
+                    # print(f"FIXME: {sql}")
+                    xxx = open("debug.sql", "w")
+                    xxx.write(sql)
+                    xxx.close()
+            else:
+                aoi = shape(data["geometry"])
+                sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
+                # sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
             # print(sql)
         else:
             # By default, get all the highways
             sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL"
             # print(sql)
-        self.curs.execute(sql)
+            self.curs.execute(sql)
 
     def filter_rows(self,
                     rows: list,
@@ -116,12 +139,14 @@ class DBExtract(object):
             osm_id = row[0]
             version = row[1]
             timestamp = row[2]
-            refs = row[3]
-            tags = row[4]
-            geom = shapely.from_wkt(row[5])
             if strip_refs:
+                tags = row[3]
+                geom = shapely.from_wkt(row[4])
                 data = {"osm_id": osm_id, "version": version}
             else:
+                refs = row[3]
+                tags = row[4]
+                geom = shapely.from_wkt(row[5])
                 data = {"osm_id": osm_id, "version": version, "refs": refs}
             data.update(tags)
             # print(data)
@@ -142,12 +167,33 @@ class DBExtract(object):
             (list): The result of the SQL query
         """
         data = list()
+        foo = "SELECT table_schema AS schema, table_name AS view FROM information_schema.views WHERE table_schema NOT IN ('information_schema', 'pg_catalog') ORDER BY schema ASC, view ASC;"
+        self.curs.execute(foo)
+        views =  self.curs.fetchall()
+        pat = re.compile("highway_view.*")
+        temp_views = list()
+
+        for entry in views:
+            match = re.search(pat, entry[1])
+            if match:
+                temp_views.append(match.string)
+        if len(temp_views) == 0:
+            log.error(f"There are no views!")
+
+        temp_view = ["ways_line"]
+
+        log.debug(f"There are {len(temp_views)} temporary views in the database")
         if not sql:
             log.error(f"Need to specify an SQL query!")
 
-        self.curs.execute(sql)
+        for view in temp_views:
+            log.info(f"Querying view {view}")
+            newsql = sql + view + ';'
+            self.curs.execute(newsql)
+            result = self.curs.fetchall()
+            data += result
 
-        return self.curs.fetchall()
+        return data
 
 def main():
     """
@@ -161,6 +207,12 @@ def main():
     parser.add_argument("-s", "--sql", help="Custom SQL Query")
 
     args = parser.parse_args()
+
+    # Need at least one operation
+    if len(argv) == 1:
+        parser.print_help()
+        quit()
+
 
     # if verbose, dump to the terminal
     if args.verbose is not None:
@@ -180,9 +232,15 @@ def main():
         db.create_view()
 
     # Query the database for what we want
-    sql = f"SELECT osm_id,version,timestamp,refs,tags,ST_AsTEXT(geom) FROM highway_view WHERE tags->>'highway' IS NOT NULL;"
+    if not args.sql:
+        sql = f"SELECT osm_id,version,timestamp,tags,ST_AsTEXT(geom) FROM "
+    else:
+        sql = args.sql
     rows = db.execute_query(sql)
 
+    if len(rows) == 0:
+        log.error(f"No data returned from the query!")
+        quit()
     features = db.filter_rows(rows)
 
     log.debug(f"Writing data to GeoJson file, this make take awhile...")

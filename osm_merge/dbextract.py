@@ -111,7 +111,7 @@ class DBExtract(object):
 
     def filter_rows(self,
                     rows: list,
-                    strip_refs: bool = True,
+                    strip_refs: bool = False,
                     ) -> list:
         """
         Filter the rows to create a real geometry.
@@ -224,7 +224,7 @@ def main():
 
     # Query the database for what we want
     if not args.sql:
-        sql = f"SELECT osm_id,version,timestamp,tags,ST_AsTEXT(geom) FROM "
+        sql = f"SELECT osm_id,version,timestamp,refs,tags,ST_AsTEXT(geom) FROM "
     else:
         sql = args.sql
     rows = db.execute_query(sql)
@@ -234,11 +234,17 @@ def main():
         quit()
     features = db.filter_rows(rows)
 
-    log.debug(f"Writing data to GeoJson file, this make take awhile...")
-    file = open(args.outfile, "w")
-    geojson.dump(FeatureCollection(features), file, indent=2, default=str)
-    file.close()
-    log.info(f"Wrote {args.outfile}")
+    path = Path(args.outfile)
+    if path.suffix == ".geojson":
+        log.debug(f"Writing data to GeoJson file, this make take awhile...")
+        file = open(args.outfile, "w")
+        geojson.dump(FeatureCollection(features), file, indent=2, default=str)
+        file.close()
+        log.info(f"Wrote {args.outfile}")
+    elif path.suffix == ".osm":
+        osm = OsmFile()
+        osm.writeOSM(features, args.outfile)
+        log.info(f"Wrote {args.outfile}")
 
 if __name__ == "__main__":
     """This is just a hook so this file can be run standalone during development."""

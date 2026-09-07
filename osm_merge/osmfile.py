@@ -267,9 +267,9 @@ class OsmFile(object):
             # print(entry)
             # out = str()
             # GeoJson input files have a geometry.
-            if entry["geometry"] is not None:
-                item["attrs"]["lon"] = entry["geometry"]["coordinates"][0]
-                item["attrs"]["lat"] = entry["geometry"]["coordinates"][1]
+            if entry["geometry"] ["type"] == Point:
+                item["attrs"]["lon"] = entry["geometry"]["coordinates"][0][0]
+                item["attrs"]["lat"] = entry["geometry"]["coordinates"][0][1]
                 ways += self.createNode(item, True) + '\n'
                 # else:
                 #     refnodes, refs = self.geom_to_nodes(entry)
@@ -292,8 +292,10 @@ class OsmFile(object):
                     else:
                         item["refs"] = tags["refs"]
                     del tags["refs"]
-                    del tags["lat"]
-                    del tags["lon"]
+                    if "lat" in tags:
+                        del tags["lat"]
+                    if "lon" in tags:
+                        del tags["lon"]
                     ways += self.createWay(item, True)
             if len(nodes) == 0 and len(ways) == 0:
                 logging.error(f"")
@@ -326,6 +328,8 @@ class OsmFile(object):
             attrs["action"] = "modify"
         if "osm_way_id" in way["attrs"]:
             attrs["id"] = int(way["attrs"]["osm_way_id"])
+        elif "osm_id" in way["tags"]:
+            attrs["id"] = int(way["tags"]["osm_id"])
         elif "osm_id" in way["attrs"]:
             attrs["id"] = int(way["attrs"]["osm_id"])
         elif "id" in way["attrs"]:
@@ -381,7 +385,6 @@ class OsmFile(object):
             line += "%s=%r " % (ref, str(value))
         osm += "  <way " + line + ">"
 
-        breakpoint()
         if "refs" in way:
             for ref in way["refs"]:
                 osm += '\n    <nd ref="%s"/>' % ref

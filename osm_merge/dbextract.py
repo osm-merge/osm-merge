@@ -95,22 +95,13 @@ class DBExtract(object):
                 for feature  in data["features"]:
                     feat = feature["geometry"]
                     foo = wkt.dumps(feat)
-                    # polys.append(feat)
-                    # aoi = wkt.dumps(data["features"])
-                    # foo = wkt.dumps(aoi["coordinates"])
-                    # aoi = MultiPolygon(map(wkt.loads, polys))
                     sql = f"CREATE TEMP VIEW highway_view{index} AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{foo}'), geom)"
                     self.curs.execute(sql)
                     log.debug(f"Created temporary view highway_view{index}")
                     index += 1
-                    # print(f"FIXME: {sql}")
-                    xxx = open("debug.sql", "w")
-                    xxx.write(sql)
-                    xxx.close()
             else:
                 aoi = shape(data["geometry"])
                 sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
-                # sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
             # print(sql)
         else:
             # By default, get all the highways

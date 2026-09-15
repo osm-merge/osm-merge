@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2025, 2006 OpenStreetMap US
+# Copyright (c) 2025, 2026 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -122,10 +122,10 @@ class DBExtract(object):
         Returns:
             (list): The filtered data
         """
+        log.info(f"Filtering the query output to create real geometries")
         features = list()
         pbar = tqdm.tqdm(rows)
 
-        log.info(f"Filtering the query output to create real geometries")
         for row in pbar:
             osm_id = row[0]
             version = row[1]
@@ -170,8 +170,6 @@ class DBExtract(object):
                 temp_views.append(match.string)
         if len(temp_views) == 0:
             log.error(f"There are no views!")
-
-        temp_view = ["ways_line"]
 
         log.debug(f"There are {len(temp_views)} temporary views in the database")
         if not sql:

@@ -93,7 +93,7 @@ def main():
     parser = argparse.ArgumentParser(description="Query a DB and output to OSM XML format")
     parser.add_argument("-v", "--verbose", nargs="?", const="0", help="verbose output")
     parser.add_argument("-b","--boundary", help='Optional boundary to clip the data')
-    parser.add_argument("-o","--outfile", default='out.geojson', help='The output file')
+    parser.add_argument("-o","--outfile", default='out.csv', help='The output file')
     parser.add_argument("-u", "--uri", help="Database URI")
 
     args = parser.parse_args()
@@ -140,13 +140,33 @@ def main():
         quit()
     features = db.filter_rows(rows)
 
+    node_addrs = dict()
+    way_addrs = dict()
     for name in sorted(highset):
         name = name.replace("'", "\"")
-        sql = f"SELECT COUNT(tags) FROM nodes WHERE tags->>'addr:street' LIKE '{name}%' "
+        sql = f"SELECT COUNT(tags) FROM nodes WHERE tags->>'addr:street' LIKE '{name}%'"
         result = db.execute_query(sql)
         if len(result) > 0:
-            log.debug(f"{name} has {result[0][0]} addresses")
-    
+            count = result[0][0]
+            node_addrs[name] = count
+            # file.write(f"{name},{count}\n")
+            log.debug(f"{name} has {count} addresses")
+        sql = f"SELECT COUNT(tags) FROM ways_poly WHERE tags->>'addr:street' LIKE '{name}%'"
+        result = db.execute_query(sql)
+        if len(result) > 0:
+            count = result[0][0]
+            way_addrs[name] = count
+            # file.write(f"{name},{count}\n")
+            log.debug(f"{name} has {count} addresses")
+    file = open(args.outfile, "w")
+    for name in sorted(highset):
+        name = name.replace("'", "\"")
+        print(f"{name}")
+        countn = node_addrs[name]
+        countw = way_addrs[name]
+        print(f"{name} {countn} - {countw}")
+        file.write(f"{name},{countn + countw}\n")
+    file.close()
     # path = Path(args.outfile)
     # if path.suffix == ".geojson":
     #     log.debug(f"Writing data to GeoJson file, this make take awhile...")

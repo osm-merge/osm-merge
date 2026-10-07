@@ -38,8 +38,7 @@ from datetime import datetime
 from tqdm import tqdm
 import tqdm.asyncio
 from osm_merge.yamlfile import YamlFile
-# from psycopgr import PgrNode, PGRouting
-
+import gpxpy.gpx
 # Instantiate logger
 log = logging.getLogger(__name__)
 
@@ -105,7 +104,7 @@ class DistanceAddrs(DBExtract):
         self.pgrcurs.execute(sql)
         result = self.pgrcurs.fetchall()
 
-        return result
+        return result[0]
 
     def find_nearest_highway(self,
                      node: str,
@@ -119,12 +118,15 @@ class DistanceAddrs(DBExtract):
         Returns:
             (dict): The nearest node on the highway.
         """
-        sql = f"SELECT osm_id,tags,ST_AsText(geom),geom <-> ST_GeogFromText(\'SRID=4326;{node}\') AS distance FROM highway_view ORDER BY distance LIMIT 1"
-        # print(sql)
-        self.curs.execute(sql)
-        result = self.curs.fetchall()
+        sql = f"SELECT osm_id,tags,ST_AsText(geom),geom <-> ST_GeogFromText(\'SRID=4326;{node}\') AS distance FROM highway_view WHERE tags->>'highway'='primary' ORDER BY distance LIMIT 1"
+        # print(f"ROUTE: {sql}")
+        nearest = self.execute_query(sql)
 
-        return result
+        sql = f"SELECT * FROM ways WHERE osm_id='{nearest[0][0]}'"
+        self.pgrcurs.execute(sql)
+        pgr = self.pgrcurs.fetchall()
+
+        return pgr
 
     def make_route(self,
                    source: dict,
@@ -133,17 +135,9 @@ class DistanceAddrs(DBExtract):
         """
         """
         route = list()
-        # many-to-many
-        # routings = pgr.get_routes(nodes, nodes, end_speed=5.0, gpx_file='r.gpx')
-
-        # one-to-one
-        # routings = self.pgr.get_routes(source, target, gpx_file='foo.gpx')
-
-        # one-to-many
-        # routings = pgr.get_routes(nodes[0], nodes)
-
-        # many-to-one
-        # routings = pgr.get_routes(nodes, nodes[2])
+        sql = f"SELECT * FROM pgr_dijkstra('SELECT id, source, target, cost, reverse_cost FROM ways',{source}, {target},directed := true);"
+        self.pgrcurs.execute(sql)
+        route = self.pgrcurs.fetchall()
 
         return route
 
@@ -161,7 +155,7 @@ class DistanceAddrs(DBExtract):
         """
         addrs = list()
         sql = f"SELECT tags->>'addr:housenumber', ST_AsText(geom) AS geom FROM address_view WHERE tags->>'addr:street' LIKE '{street}';"
-        result = self.execute_query(sql)
+        result = self.execute_query(sql, "address_view")
         if len(result) > 0:
             number = result[0][0]
             geom = result[0][1]
@@ -194,7 +188,7 @@ def main():
     """
     This program queries a postgres database as maintained by Underpass.
     """
-    parser = argparse.ArgumentParser(description="Query a DB and output to OSM XML format")
+    parser = argparse.ArgumentParser(description="Calculate distance to the nearest decent highway")
     parser.add_argument("-v", "--verbose", nargs="?", const="0", help="verbose output")
     parser.add_argument("-b","--boundary", help='Optional boundary to clip the data')
     parser.add_argument("-o","--outfile", default='out.csv', help='The output file')
@@ -249,6 +243,7 @@ def main():
             #     new = ca.convert(tags["name"])
             highset.add(tags["name"])
 
+    # Use GPX instead of GeoJson so we can specify the line color
     for name in sorted(highset):
         # Embedded single quotes are evil
         name = name.replace("'", "\"")
@@ -257,14 +252,39 @@ def main():
             log.warning(f"No addresses found on {name}")
             continue
         for addr in addrs:
-            node = db.find_nearest_point(addr["geom"])
-            way = db.find_nearest_highway(addr["geom"])
+            gpx = gpxpy.gpx.GPX()
+            gpx.nsmap["osm_merge"] = "https://osmmerge.org"
+            gpx.creator = "distance_addrs 0.1"
+            gpx_track = gpxpy.gpx.GPXTrack()
+            gpx.tracks.append(gpx_track)
+            outfile = f"{addr["number"]}_{addr["street"]}.gpx"
+            vertic = db.find_nearest_point(addr["geom"])
+            way = db.find_nearest_highway(vertic[1])
+            node = db.find_nearest_highway(addr["geom"])
             if len(way) == 0:
                 log.error(f"No suitable highways were found near {node}")
-            # db.make_route(source, target)
+            if len(node) == 0 or len(way) == 0:
+                continue
+            source = node[0][0]
+            target = way[len(way) - 1][0]
+            route = db.make_route(source, target)
+            gpx_segment = gpxpy.gpx.GPXTrackSegment()
+            gpx_track.segments.append(gpx_segment)
+            for segment in route:
+                # FIXME: the coords are also in the route, the first one is missing one
+                # of the coordinates.
+                sql = f"SELECT x, y FROM ways_vertices_pgr WHERE id='{segment[0]}';"
+                db.pgrcurs.execute(sql)
+                coords = db.pgrcurs.fetchall()
+                lat = coords[0][0]
+                lon = coords[0][1]
+                gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon))
+            # print(f"VERTIC: {vertic}")
+            # print(f"ADDR: {addr}")
             # print(f"NODE: {node}")
-            # print(f"WAY: {way[0][1]}")
-
+            # print(f"WAY: {way[0]}")
+            gpxfile = open(outfile, "w")
+            gpxfile.write(gpx.to_xml())
     # sql = "SELECT *"
     # db.execute_query(sql)
     # path = Path(args.outfile)

@@ -276,8 +276,8 @@ def main():
                 sql = f"SELECT x, y FROM ways_vertices_pgr WHERE id='{segment[0]}';"
                 db.pgrcurs.execute(sql)
                 coords = db.pgrcurs.fetchall()
-                lat = coords[0][0]
-                lon = coords[0][1]
+                lat = coords[0][1]
+                lon = coords[0][0]
                 gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon))
             # print(f"VERTIC: {vertic}")
             # print(f"ADDR: {addr}")

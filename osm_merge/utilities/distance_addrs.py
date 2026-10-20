@@ -29,7 +29,10 @@ from geojson import Feature, FeatureCollection, GeometryCollection, LineString, 
 import re
 from geomet import wkt
 # from geojson import Point, Feature, FeatureCollection, LineString
-from shapely.geometry import LineString, shape, Polygon
+from shapely.geometry import LineString, shape, Polygon, Point, MultiLineString, MultiPolygon
+from shapely import ops
+from shapely.ops import unary_union
+
 # from shapely.geometry.polygon import Polygon
 import shapely
 import psycopg2
@@ -41,9 +44,13 @@ from osm_merge.yamlfile import YamlFile
 import gpxpy.gpx
 # Instantiate logger
 log = logging.getLogger(__name__)
-
+import shapely.wkt
+import pyproj
 import osm_merge as om
 rootdir = om.__path__[0]
+import math
+from shapely import buffer
+
 
 class DistanceAddrs(DBExtract):
     def __init__(self,
@@ -75,6 +82,7 @@ class DistanceAddrs(DBExtract):
                 self.pgrdb = psycopg2.connect(pargs)
                 self.pgrcurs = self.pgrdb.cursor()
                 log.info(f"Connected to database {db} on {host}")
+                self.pgrdb.autocommit = True
             except Exception as e:
                 log.error(f"Couldn't connect to database: {e}")
         # self.pgr = PGRouting(dbname='gilpin_routing', user='rob')
@@ -84,9 +92,12 @@ class DistanceAddrs(DBExtract):
         #     log.info(f"Connected to {routing} database")
 
         # self.pgr.set_meta_data(cost='cost_s', reverse_cost='reverse_cost_s', directed=True)
+        self.sources = list()
+        self.targets = list()
+        self.highways = dict()
 
-    def find_nearest_point(self,
-                     node: str,
+    def find_nearest_vertex(self,
+                          node: Point,
                      ) -> dict:
         """
         Query the PGRouting table to find the nearest node, which
@@ -100,46 +111,182 @@ class DistanceAddrs(DBExtract):
         Returns:
             (dict): The nearest node
         """
-        sql = f"SELECT osm_id,ST_AsText(geom),geom <-> ST_GeogFromText(\'SRID=4326;{node}\') AS distance FROM ways_vertices_pgr ORDER BY distance LIMIT 1;"
+        poly = self.make_boundary(node)
+        sql = f"CREATE OR REPLACE TEMP VIEW pg_view AS SELECT * FROM ways_vertices_pgr WHERE ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{poly.wkt}'), geom)"
+        # print(sql)
+        self.pgrcurs.execute(sql)
+
+        threshold = 1000 # in meters
+        sql = f"SELECT row_to_json(pg_view) as row FROM pg_view WHERE ST_Distance(geom, ST_GeomFromEWKT('SRID=4326;{node.wkt}')::geography) < {threshold} ORDER BY ST_Distance(geom, ST_GeomFromEWKT('SRID=4326;{node.wkt}')) LIMIT 1;"
+
         self.pgrcurs.execute(sql)
         result = self.pgrcurs.fetchall()
 
-        return result[0]
+        if len(result) == 0:
+            log.warning(f"No nearby verticies found within {threshold} meters!")
+            return dict()
 
-    def find_nearest_highway(self,
-                     node: str,
-                     ) -> dict:
+        return result[0][0]
+
+    def make_buffer (self,
+                     highway: LineString,
+                     radius: int = 0.00001,
+                     ) -> Polygon:
         """
-        Query the OSM database to find the nodes in a highway.
-
-        Args:
-            node (str): A geometry in WKT format.
-
-        Returns:
-            (dict): The nearest node on the highway.
         """
-        sql = f"SELECT osm_id,tags,ST_AsText(geom),geom <-> ST_GeogFromText(\'SRID=4326;{node}\') AS distance FROM highway_view WHERE tags->>'highway'='primary' ORDER BY distance LIMIT 1"
-        # print(f"ROUTE: {sql}")
-        nearest = self.execute_query(sql)
+        # sql = f"SELECT ST_AsText(ST_Buffer(ST_GeomFromText('SRID=4326;{highway.wkt}::geography'), {radius}, 'join=bevel'));"
+        # self.pgrcurs.execute(sql)
+        # result = self.pgrcurs.fetchall()
+        # poly =  shapely.wkt.loads(result[0][0])
 
-        sql = f"SELECT * FROM ways WHERE osm_id='{nearest[0][0]}'"
+        poly = buffer(highway, radius)
+
+        return poly
+
+    def make_boundary(self,
+                     node: Point,
+                     radius: int = 100,
+                     ) -> Polygon:
+        """
+        """
+        sql = f"SELECT ST_AsText(ST_Buffer(ST_GeomFromText('{node.wkt}'), {radius}));"
         self.pgrcurs.execute(sql)
-        pgr = self.pgrcurs.fetchall()
+        result = self.pgrcurs.fetchall()
+        poly =  shapely.wkt.loads(result[0][0])
+        return poly
 
-        return pgr
+    def find_major_highways(self,
+                        ) -> dict:
+        """
+        Extract all major highways.
+
+        """
+        highways = dict()
+        # sql = f"SELECT osm_id,tags,ST_AsText(geom) FROM highway_view WHERE tags->>'highway'='primary' OR tags->>'highway'='tertiary' OR tags->>'highway'='secondary'"
+        sql = f"SELECT osm_id,tags,ST_AsText(geom) FROM highway_view WHERE tags->>'highway'='primary' OR tags->>'highway'='secondary'"
+        print(f"ROUTE: {sql}")
+        major = self.execute_query(sql)
+
+        tags = ["osm_id", "tags", "geom", "distance"]
+        # Combine all the LineStrings
+        for entry in major:
+            highway = dict(zip(tags, entry))
+            key = str()
+            if "name" not in highway["tags"]:
+                name = "unknown"
+            elif "name" in highway["tags"]:
+                name = highway["tags"]["name"]
+            elif "ref" in highway["tags"]:
+                name = highway["tags"]["ref"]
+
+            if name not in highways:
+                highways[name] = dict()
+                highways[name]["lines"] = list()
+                highways[name]["tags"] = highway["tags"]
+
+            highways[name]["lines"].append(highway["geom"])
+        for name, segments in highways.items():
+            multi = list()
+            for line in segments["lines"]:
+                multi.append(shapely.wkt.loads(line))
+            all = MultiLineString(multi)
+            highline = ops.linemerge(all)
+            highways[name]["buffer"] = self.make_buffer(highline)
+            verts = self.get_vertics(name)
+
+        return highways
+
+    def get_targets(self,
+                    node: Point,
+                    highways: MultiPolygon,
+                    threshold: float = 10.0,
+                    ) -> list:
+        """
+        """
+        targets = list()
+        # sql = f"SELECT id,ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;POINT (-105.4970686 39.917249)'), geom) AS distance FROM ways_vertices_pgr WHERE ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;{node.wkt}'), geom) < {threshold} ORDER BY distance;"
+        sql = f"SELECT id,ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;{node.wkt}'), geom::geography) AS distance FROM ways_vertices_pgr WHERE ST_Contains(ST_GeomFromEWKT('SRID=4326;{highways.wkt}'), geom) ORDER BY distance LIMIT 10;"
+        # sql = f"SELECT id,ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;{highways.wkt}'), geom) AS distance FROM ways_vertices_pgr WHERE ST_Contains(ST_GeomFromEWKT('SRID=4326;{highways.wkt}'), geom) ORDER BY distance;"
+        # print(sql)
+        self.pgrcurs.execute(sql)
+
+        result = self.pgrcurs.fetchall()
+        vertices = dict()
+        for row in result:
+            vertices[row[0]] = row[1]
+
+        return vertices
 
     def make_route(self,
-                   source: dict,
-                   target: dict,
+                   source: int,
+                   targets: dict,
                    ) -> list:
         """
-        """
-        route = list()
-        sql = f"SELECT * FROM pgr_dijkstra('SELECT id, source, target, cost, reverse_cost FROM ways',{source}, {target},directed := true);"
-        self.pgrcurs.execute(sql)
-        route = self.pgrcurs.fetchall()
+        Use PGRouting to generate a list of rouing options.
 
-        return route
+        Args:
+            source (int): The ID of the target in the ways_vertices_pgr table
+            targets (dict): The list of target IDs in the ways_vertices_pgr table
+
+        Returns:
+            (list): the list of possible routes to analyze
+        """
+        routes = list()
+        nodes = list()
+        for id, dist in targets.items():
+            nodes.append(id)
+
+        if len(targets) == 0:
+            log.warning(f"No targets for source {source}!")
+            return routes
+        sql = f"SELECT res.path_seq, res.node, res.edge, ST_AsText(e.geom), res.cost, e.reverse_cost, e.reverse_cost_s FROM pgr_dijkstra('SELECT id as id, source, target, cost_s AS cost FROM ways', {source}, ARRAY{nodes}, directed := true) AS res JOIN ways e ON res.edge = e.id;"
+        # sql = f"SELECT res.end_vid, res.node, e.cost_s, ST_AsText(e.geom) FROM pgr_dijkstra('SELECT id as id, source, target, length_m as cost FROM ways', {source}, {target}, directed := false) AS res JOIN ways e ON res.edge = e.id;"
+        self.pgrcurs.execute(sql)
+        result = self.pgrcurs.fetchall()
+        # print(sql)
+
+        tags = ["sequence", "node", "edge", "geom", "cost", "reverse_cost", "reverse_cost_s"]
+        route = list()
+        previous = 1
+        # Multiple routes are in the result, so we have to check for the transition
+        # and store them all seperately.
+        for row in result:
+            data = dict(zip(tags, row))
+            if int(data["sequence"]) < previous:
+                routes.append(route)
+            if int(data["sequence"]) == 1:
+                route = list()
+            previous = int(data["sequence"])
+            route.append(data)
+
+        return routes
+
+    def get_vertics(self,
+                    name: str,
+                    ) -> bool:
+        """
+        """
+        sources = list()
+        targets = list()
+        try:
+            sql = f"SELECT id, source, target, ST_AsText(geom) FROM ways WHERE name='{name}'"
+            self.pgrcurs.execute(sql)
+            result = self.pgrcurs.fetchall()
+        except:
+            breakpoint()
+        for row in result:
+            if name not in self.highways:
+                self.highways[name] = dict()
+                self.highways[name]["sources"] = list()
+                self.highways[name]["targets"] = list()
+            self.highways[name]["sources"].append(row[1])
+            self.highways[name]["targets"].append(row[2])
+
+        # if len(self.sources) == 0 or len(self.targets) == 0:
+        #     log.error(f"No source or targets found!")
+        #     return False
+
+        return True
 
     def get_addrs(self,
                   street: str,
@@ -154,39 +301,121 @@ class DistanceAddrs(DBExtract):
             (list): All the addresses on this street
         """
         addrs = list()
-        sql = f"SELECT tags->>'addr:housenumber', ST_AsText(geom) AS geom FROM address_view WHERE tags->>'addr:street' LIKE '{street}';"
+        sql = f"SELECT tags->>'addr:housenumber', ST_AsText(geom) AS geom FROM address_view WHERE tags->>'addr:street'='{street}';"
         result = self.execute_query(sql, "address_view")
         if len(result) > 0:
-            number = result[0][0]
-            geom = result[0][1]
-            # file.write(f"{name},{count}\n")
-            log.debug(f"{street} has {len(result)} addresses")
-            addrs.append({"street": street, "number": number, "geom": geom})
-
-        if len(result) > 0:
-            number = result[0][0]
-            addrs.append({"street": street, "number": number, "geom": geom})
+            for entry in result:
+                number = entry[0]
+                geom = entry[1]
+                addrs.append({"street": street, "number": number, "geom": geom})
 
         return addrs
 
-    def route_addr(self,
-                   source: long,
-                   target: long,
-                   ):
+    def get_highways(self,
+                    name: str,
+                    ) -> list:
         """
-        Route an address to the nearest decent highway.
         """
-        sql = "SELECT * FROM pgr_dijkstra('SELECT * FROM ways', {source}, {target}, directed := true);"
-        result = db.execute_query(sql)
-        if len(result) > 0:
-            count = result[0][0]
-            node_addrs[name] = count
-            # file.write(f"{name},{count}\n")
-            log.debug(f"{name} has {count} addresses")
+        sql = "SELECT "
+
+    def make_track(self,
+                  route: list,
+                  ):
+        """
+
+        """
+        # print(f"SEGMENT: {segment}")
+        # multi = list()
+        # for name, values in majors.items():
+        #     multi.append(shapely.wkt.loads(values["buffer"]))
+        # bar = MultiLineString(multi)
+        # highline = ops.linemerge(bar)
+
+        # if type(highline) == MultiLineString:
+        #     log.debug(f"LINE PROBLEM: {segment}")
+        #     # bar = list()
+        #     # for line in highline.geoms:
+        #     #     bar.append(line)
+        #     # foo = ops.linemerge(bar)
+        #     return None, False
+        # verts = list()
+        # try:
+        #     for point in highline.coords:
+        #         sql = f"SELECT id, osm_id FROM ways_vertices_pgr WHERE x={point[0]} AND y={point[1]}"
+        #         self.pgrcurs.execute(sql)
+        #         result = self.pgrcurs.fetchall()
+        #         if len(result) > 0:
+        #             verts.append(int(result[0][0]))
+        # except:
+        #     breakpoint()
+        # print(f"VERTs: {verts}")
+
+        gpx_segment = gpxpy.gpx.GPXTrackSegment()
+        for segment in route:
+            source = int(segment["edge"])
+            target = segment["node"]
+            for name, data in self.highways.items():
+                line = shapely.wkt.loads(segment["geom"])
+                start = line.coords[0]
+                end = line.coords[1]
+                gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(start[1], start[0]))
+                gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(end[1], end[0]))
+                print(f"FOO: {name} {segment} {segment["node"] in data["targets"]}")
+                if segment["node"] in data["targets"]:
+                    return gpx_segment, True
+
+        return gpx_segment, True
+            #segline = shapely.wkt.loads(segment["geom"])
+            # try:
+            #     highline = shapely.wkt.loads(highway["geom"])
+            # except:
+            #     breakpoint()
+            # print(f"LEN: {highway.length}")
+        # geom = shapely.wkt.loads(segment[4])
+        # print(f"FIXME:  {target}: {target in verts}")
+        # print(f"FIXME:  {target}: {highline.touches(segline)}")
+        # print(f"FIXME1: {target}: {segline.intersects(highline)}")
+        # print(f"FIXME2: {target}: {segline.within(highline)}")
+
+        sql = f"SELECT name, osm_id, source, target, length, x1,y1,x2,y2, cost, cost_s FROM ways WHERE target='{target}' AND source!='{source}'"
+        self.pgrcurs.execute(sql)
+        result = self.pgrcurs.fetchall()
+        tags = ["name", "osm_id", "source", "target", "length", "x1", "y1", "x2", "y2", "cost", "cost_s"]
+        if len(result) != 0:
+            data = dict(zip(tags, result[0]))
+        else:
+            data = dict(zip(tags, [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
+        done = False
+        print(f"DATA: {data}")
+        if int(segment["node"]) == 5107:
+            breakpoint()
+            pass
+
+        # if target in verts and segline.intersects(highline) and segline.within(highline):
+        #     done = True
+        #     log.debug(f"Last segment! {segment}")
+        # for node in segline.coords:
+        #     pt = Point(node[0], node[1])
+        #     pt1 = Point(data["x1"], data["y1"])
+        #     pt2 = Point(data["x2"], data["y2"])
+        #     print(f"PT: {pt.equals(pt2)}")
+        #     touch = highline.touches(pt)
+        #     if touch:
+        #         print(f"NODE: {pt} {touch}")
+        #         break
+        #     if math.isclose(data["x1"], node[0]) and math.isclose(data["y1"], node[1]):
+        #         print(f"CLOSE: {node} {data}")
+        #         done = True
+        #         break
+        #     gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(node[1], node[0]))
+        #     if target in verts and done:
+        #         log.debug(f"Last segment! {segment}")
+        #         break
+        return gpx_segment, done
 
 def main():
     """
-    This program queries a postgres database as maintained by Underpass.
+    This program queries a postgres database as to plot potenial emergency egress routes.
     """
     parser = argparse.ArgumentParser(description="Calculate distance to the nearest decent highway")
     parser.add_argument("-v", "--verbose", nargs="?", const="0", help="verbose output")
@@ -235,6 +464,7 @@ def main():
     if len(rows) == 0:
         log.error(f"No data returned from the query!")
         return
+
     highset = set()
     for highway in rows:
         tags = highway[4]
@@ -243,7 +473,16 @@ def main():
             #     new = ca.convert(tags["name"])
             highset.add(tags["name"])
 
+    # colors = {"route1": "#ff5020", "route2": "#ff5020", "route 3": "#a71de1"}
+
     # Use GPX instead of GeoJson so we can specify the line color
+    major = db.find_major_highways()
+    polys = list()
+    for name, values in major.items():
+        polys.append(values["buffer"])
+        db.get_vertics(name)
+    aoi = unary_union(polys)
+
     for name in sorted(highset):
         # Embedded single quotes are evil
         name = name.replace("'", "\"")
@@ -251,40 +490,54 @@ def main():
         if len(addrs) == 0:
             log.warning(f"No addresses found on {name}")
             continue
+        else:
+            log.debug(f"Found {len(addrs)} addresses for {name}")
         for addr in addrs:
+            # if addr["number"] == '1303':
+            #     breakpoint()
             gpx = gpxpy.gpx.GPX()
             gpx.nsmap["osm_merge"] = "https://osmmerge.org"
+            # color = etree.Element("{osmand}color", nsmap=gpx.nsmap)
+            # color.text = colors[icon]
             gpx.creator = "distance_addrs 0.1"
             gpx_track = gpxpy.gpx.GPXTrack()
             gpx.tracks.append(gpx_track)
-            outfile = f"{addr["number"]}_{addr["street"]}.gpx"
-            vertic = db.find_nearest_point(addr["geom"])
-            way = db.find_nearest_highway(vertic[1])
-            node = db.find_nearest_highway(addr["geom"])
-            if len(way) == 0:
-                log.error(f"No suitable highways were found near {node}")
-            if len(node) == 0 or len(way) == 0:
+            print(f"ADDR: {addr}")
+            node = shapely.wkt.loads(addr["geom"])
+            print(f"NODE: {node.y}, {node.x}")
+            nearest = db.find_nearest_vertex(node)
+            # print(f"NEAREST: {nearest}")
+            # highway = db.find_nearest_highway(nearest)
+            # print(f"HIGHWAY: {highway}")
+            # if node is None or len(highway) == 0:
+            #     log.warning(f"No suitable highways were found near {node}")
+            #     continue
+            pt = shape(nearest["geom"])
+            targets = db.get_targets(pt, aoi)
+
+            # print(f"TARGETS: {targets}")
+            if targets == 0:
+                log.warning(f"No targets found for {highway}")
                 continue
-            source = node[0][0]
-            target = way[len(way) - 1][0]
-            route = db.make_route(source, target)
-            gpx_segment = gpxpy.gpx.GPXTrackSegment()
-            gpx_track.segments.append(gpx_segment)
-            for segment in route:
-                # FIXME: the coords are also in the route, the first one is missing one
-                # of the coordinates.
-                sql = f"SELECT x, y FROM ways_vertices_pgr WHERE id='{segment[0]}';"
-                db.pgrcurs.execute(sql)
-                coords = db.pgrcurs.fetchall()
-                lat = coords[0][1]
-                lon = coords[0][0]
-                gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon))
-            # print(f"VERTIC: {vertic}")
-            # print(f"ADDR: {addr}")
-            # print(f"NODE: {node}")
-            # print(f"WAY: {way[0]}")
-            gpxfile = open(outfile, "w")
-            gpxfile.write(gpx.to_xml())
+            routes = db.make_route(nearest["id"], targets)
+            log.debug(f"There are {len(routes)} routes in the result.")
+            length = 0
+            for route in routes:
+                #for segment in route:
+                part, done = db.make_track(route)
+                gpx_track.segments.append(part)
+                #     if done:
+                #         break
+                # if done:
+                #     break
+            outfile = f"{addr["number"]}_{addr["street"].replace(" ", "_")}.gpx"
+            # gpx_track.desc = f"Length {length} meters"
+            # gpx_track.description = f"Length {gpx_track.length_2d()} meters"
+            # gpx_track.description = f"Length {gpx_track.length_2d()} meters or {gpx_track.length_2d() / 0.3048} feet"
+            with open(outfile, "w") as gpxfile:
+                gpxfile.write(gpx.to_xml())
+            log.debug(f"Wrote {outfile}")
+
     # sql = "SELECT *"
     # db.execute_query(sql)
     # path = Path(args.outfile)

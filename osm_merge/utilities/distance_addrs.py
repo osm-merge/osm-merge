@@ -42,6 +42,9 @@ from tqdm import tqdm
 import tqdm.asyncio
 from osm_merge.yamlfile import YamlFile
 import gpxpy.gpx
+# import lxml.etree as mod_etree
+from lxml import etree
+
 # Instantiate logger
 log = logging.getLogger(__name__)
 import shapely.wkt
@@ -116,7 +119,7 @@ class DistanceAddrs(DBExtract):
         # print(sql)
         self.pgrcurs.execute(sql)
 
-        threshold = 1000 # in meters
+        threshold = 3000 # in meters
         sql = f"SELECT row_to_json(pg_view) as row FROM pg_view WHERE ST_Distance(geom, ST_GeomFromEWKT('SRID=4326;{node.wkt}')::geography) < {threshold} ORDER BY ST_Distance(geom, ST_GeomFromEWKT('SRID=4326;{node.wkt}')) LIMIT 1;"
 
         self.pgrcurs.execute(sql)
@@ -239,11 +242,11 @@ class DistanceAddrs(DBExtract):
         if len(targets) == 0:
             log.warning(f"No targets for source {source}!")
             return routes
-        sql = f"SELECT res.path_seq, res.node, res.edge, ST_AsText(e.geom), res.cost, e.reverse_cost, e.reverse_cost_s FROM pgr_dijkstra('SELECT id as id, source, target, cost_s AS cost FROM ways', {source}, ARRAY{nodes}, directed := true) AS res JOIN ways e ON res.edge = e.id;"
+        sql = f"SELECT res.path_seq, res.node, res.edge, ST_AsText(e.geom), res.cost, e.reverse_cost, e.reverse_cost_s FROM pgr_dijkstra('SELECT id as id, source, target, cost_s AS cost FROM ways', {source}, ARRAY{nodes}, directed := false) AS res JOIN ways e ON res.edge = e.id;"
         # sql = f"SELECT res.end_vid, res.node, e.cost_s, ST_AsText(e.geom) FROM pgr_dijkstra('SELECT id as id, source, target, length_m as cost FROM ways', {source}, {target}, directed := false) AS res JOIN ways e ON res.edge = e.id;"
         self.pgrcurs.execute(sql)
         result = self.pgrcurs.fetchall()
-        # print(sql)
+        print(sql)
 
         tags = ["sequence", "node", "edge", "geom", "cost", "reverse_cost", "reverse_cost_s"]
         route = list()
@@ -320,6 +323,7 @@ class DistanceAddrs(DBExtract):
 
     def make_track(self,
                   route: list,
+                  targets: list,
                   ):
         """
 
@@ -359,8 +363,8 @@ class DistanceAddrs(DBExtract):
                 start = line.coords[0]
                 end = line.coords[1]
                 gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(start[1], start[0]))
-                gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(end[1], end[0]))
-                print(f"FOO: {name} {segment} {segment["node"] in data["targets"]}")
+                # gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(end[1], end[0]))
+                print(f"FOO: {name} {segment["node"]} {start}, {end}: {segment["node"] in data["targets"]}")
                 if segment["node"] in data["targets"]:
                     return gpx_segment, True
 
@@ -481,7 +485,13 @@ def main():
     for name, values in major.items():
         polys.append(values["buffer"])
         db.get_vertics(name)
-    aoi = unary_union(polys)
+        aoi = unary_union(polys)
+
+    nsmap = {"osmmerge": "https://osmmerge.org"}
+    color = etree.Element("{osmmerge}color", nsmap=nsmap)
+    colors = {"tourism_camp_site": "#ff5020", "tourism_picnic_site": "#ff5020", "special_trekking": "#a71de1"}
+
+    color.text = colors["tourism_picnic_site"]
 
     for name in sorted(highset):
         # Embedded single quotes are evil
@@ -500,8 +510,6 @@ def main():
             # color = etree.Element("{osmand}color", nsmap=gpx.nsmap)
             # color.text = colors[icon]
             gpx.creator = "distance_addrs 0.1"
-            gpx_track = gpxpy.gpx.GPXTrack()
-            gpx.tracks.append(gpx_track)
             print(f"ADDR: {addr}")
             node = shapely.wkt.loads(addr["geom"])
             print(f"NODE: {node.y}, {node.x}")
@@ -523,8 +531,14 @@ def main():
             log.debug(f"There are {len(routes)} routes in the result.")
             length = 0
             for route in routes:
+                gpx_track = gpxpy.gpx.GPXTrack()
+                gpx_track.extensions.append(color)
+                gpx_track.name = f"{addr["number"]} {addr["street"]} Track #{routes.index(route)}"
+                gpx.tracks.append(gpx_track)
+                cnt = len(route) - 1
+                print(f"ROUTE: {route[0]["node"]}, {route[0]["edge"]} : {route[cnt]["node"]}, {route[cnt]["edge"]}")
                 #for segment in route:
-                part, done = db.make_track(route)
+                part, done = db.make_track(route, targets)
                 gpx_track.segments.append(part)
                 #     if done:
                 #         break

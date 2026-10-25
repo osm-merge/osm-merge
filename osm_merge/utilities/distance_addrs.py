@@ -246,7 +246,7 @@ class DistanceAddrs(DBExtract):
         # sql = f"SELECT res.end_vid, res.node, e.cost_s, ST_AsText(e.geom) FROM pgr_dijkstra('SELECT id as id, source, target, length_m as cost FROM ways', {source}, {target}, directed := false) AS res JOIN ways e ON res.edge = e.id;"
         self.pgrcurs.execute(sql)
         result = self.pgrcurs.fetchall()
-        print(sql)
+        # print(sql)
 
         tags = ["sequence", "node", "edge", "geom", "cost", "reverse_cost", "reverse_cost_s"]
         route = list()
@@ -328,44 +328,18 @@ class DistanceAddrs(DBExtract):
         """
 
         """
-        # print(f"SEGMENT: {segment}")
-        # multi = list()
-        # for name, values in majors.items():
-        #     multi.append(shapely.wkt.loads(values["buffer"]))
-        # bar = MultiLineString(multi)
-        # highline = ops.linemerge(bar)
-
-        # if type(highline) == MultiLineString:
-        #     log.debug(f"LINE PROBLEM: {segment}")
-        #     # bar = list()
-        #     # for line in highline.geoms:
-        #     #     bar.append(line)
-        #     # foo = ops.linemerge(bar)
-        #     return None, False
-        # verts = list()
-        # try:
-        #     for point in highline.coords:
-        #         sql = f"SELECT id, osm_id FROM ways_vertices_pgr WHERE x={point[0]} AND y={point[1]}"
-        #         self.pgrcurs.execute(sql)
-        #         result = self.pgrcurs.fetchall()
-        #         if len(result) > 0:
-        #             verts.append(int(result[0][0]))
-        # except:
-        #     breakpoint()
-        # print(f"VERTs: {verts}")
-
         gpx_segment = gpxpy.gpx.GPXTrackSegment()
         for segment in route:
             source = int(segment["edge"])
             target = segment["node"]
+            line = shapely.wkt.loads(segment["geom"])
+            start = line.coords[0]
+            end = line.coords[1]
+            gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(start[1], start[0]))
+            # gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(end[1], end[0]))
             for name, data in self.highways.items():
-                line = shapely.wkt.loads(segment["geom"])
-                start = line.coords[0]
-                end = line.coords[1]
-                gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(start[1], start[0]))
-                # gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(end[1], end[0]))
-                print(f"FOO: {name} {segment["node"]} {start}, {end}: {segment["node"] in data["targets"]}")
                 if segment["node"] in data["targets"]:
+                    # print(f"FOO: {name} {segment["node"]} {start}, {end}: {segment["node"] in data["targets"]}")
                     return gpx_segment, True
 
         return gpx_segment, True
@@ -391,30 +365,7 @@ class DistanceAddrs(DBExtract):
             data = dict(zip(tags, [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
         done = False
         print(f"DATA: {data}")
-        if int(segment["node"]) == 5107:
-            breakpoint()
-            pass
 
-        # if target in verts and segline.intersects(highline) and segline.within(highline):
-        #     done = True
-        #     log.debug(f"Last segment! {segment}")
-        # for node in segline.coords:
-        #     pt = Point(node[0], node[1])
-        #     pt1 = Point(data["x1"], data["y1"])
-        #     pt2 = Point(data["x2"], data["y2"])
-        #     print(f"PT: {pt.equals(pt2)}")
-        #     touch = highline.touches(pt)
-        #     if touch:
-        #         print(f"NODE: {pt} {touch}")
-        #         break
-        #     if math.isclose(data["x1"], node[0]) and math.isclose(data["y1"], node[1]):
-        #         print(f"CLOSE: {node} {data}")
-        #         done = True
-        #         break
-        #     gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(node[1], node[0]))
-        #     if target in verts and done:
-        #         log.debug(f"Last segment! {segment}")
-        #         break
         return gpx_segment, done
 
 def main():
@@ -487,12 +438,7 @@ def main():
         db.get_vertics(name)
         aoi = unary_union(polys)
 
-    nsmap = {"osmmerge": "https://osmmerge.org"}
-    color = etree.Element("{osmmerge}color", nsmap=nsmap)
-    colors = {"tourism_camp_site": "#ff5020", "tourism_picnic_site": "#ff5020", "special_trekking": "#a71de1"}
-
-    color.text = colors["tourism_picnic_site"]
-
+    nsmap = {'gpxx': 'http://www.garmin.com/xmlschemas/GpxExtensions/v3'}
     for name in sorted(highset):
         # Embedded single quotes are evil
         name = name.replace("'", "\"")
@@ -506,20 +452,18 @@ def main():
             # if addr["number"] == '1303':
             #     breakpoint()
             gpx = gpxpy.gpx.GPX()
-            gpx.nsmap["osm_merge"] = "https://osmmerge.org"
-            # color = etree.Element("{osmand}color", nsmap=gpx.nsmap)
-            # color.text = colors[icon]
+            gpx.nsmap = {'gpxx': 'http://www.garmin.com/xmlschemas/GpxExtensions/v3'}
             gpx.creator = "distance_addrs 0.1"
-            print(f"ADDR: {addr}")
+            # print(f"ADDR: {addr}")
             node = shapely.wkt.loads(addr["geom"])
-            print(f"NODE: {node.y}, {node.x}")
+            # print(f"NODE: {node.y}, {node.x}")
             nearest = db.find_nearest_vertex(node)
             # print(f"NEAREST: {nearest}")
             # highway = db.find_nearest_highway(nearest)
             # print(f"HIGHWAY: {highway}")
-            # if node is None or len(highway) == 0:
-            #     log.warning(f"No suitable highways were found near {node}")
-            #     continue
+            if node is None or len(highway) == 0:
+                log.warning(f"No suitable highways were found near {node}")
+                continue
             pt = shape(nearest["geom"])
             targets = db.get_targets(pt, aoi)
 
@@ -532,22 +476,16 @@ def main():
             length = 0
             for route in routes:
                 gpx_track = gpxpy.gpx.GPXTrack()
-                gpx_track.extensions.append(color)
                 gpx_track.name = f"{addr["number"]} {addr["street"]} Track #{routes.index(route)}"
                 gpx.tracks.append(gpx_track)
                 cnt = len(route) - 1
-                print(f"ROUTE: {route[0]["node"]}, {route[0]["edge"]} : {route[cnt]["node"]}, {route[cnt]["edge"]}")
-                #for segment in route:
+                # print(f"ROUTE: {route[0]["node"]}, {route[0]["edge"]} : {route[cnt]["node"]}, {route[cnt]["edge"]}")
                 part, done = db.make_track(route, targets)
                 gpx_track.segments.append(part)
-                #     if done:
-                #         break
-                # if done:
-                #     break
             outfile = f"{addr["number"]}_{addr["street"].replace(" ", "_")}.gpx"
-            # gpx_track.desc = f"Length {length} meters"
-            # gpx_track.description = f"Length {gpx_track.length_2d()} meters"
-            # gpx_track.description = f"Length {gpx_track.length_2d()} meters or {gpx_track.length_2d() / 0.3048} feet"
+            dist = etree.Element("{gpxx}length", nsmap=nsmap)
+            dist.text = f"Length {gpx_track.length_2d():.3f} meters or {(gpx_track.length_2d() / 0.3048):.3f} feet"
+            gpx_track.extensions.append(dist)
             with open(outfile, "w") as gpxfile:
                 gpxfile.write(gpx.to_xml())
             log.debug(f"Wrote {outfile}")

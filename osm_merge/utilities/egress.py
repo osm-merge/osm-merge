@@ -333,10 +333,33 @@ class DistanceAddrs(DBExtract):
             source = int(segment["edge"])
             target = segment["node"]
             line = shapely.wkt.loads(segment["geom"])
-            start = line.coords[0]
-            end = line.coords[1]
-            gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(start[1], start[0]))
-            # gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(end[1], end[0]))
+            sql = f"SELECT ST_AsText(geom) FROM ways WHERE ST_CONTAINS(geom, ST_GeomFromEWKT('SRID=4326;{segment["geom"]}'));"
+            self.pgrcurs.execute(sql)
+            result = self.pgrcurs.fetchall()
+            # sql = f"SELECT ST_AsText(geom), refs FROM ways_line WHERE ST_CONTAINS(geom, ST_GeomFromEWKT('{segment["geom"]}'));"
+            # self.curs.execute(sql)
+            # result = self.curs.fetchall()
+            node = line.coords[0]
+            # multi = list()
+            if len(result) > 0:
+                osm = shapely.wkt.loads(result[0][0])
+                # for point in osm.coords:
+                inter = line.intersection(osm)
+                if inter.geom_type == 'MultiLineString':
+                    inter = ops.linemerge(inter)
+                # print(f"BARRRRR: {inter}")
+                #for pt in inter.coords:
+                #    gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(pt[1], pt[0]))
+                #if line.contains(Point(point)):
+                # multi.append(line.intersection(osm))
+                # print(f"FOOOO: {point} {line.contains(Point(point))}")
+                # gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(point[1], point[0]))
+            # all = MultiLineString(multi)
+            # highline = ops.linemerge(all)
+
+            # for pt in inter.coords:
+                #gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(pt[1], pt[0]))
+            gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(node[1], node[0]))
             for name, data in self.highways.items():
                 if segment["node"] in data["targets"]:
                     # print(f"FOO: {name} {segment["node"]} {start}, {end}: {segment["node"] in data["targets"]}")
@@ -482,6 +505,7 @@ def main():
                 # print(f"ROUTE: {route[0]["node"]}, {route[0]["edge"]} : {route[cnt]["node"]}, {route[cnt]["edge"]}")
                 part, done = db.make_track(route, targets)
                 gpx_track.segments.append(part)
+            gpx.tracks[0].segments[0].points.insert(0, gpxpy.gpx.GPXTrackPoint(node.y, node.x))
             outfile = f"{addr["number"]}_{addr["street"].replace(" ", "_")}.gpx"
             dist = etree.Element("{gpxx}length", nsmap=nsmap)
             dist.text = f"Length {gpx_track.length_2d():.3f} meters or {(gpx_track.length_2d() / 0.3048):.3f} feet"

@@ -43,6 +43,9 @@
   - TRAIL_TYPE: surface
   - TRAIL_NO: ref
   - MANAGING_ORG: operator
+  - TERRA_MOTORIZED:
+    - N: no
+    - Y: designated
   - surface:
     - metal
     - rubber

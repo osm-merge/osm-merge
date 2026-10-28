@@ -170,19 +170,34 @@ debugging.
 ## Usage
 
 ```c
-	Calculate the route to the nearest decent highway. Decent being
-	primary, secondary, or tertiary.
-	
+Calculate route to the nearest decent highway
 
-	options:
-	-h, --help              show this help message and exit
-	-v, --verbose [VERBOSE] verbose output
-	-b, --boundary BOUNDARY Optional boundary to clip the data
-	-o, --outfile OUTFILE   The output file
-	-u, --osmuri OSMURI      OSM Database URI
-	-r, --routedb ROUTEDB    PGRouting Database URI
+options:
+  -h, --help            show this help message and exit
+  -v, --verbose [VERBOSE]
+                        verbose output
+  -b, --boundary BOUNDARY
+                        Optional boundary to clip the data
+  -o, --outfile OUTFILE
+                        The output file
+  -u, --osmuri OSMURI   OSM Database URI
+  -r, --routedb ROUTEDB
+                        PGRouting Database URI
+
+This program uses OpenStreetMap data to calculate egress routes to ther nearest
+decent hoghway for mass evacuation during an emergency. Decent being primary,
+secondary, or tertiary. This produces a GPX file with the route suggestions, one
+for each address in the AOI.
+
+  For example:
+
+	egress.py -v -u localhost/colorado -r localhost/gilpin_routing -b boundaries/Gilpin.geojson
+
+    --boundary
+        Must be a MultiPolygon or Polygon.
+    --osmuri
+        OSM data imported with osm-rawdata's importer program
+    --routedb
+        Imported with the osm2pgrouting program in PGRouting
 ```
 
-For example
-
-egress.py -v -u localhost/colorado -r localhost/gilpin_routing -b boundaries/Gilpin.geojson

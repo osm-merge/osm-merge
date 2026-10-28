@@ -68,11 +68,12 @@ class DBExtract(object):
                     pargs+= f" host={host}"
                 self.db = psycopg2.connect(pargs)
                 self.curs = self.db.cursor()
+                self.db.autocommit = True
                 log.info(f"Connected to database {db} on {host}")
             except Exception as e:
                 log.error(f"Couldn't connect to database: {e}")
 
-    def create_view(self,
+    def create_highway_view(self,
                     boundary: str = None,
                     ) -> bool:
         """
@@ -82,9 +83,14 @@ class DBExtract(object):
             boundary (str): The boundary data file
 
         Returns:
-            (bool): Whether the view was create or not
+            (bool): Whether the view was created or not
         """
-        log.info(f"Creating a temporary table, this make take awhile...")
+        log.info(f"Creating temporary views of highways, this make take awhile...")
+        views = self.list_views("highway")
+        if len(views) > 0:
+            log.debug(f"highway_view already exists")
+            return True
+
         if boundary:
             file = open(boundary, "r")
             data = geojson.load(file)
@@ -95,19 +101,77 @@ class DBExtract(object):
                 for feature  in data["features"]:
                     feat = feature["geometry"]
                     foo = wkt.dumps(feat)
-                    sql = f"CREATE TEMP VIEW highway_view{index} AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{foo}'), geom)"
+                    sql = f"CREATE OR REPLACE TEMP VIEW highway_view{index} AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{foo}'), geom)"
                     self.curs.execute(sql)
                     log.debug(f"Created temporary view highway_view{index}")
                     index += 1
             else:
                 aoi = shape(data["geometry"])
-                sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
-            # print(sql)
+                sql = f"CREATE OR REPLACE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
+                # print(sql)
+                self.curs.execute(sql)
         else:
             # By default, get all the highways
-            sql = f"CREATE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL"
+            sql = f"CREATE OR REPLACE TEMP VIEW highway_view AS SELECT * FROM ways_line WHERE tags->>'highway' IS NOT NULL"
             # print(sql)
             self.curs.execute(sql)
+
+    def create_address_view(self,
+                    boundary: str = None,
+                    ) -> bool:
+        """
+        Filter the data by a multi-polygon to reduce the size.
+
+        Args:
+            boundary (str): The boundary data file
+
+        Returns:
+            (bool): Whether the view was created or not
+        """
+        log.info(f"Creating temporary views of addresses, this make take awhile...")
+        views = self.list_views("address")
+        if len(views) > 0:
+            log.debug(f"address_view already exists")
+            return True
+
+        if boundary:
+            file = open(boundary, "r")
+            data = geojson.load(file)
+            file.close()
+            index = 0
+            if "geometry" not in data:  # It's a FeatureCollection or MultiPolygon
+                polys = list()
+                for feature  in data["features"]:
+                    feat = feature["geometry"]
+                    foo = wkt.dumps(feat)
+                    sql = f"CREATE OR REPLACE TEMP VIEW tmp_view{index} AS SELECT * FROM nodes WHERE tags->>'addr:housenumber' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{foo}'), geom)"
+                    self.curs.execute(sql)
+                    log.debug(f"Created temporary address_view{index}")
+                    index += 1
+            else:
+                aoi = shape(data["geometry"])
+                sql = f"CREATE OR REPLACE TEMP VIEW tmp_view AS SELECT * FROM nodes WHERE tags->>'addr:housenumber' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
+                # print(sql)
+                # Addresses may be on either a node or the building polygon
+                self.curs.execute(sql)
+                sql = f"CREATE OR REPLACE TEMP VIEW tmp_view2 AS SELECT * FROM ways_poly WHERE tags->>'addr:housenumber' IS NOT NULL AND ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{aoi.wkt}'), geom)"
+                # print(sql)
+                self.curs.execute(sql)
+                sql = "CREATE OR REPLACE TEMP VIEW address_view AS SELECT tags,geom FROM tmp_view UNION ALL SELECT tags,ST_CENTROID(geom) FROM tmp_view2;"
+                # print(sql)
+                self.curs.execute(sql)
+        else:
+            sql = f"CREATE OR REPLACE TEMP VIEW tmp_view AS SELECT * FROM nodes WHERE tags->>'addr:housenumber' IS NOT NULL;"
+            print(sql)
+            # Addresses may be on either a node or the building polygon
+            self.curs.execute(sql, ("auto-committed",))
+            sql = f"CREATE OR REPLACE TEMP VIEW tmp_view2 AS SELECT * FROM ways_poly WHERE tags->>'addr:housenumber' IS NOT NULL;"
+            print(sql)
+            self.curs.execute(sql, ("auto-committed",))
+            sql = "CREATE OR REPLACE TEMP VIEW address_view AS SELECT tags,geom FROM tmp_view UNION ALL SELECT tags,ST_CENTROID(geom) FROM tmp_view2;"
+            print(sql)
+            # print(sql)
+            self.curs.execute(sql, ("auto-committed",))
 
     def filter_rows(self,
                     rows: list,
@@ -147,42 +211,87 @@ class DBExtract(object):
 
     def execute_query(self,
                     sql: str = None,
+                    view: str = "highway_view",
                     ) -> list:
         """
         Execute an SQL query.
 
         Args:
             sql (str): The SQL to execute
+            view (str): Optional database view
 
         Returns:
             (list): The result of the SQL query
         """
-        data = list()
-        foo = "SELECT table_schema AS schema, table_name AS view FROM information_schema.views WHERE table_schema NOT IN ('information_schema', 'pg_catalog') ORDER BY schema ASC, view ASC;"
-        self.curs.execute(foo)
-        views =  self.curs.fetchall()
-        pat = re.compile("highway_view.*")
-        temp_views = list()
+        if not sql:
+            log.error(f"Need to specify an SQL query!")
 
+        # data = list()
+        # temp_views = self.list_views(view)
+        # if len(temp_views) == 0:
+        #     log.error(f"There are no views!")
+        #     return data
+
+        # for dbview in temp_views:
+        if sql.find("_view") > 0:
+            newsql = sql
+        else:
+            newsql = sql + view + ';'
+        # log.debug(newsql)
+        self.curs.execute(newsql)
+        result = self.curs.fetchall()
+
+        return result
+
+    def get_vertices(self,
+                    ) -> dict:
+        """
+        Query the database to get only rhe major highways we want to route to..
+
+        """
+        primaries = list
+        sql = f"SELECT row_to_json(highway_view) FROM highway_view WHERE tags->>'highway'='primary'"
+        rows = self.execute_query(sql)
+        if len(rows) == 0:
+            log.error(f"No data returned from the query!")
+
+        # for name in rows["name"]:
+        #     sql = f"SELECT source, target, source_osm, target_osm FROM ways WHERE name LIKE '{name}%'"
+        #     self.pgrcurs.execute(sql)
+        #     result = self.pgrcurs.fetchall()
+        #     nodes = list()
+        #     for entry in result[0]:
+        #         vertex = {"source": entry[0],
+        #                 "target": entry[1],
+        #                 "source_osm": entry[2],
+        #                 "target_osm": entry[3],
+        #                 }
+        #         nodes.append(vertex)
+
+        return nodes
+
+    def list_views(self,
+                   view: str,
+                   ) -> list:
+        """
+        List all the temp views that match a pattern.
+
+        Args:
+            view (str): The views to look for
+        """
+        temp_views = list()
+        sql = "SELECT table_schema AS schema, table_name AS view FROM information_schema.views WHERE table_schema NOT IN ('information_schema', 'pg_catalog') ORDER BY schema ASC, view ASC;"
+        self.curs.execute(sql)
+        views =  self.curs.fetchall()
+        pat = re.compile(f"{view}.*")
+        temp_views = list()
         for entry in views:
             match = re.search(pat, entry[1])
             if match:
                 temp_views.append(match.string)
-        if len(temp_views) == 0:
-            log.error(f"There are no views!")
 
-        log.debug(f"There are {len(temp_views)} temporary views in the database")
-        if not sql:
-            log.error(f"Need to specify an SQL query!")
-
-        for view in temp_views:
-            log.info(f"Querying view {view}")
-            newsql = sql + view + ';'
-            self.curs.execute(newsql)
-            result = self.curs.fetchall()
-            data += result
-
-        return data
+        # log.debug(f"There are {len(temp_views)} temporary views in the database")
+        return temp_views
 
 def main():
     """

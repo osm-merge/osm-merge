@@ -88,12 +88,12 @@ class CountAddrs(object):
 
 def main():
     """
-    This program queries a postgres database as maintained by Underpass.
+    This program generates a count of addresses on each road.
     """
-    parser = argparse.ArgumentParser(description="Query a DB and output to OSM XML format")
+    parser = argparse.ArgumentParser(description="Query a DB and output to CSV")
     parser.add_argument("-v", "--verbose", nargs="?", const="0", help="verbose output")
     parser.add_argument("-b","--boundary", help='Optional boundary to clip the data')
-    parser.add_argument("-o","--outfile", default='out.csv', help='The output file')
+    parser.add_argument("-o","--outfile", default='count_addrs.csv', help='The output file')
     parser.add_argument("-u", "--uri", help="Database URI")
 
     args = parser.parse_args()
@@ -132,7 +132,7 @@ def main():
         tags = highway[4]
         # FIXME: only needed for non OSM data
         if "name" in tags:
-            #     new = ca.convert(tags["name"])
+            # new = ca.convert(tags["name"])
             highset.add(tags["name"])
 
     if len(rows) == 0:
@@ -149,14 +149,12 @@ def main():
         if len(result) > 0:
             count = result[0][0]
             node_addrs[name] = count
-            # file.write(f"{name},{count}\n")
             log.debug(f"{name} has {count} addresses")
         sql = f"SELECT COUNT(tags) FROM ways_poly WHERE tags->>'addr:street' LIKE '{name}%'"
         result = db.execute_query(sql)
         if len(result) > 0:
             count = result[0][0]
             way_addrs[name] = count
-            # file.write(f"{name},{count}\n")
             log.debug(f"{name} has {count} addresses")
     file = open(args.outfile, "w")
     for name in sorted(highset):
@@ -167,13 +165,6 @@ def main():
         print(f"{name} {countn} - {countw}")
         file.write(f"{name},{countn + countw}\n")
     file.close()
-    # path = Path(args.outfile)
-    # if path.suffix == ".geojson":
-    #     log.debug(f"Writing data to GeoJson file, this make take awhile...")
-    #     file = open(args.outfile, "w")
-    #     geojson.dump(FeatureCollection(features), file, indent=2, default=str)
-    #     file.close()
-    #     log.info(f"Wrote {args.outfile}")
 
 if __name__ == "__main__":
     """This is just a hook so this file can be run standalone during development."""

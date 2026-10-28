@@ -66,8 +66,6 @@ nav:
       - About: about.md
       - License: LICENSE.md
       - Changelog: CHANGELOG.md
-#      - Code of Conduct: https://docs.hotosm.org/code-of-conduct
-#      - Versioning: https://docs.hotosm.org/dev-guide/repo-management/version-control/#creating-releases
   - Data Flow: dataflow.md
   - Setup Infrastructure: setup.md
   - Improving XLSForms: xlsforms.md
@@ -84,16 +82,17 @@ nav:
       - OSM Merge: osm-merge.md
       - TM Splitter: tm-splitter.md
       - Basemapper: basemapper.md
-      - Odk2osm: odk2osm.md
-      - Osm2favorites: osm2favorites.md
-      - dbextract: dbextract.md
-      - local-roads: local-roads.md
+      - ODK to OSM: odk2osm.md
+      - OSM to GPX: osm2favorites.md
+      - Extracting Data: dbextract.md
+      - Egress: egress.md
   - Data Conversion:
       - Data Formats: formats.md
       - MVUM: mvum.md
       - Trails: trails.md
       - BLM: blm.md
       - ODK: odkconflation.md
+      - local-roads: local-roads.md
       - OSM Highways: osmhighways.md
       - Extending For Other Datasets: extending.md
   - API:
@@ -111,3 +110,5 @@ nav:
       - MVUM: api/mvum.md
       - BLM: api/blm.md
       - Trails: api/trails.md
+      - Egress: api/egress.md
+

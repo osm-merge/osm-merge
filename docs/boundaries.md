@@ -26,7 +26,7 @@ anyway. You can get the official boundaries from these two sources.
 
 [National Parks](https://catalog.data.gov/dataset/administrative-boundaries-of-national-park-system-units-national-geospatial-data-asset-ngd-a4761)
 
-These datasets are national wise, so need to be split into each forest
+These datasets are national wide, so need to be split into each forest
 or park. I wrote a program called 
 [tm-splitter](https://github.com/osm-merge/osm-merge/blob/main/osm_merge/utilities/tm-splitter.py)
 that reads in the large file, and then splits each forest and park into

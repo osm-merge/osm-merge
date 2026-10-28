@@ -32,7 +32,7 @@
     - UTV: atv=designated
     - PLAN_ALLOW_MODE_TRNSPRT:
       - HIK_ONLY: hiking=designated
-      - ALL_MOTO_VEH: motorvehicle=designated
+      - ALL_MOTO_VEH: motor_vehicle=designated
       - BIKE_HIK_ONLY: hiking=designated, bicycle=designated
       - BIKE_ONLY: bicycle=designated
       - EQU_HIK_ONLY: hiking=designated, horse=designated
@@ -50,8 +50,8 @@
       - TECH_HI_CLEAR_VEH_ONLY: 4wd_only=yes
       - Tech_Hi_Clear_VEH_ONLY: 4wd_only=yes
     - PLAN_MODE_TRNSPRT:
-      - Motorized: motorvehicle=designated
-      - Non-Mechanized:  motorvehicle=no
+      - Motorized: motor_vehicle=designated
+      - Non-Mechanized:  motor_vehicle=no
     - OBSRVE_ROUTE_USE_CLASS:
       - ATV: atv=designated
       - UTV: utv=designated

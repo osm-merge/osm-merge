@@ -25,6 +25,7 @@ import magic
 
 from osm_merge.fieldwork.parsers import ODKParsers
 from osm_merge.osmfile import OsmFile
+from osm_merge.yamlfile import YamlFile
 
 # Instantiate logger
 log = logging.getLogger(__name__)

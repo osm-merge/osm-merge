@@ -395,7 +395,29 @@ def main():
     """
     This program queries a postgres database as to plot potenial emergency egress routes.
     """
-    parser = argparse.ArgumentParser(description="Calculate distance to the nearest decent highway")
+    parser = argparse.ArgumentParser(
+        prog="egress",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Calculate route to the nearest decent highway",
+        epilog="""
+This program uses OpenStreetMap data to calculate egress routes to ther nearest
+decent hoghway for mass evacuation during an emergency. Decent being primary,
+secondary, or tertiary. This produces a GPX file with the route suggestions, one
+for each address in the AOI.
+
+  For example:
+
+	egress.py -v -u localhost/colorado -r localhost/gilpin_routing -b boundaries/Gilpin.geojson
+
+    --boundary
+        Must be a MultiPolygon or Polygon.
+    --osmuri
+        OSM data imported with osm-rawdata's importer program
+    --routedb
+        Imported with the osm2pgrouting program in PGRouting
+
+""",
+    )
     parser.add_argument("-v", "--verbose", nargs="?", const="0", help="verbose output")
     parser.add_argument("-b","--boundary", help='Optional boundary to clip the data')
     parser.add_argument("-o","--outfile", default='out.csv', help='The output file')
@@ -472,8 +494,6 @@ def main():
         else:
             log.debug(f"Found {len(addrs)} addresses for {name}")
         for addr in addrs:
-            # if addr["number"] == '1303':
-            #     breakpoint()
             gpx = gpxpy.gpx.GPX()
             gpx.nsmap = {'gpxx': 'http://www.garmin.com/xmlschemas/GpxExtensions/v3'}
             gpx.creator = "distance_addrs 0.1"
@@ -505,7 +525,13 @@ def main():
                 # print(f"ROUTE: {route[0]["node"]}, {route[0]["edge"]} : {route[cnt]["node"]}, {route[cnt]["edge"]}")
                 part, done = db.make_track(route, targets)
                 gpx_track.segments.append(part)
-            gpx.tracks[0].segments[0].points.insert(0, gpxpy.gpx.GPXTrackPoint(node.y, node.x))
+                # Make the first point in the track be the address node so it's clear
+                # which house uses which route.
+            try:
+                gpx.tracks[0].segments[0].points.insert(0, gpxpy.gpx.GPXTrackPoint(node.y, node.x))
+            except:
+                # breakpoint()
+                pass
             outfile = f"{addr["number"]}_{addr["street"].replace(" ", "_")}.gpx"
             dist = etree.Element("{gpxx}length", nsmap=nsmap)
             dist.text = f"Length {gpx_track.length_2d():.3f} meters or {(gpx_track.length_2d() / 0.3048):.3f} feet"

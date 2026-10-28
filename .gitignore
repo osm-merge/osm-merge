@@ -99,3 +99,6 @@ config.log
 config.status
 .gdbinit
 fastclip/fastclip
+missing
+install-sh
+

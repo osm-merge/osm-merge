@@ -22,6 +22,7 @@ dependencies = [
     "tqdm>=4.67.1",
     "yxf>=0.4.0",
     "pyxform>=4.3.0",
+    "geomet>=1.1.0",
 ]
 requires-python = ">=3.9"
 readme = "README.md"
@@ -122,3 +123,4 @@ basemapper = "osm_merge.fieldwork.basemapper:main"
 osm2favorites = "osm_merge.fieldwork.osm2favorities:main"
 odk2osm = "osm_merge.fieldwork.odk2osm:main"
 tm-splitter = "osm_merge.utilities.tm_splitter:main"
+egress = "osm_merge.utilities.egress:main"

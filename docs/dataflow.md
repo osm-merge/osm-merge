@@ -139,6 +139,7 @@ is documented in detail here:
 
 * [MVUM](mvum.md)
 * [Trails](trails.md)
+* [BLM](blm.md)
 * [OSM](osmhighways.md)
 
 While it's possible to manually convert the tags using an editor, it

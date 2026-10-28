@@ -1,21 +1,17 @@
+dnl Copyright (c) 2025, 2026 OpenStreetMap US
 dnl
-dnl Copyright (c) 2020, 2021, 2023 Humanitarian OpenStreetMap Team
+dnl This program is free software: you can redistribute it and/or modify
+dnl it under the terms of the GNU Affero General Public License as
+dnl published by the Free Software Foundation, either version 3 of the
+dnl License, or (at your option) any later version.
 dnl
-dnl This file is part of Underpass.
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU Affero General Public License for more details.
 dnl
-dnl     Underpass is free software: you can redistribute it and/or modify
-dnl     it under the terms of the GNU General Public License as published by
-dnl     the Free Software Foundation, either version 3 of the License, or
-dnl     (at your option) any later version.
-dnl
-dnl     Underpass is distributed in the hope that it will be useful,
-dnl     but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-dnl     GNU General Public License for more details.
-dnl
-dnl     You should have received a copy of the GNU General Public License
-dnl     along with Underpass.  If not, see <https:dnlwww.gnu.org/licenses/>.
-dnl
+dnl You should have received a copy of the GNU Affero General Public License
+dnl along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 AC_PREREQ(2.59c)
 AC_INIT(osmmerge, 1.0dev)

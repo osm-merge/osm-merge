@@ -135,8 +135,8 @@ consider around editing time.
 # Kept Fields
 
 The two primary fields are *TRAIL_NO*, which is used for the
-*ref:usfs* tags, and *TRAIL_NAME*, which is the name of the trail. In
-addition to these
+*ref* tag, and *TRAIL_NAME*, which is the name of the trail. In
+addition to these are the following:
 
 ## The 5 Variations
 

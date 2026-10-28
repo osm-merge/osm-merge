@@ -205,27 +205,8 @@ varying quality, there's probably a few not captured here that will
 have to be fixed when editing the data. This however improves the
 conflation results to limit manual editing.
 
-For example, these are some of the abbreviations, a [Full
-list](https://github.com/osm-merge/osm-merge/blob/main/osm_merge/utilities/mvum.yaml)
-is in the config file used for conversion.
-
-* " Cr " is " Creek "
-* " Cg " is " Campground "
-* " Rd. " is " Road"
-* " Mt " is " Mountain"
-* " Mtn " is " Mountain"
-* " Disp " is " Dispersed"
-* " Rd. " is " Road"
-* " Mtn " is " Mountain"
-* " Lk " is " Lake"
-* " Resvr " is " Reservoir"
-* " Spg " is " Spring"
-* " Br " is " Bridge"
-* " N " is " North"
-* " W " is " West"
-* " E " is " East"
-* " S " is " South"
-* " So " is " South"
+For example, these are some of the [ abbreviations
+list](abbreviations.md) I've found while converting metadata.
 
 # Other Minor issues
 

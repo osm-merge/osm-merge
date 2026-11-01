@@ -1,0 +1,16 @@
+
+'''c
+Calculate distance to the nearest decent highway
+
+options:
+  -h, --help            show this help message and exit
+  -v, --verbose [VERBOSE]
+                        verbose output
+  -b, --boundary BOUNDARY
+                        Optional boundary to clip the data
+  -o, --outfile OUTFILE
+                        The output file
+  -u, --osmuri OSMURI   OSM Database URI
+  -r, --routedb ROUTEDB
+                        PGRouting Database URI
+'''

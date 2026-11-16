@@ -55,10 +55,10 @@ import math
 from shapely import buffer
 
 
-class DistanceAddrs(DBExtract):
+class RouteAddrs(DBExtract):
     def __init__(self,
-                 osmuri: str,
-                 routing: str,
+                 osmuri: str = None,
+                 routing: str = None,
                  ):
         """
         Initialize the database connection.
@@ -68,16 +68,28 @@ class DistanceAddrs(DBExtract):
             routing (str): The PGRoutinh database to use
 
         Returns:
-            DistanceAddrs: An instance of this class
+            RouteAddrs: An instance of this class
         """
         self.curs = None
         self.db = None
+        self.connectDB(osmuri, routing)
+        self.pgrdb = None
+        self.pgrcurs = None
+
+    def connectDB(self,
+                 osmuri: str = None,
+                 routing: str = None,
+                 ):
         if osmuri:
             super().__init__(osmuri)
 
         if routing:
-            host = routing.split('/')[0]
-            db = routing.split('/')[1]
+            if routing.find('/') > 0:
+                host = routing.split('/')[0]
+                db = routing.split('/')[1]
+            else:
+                host = "localhost"
+                db = routing
             try:
                 pargs = f"dbname={db}"
                 if host != "localhost":
@@ -88,13 +100,6 @@ class DistanceAddrs(DBExtract):
                 self.pgrdb.autocommit = True
             except Exception as e:
                 log.error(f"Couldn't connect to database: {e}")
-        # self.pgr = PGRouting(dbname='gilpin_routing', user='rob')
-        # if self.pgr._conn   is None:
-        #     log.error(f"Failed to connect to {routing} database")
-        # else:
-        #     log.info(f"Connected to {routing} database")
-
-        # self.pgr.set_meta_data(cost='cost_s', reverse_cost='reverse_cost_s', directed=True)
         self.sources = list()
         self.targets = list()
         self.highways = dict()
@@ -116,15 +121,17 @@ class DistanceAddrs(DBExtract):
         """
         poly = self.make_boundary(node)
         sql = f"CREATE OR REPLACE TEMP VIEW pg_view AS SELECT * FROM ways_vertices_pgr WHERE ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{poly.wkt}'), geom)"
-        # print(sql)
+        print(sql)
         self.pgrcurs.execute(sql)
 
         threshold = 3000 # in meters
         sql = f"SELECT row_to_json(pg_view) as row FROM pg_view WHERE ST_Distance(geom, ST_GeomFromEWKT('SRID=4326;{node.wkt}')::geography) < {threshold} ORDER BY ST_Distance(geom, ST_GeomFromEWKT('SRID=4326;{node.wkt}')) LIMIT 1;"
 
+        print(f"VERTEX: {sql}")
         self.pgrcurs.execute(sql)
         result = self.pgrcurs.fetchall()
-
+        # tags = ["id", "in_edges", "out_edges", "x", "y", "osm_id", "geom"]
+        # foo = dict(zip(tags, result[0]))
         if len(result) == 0:
             log.warning(f"No nearby verticies found within {threshold} meters!")
             return dict()
@@ -153,6 +160,7 @@ class DistanceAddrs(DBExtract):
         """
         """
         sql = f"SELECT ST_AsText(ST_Buffer(ST_GeomFromText('{node.wkt}'), {radius}));"
+        print(sql)
         self.pgrcurs.execute(sql)
         result = self.pgrcurs.fetchall()
         poly =  shapely.wkt.loads(result[0][0])
@@ -207,14 +215,18 @@ class DistanceAddrs(DBExtract):
         """
         """
         targets = list()
+        vertices = dict()
+        if highways is None:
+            log.error(f"No Highways specified!")
+            # return vertices
+
         # sql = f"SELECT id,ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;POINT (-105.4970686 39.917249)'), geom) AS distance FROM ways_vertices_pgr WHERE ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;{node.wkt}'), geom) < {threshold} ORDER BY distance;"
-        sql = f"SELECT id,ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;{node.wkt}'), geom::geography) AS distance FROM ways_vertices_pgr WHERE ST_Contains(ST_GeomFromEWKT('SRID=4326;{highways.wkt}'), geom) ORDER BY distance LIMIT 10;"
         # sql = f"SELECT id,ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;{highways.wkt}'), geom) AS distance FROM ways_vertices_pgr WHERE ST_Contains(ST_GeomFromEWKT('SRID=4326;{highways.wkt}'), geom) ORDER BY distance;"
-        # print(sql)
+        sql = f"SELECT id,ST_DISTANCE(ST_GeomFromEWKT('SRID=4326;{node.wkt}'), geom::geography) AS distance FROM ways_vertices_pgr WHERE ST_Contains(ST_GeomFromEWKT('SRID=4326;{highways.wkt}'), geom) ORDER BY distance LIMIT 10;"
+        print(sql)
         self.pgrcurs.execute(sql)
 
         result = self.pgrcurs.fetchall()
-        vertices = dict()
         for row in result:
             vertices[row[0]] = row[1]
 
@@ -246,7 +258,7 @@ class DistanceAddrs(DBExtract):
         # sql = f"SELECT res.end_vid, res.node, e.cost_s, ST_AsText(e.geom) FROM pgr_dijkstra('SELECT id as id, source, target, length_m as cost FROM ways', {source}, {target}, directed := false) AS res JOIN ways e ON res.edge = e.id;"
         self.pgrcurs.execute(sql)
         result = self.pgrcurs.fetchall()
-        # print(sql)
+        print(sql)
 
         tags = ["sequence", "node", "edge", "geom", "cost", "reverse_cost", "reverse_cost_s"]
         route = list()
@@ -290,6 +302,18 @@ class DistanceAddrs(DBExtract):
         #     return False
 
         return True
+
+    def get_geom(self,
+                 addr: str,
+                 street: str,
+                    ):
+        sql = f"SELECT ST_AsText(geom) AS geom FROM address_view WHERE tags->>'addr:housenumber'='{addr}' AND tags->>'addr:street'='{street}';"
+        result = self.execute_query(sql, "address_view")
+        geom = None
+        if len(result) > 0:
+            #for entry in result:
+            geom = result[0]
+        return {"street": street, "number": addr, "geom": geom}
 
     def get_addrs(self,
                   street: str,
@@ -440,7 +464,7 @@ for each address in the AOI.
             stream=sys.stdout,
         )
 
-    db = DistanceAddrs(args.osmuri, args.routedb)
+    db = RouteAddrs(args.osmuri, args.routedb)
 
     # Make a temporary view to reduce the data size
     if args.boundary:
@@ -496,7 +520,7 @@ for each address in the AOI.
         for addr in addrs:
             gpx = gpxpy.gpx.GPX()
             gpx.nsmap = {'gpxx': 'http://www.garmin.com/xmlschemas/GpxExtensions/v3'}
-            gpx.creator = "distance_addrs 0.1"
+            gpx.creator = "egress 0.1"
             # print(f"ADDR: {addr}")
             node = shapely.wkt.loads(addr["geom"])
             # print(f"NODE: {node.y}, {node.x}")

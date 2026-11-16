@@ -60,8 +60,12 @@ class DBExtract(object):
         self.curs = None
         self.db = None
         if uri:
-            host = uri.split('/')[0]
-            db = uri.split('/')[1]
+            if uri.find('/') >= 0:
+                host = uri.split('/')[0]
+                db = uri.split('/')[1]
+            else:
+                host = "localhost"
+                db = uri
             try:
                 pargs = f"dbname={db}"
                 if host != "localhost":

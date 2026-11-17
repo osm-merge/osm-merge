@@ -14,7 +14,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from fastapi import FastAPI, UploadFile, File, Form, APIRouter
+
+from typing import Annotated
+from fastapi import FastAPI, UploadFile, File, Form, APIRouter, Query
 from shapely.geometry import Polygon, MultiPolygon
 from starlette.responses import FileResponse
 from osm_merge.utilities.egress import RouteAddrs
@@ -25,11 +27,21 @@ from shapely.ops import unary_union
 import logging
 import gpxpy.gpx
 from lxml import etree
+from pydantic import BaseModel
+from osm_merge.backend.egress_models import DBsIn, Response
+
+class Item(BaseModel):
+    name: str = "foo"
+    description: str | None = None
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
-app = FastAPI()
+app = FastAPI(
+    title="Egress Planning",
+    version="0.1",
+    )
+
 # outer = APIRouter(
 #     prefix="/helper",
 #     tags=["helper"],
@@ -42,6 +54,7 @@ class Egress(RouteAddrs):
         """
         self.aoi = None
         self.major = None
+        self.gpx = None
         super().__init__()
         self.connectDB("colorado", "gilpin_routing")
         self.create_highway_view("/tmp/Gilpin.geojson")
@@ -77,7 +90,7 @@ class Egress(RouteAddrs):
                         routes: list,
                         start: Point,
                         targets: list,
-                        ) -> gpxpy.gpx.GPX:
+                        ) -> str:
         """
         """
         tracks = list()
@@ -100,7 +113,7 @@ class Egress(RouteAddrs):
             dist = etree.Element("{gpxx}length", nsmap=gpx.nsmap)
             dist.text = f"Length {gpx_track.length_2d():.3f} meters or {(gpx_track.length_2d() / 0.3048):.3f} feet"
             gpx_track.extensions.append(dist)
-
+        self.gpx = gpx
         return gpx.to_xml()
 
 #
@@ -109,33 +122,27 @@ class Egress(RouteAddrs):
 egress = Egress()
     
 @app.get("/")
-async def get_default (uri: str = "colorado", routedb: str = "gilpin_routing"):
-    if uri is None and routedb is None:
+# FIXME: the default database names are only for debugging!
+async def get_default (osmdb: Annotated[str, Query()] = "colorado",
+                       routedb: Annotated[str, Query()] = "gilpin_routing"):
+    if osmdb is None and routedb is None:
         # FIXME: these are just for debugging"
-        uri = "localhost/colorado"
-        routedb = "localhost/gilpin_routing"
-        result = egress.connectDB(uri, routedb)
-    return f"uri: {uri}, routedb: {routedb}"
+        result = egress.connectDB(osmdb, routedb)
+    return f"uri: {osmdb}, routedb: {routedb}"
 
-@app.get("/aoi")
-# def apply_aoi (filespec: str = Form(...)):
-#    file: UploadFile = File(...)
+@app.post("/aoi")
 async def apply_aoi(file: UploadFile = File(...)):
-    breakpoint()
-    # data = file.read()
-    # FIXME: only for debugging
     egress.create_highway_view(file.filename)
     egress.create_address_view(file.filename)
-    print(f"FIXME: {file}")
     return {
         "filename": file.filename,
         "content_type": file.content_type,
-        "size": len(contents)
     }
 
 # FIXME: Drop the default values after debugging!
 @app.get("/address")
-async def get_route_for_address (number: str = "1305", street: str = "Upper Moon Gulch Road"):
+async def get_route_for_address (number: Annotated[str, Query()] = "1305",
+                                 street: Annotated[str, Query()] = "Upper Moon Gulch Road"):
     addr = egress.get_geom(number, street)
     node = shapely.wkt.loads(addr["geom"])[0]
     log.debug(f"Address {number} {street} is {node}")
@@ -143,7 +150,8 @@ async def get_route_for_address (number: str = "1305", street: str = "Upper Moon
 
 # FIXME: Drop the default values after debugging!
 @app.get("/coordinates")
-async def get_route_for_coordinates (lat: float = -105.51833, lon: float = 39.91271) -> dict:
+async def get_route_for_coordinates (lat: float = -105.51833,
+                                     lon: float = 39.91271) -> dict:
     """
     Args:
         lat (float): the latitude
@@ -162,7 +170,6 @@ async def get_route_for_coordinates (lat: float = -105.51833, lon: float = 39.91
     else:
         log.debug(f"Found nearest vertex {nearest} to {node}")
     pt = shape(nearest["geom"])
-    breakpoint()
     targets = egress.get_targets(pt, egress.aoi)
 
     if len(targets) == 0:
@@ -181,18 +188,14 @@ async def get_route_for_coordinates (lat: float = -105.51833, lon: float = 39.91
     return {"nearest": nearest, "targets": targets, "gpx": gpx}
 
 @app.get("/download")
-async def download_gpx (self,
-                  outfile: str,
-                   ):
+async def download_gpx (outfile: str) -> bool:
     with open(outfile, "w") as gpxfile:
-        gpxfile.write(gpx.to_xml())
-        log.debug(f"Wrote {outfile}")
+        if egress.gpx is None:
+            log.error(f"No GPX data!")
+            return False
+        else:
+            gpxfile.write(egress.gpx.to_xml())
+            log.debug(f"Wrote {outfile}")
     # return f"apply_aoi({file.filename})"
-    return FileResponse(file_location, media_type='application/octet-stream',filename=file_name)
+    return True
 
-# t = Test()
-# @app.get("/test")
-# async def test_test (self,
-#                   outfile: str,
-#                    ):
-#     return t.test_test()

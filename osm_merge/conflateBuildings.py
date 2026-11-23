@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2021, 2022, 2023 OpenStreetMap US
+# Copyright (c) 2021, 2022, 2023, 2024, 2025, 2026 OpenStreetMap US
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,17 +18,21 @@
 import argparse
 import logging
 import sys
+from sys import argv
 
 import geojson
 from codetiming import Timer
 from cpuinfo import get_cpu_info
-from geojson import Feature, FeatureCollection, Polygon
-
+from geojson import Feature, FeatureCollection, Polygon, MultiPolygon
+from osm_merge.dbextract import DBExtract
 # from osm_merge.geosupport import GeoSupport
-from geosupport import GeoSupport
-from osm_rawdata.postgres import uriParser
-from shapely import wkb
-from shapely.geometry import Polygon, shape
+# from geosupport import GeoSupport
+# from osm_rawdata.postgres import uriParser
+from shapely import wkb, wkt
+from shapely.geometry import Polygon, shape, Point
+import geopandas as gpd
+from progress.spinner import PixelSpinner
+import math
 
 # Instantiate logger
 log = logging.getLogger(__name__)
@@ -38,30 +42,103 @@ info = get_cpu_info()
 cores = info["count"]
 
 
-class ConflateBuildings(object):
+class ConflateBuildings(DBExtract):
     def __init__(
         self,
-        dburi: str = None,
-        boundary: Polygon = None,
+        uri: str = None,
+        blduri: str = None,
     ):
         """This class conflates data that has been imported into a postgres
-        database using the Underpass raw data schema.
+        database using the osm-rawdata schema.
 
         Args:
-            dburi (str): The DB URI
-            boundary (Polygon): The AOI of the project
+            uri (str): The DB URI for OSM data
+            blduri (str): The DB URI for building footprints
 
         Returns:
-            (ConflateDB): An instance of this object
+            (ConflateBuildings): An instance of this object
         """
-        self.postgres = list()
-        self.uri = None
-        if dburi:
-            self.uri = uriParser(dburi)
-            self.db = GeoSupport(dburi)
-        self.boundary = boundary
-        self.view = "ways_poly"
+        # if blduri:
+        #     self.blddb = DBExtract(blduri)
+
+        self.boundary = None
         self.filter = list()
+        if uri:
+            super().__init__("conflate")
+        # self.create_tables()
+            self.aoi = None
+        self.convert = {"Fdr": "FR", "Cr": "Creek", "Cr.": "Creek", "Ck.": "Creek", "Crk": "Creek", "Cg": "Campground", "C G": "Campground", "C.G": "Campground", "Th": "Trailhead", "Tr": "Trail", "T.H.": "Trailhead", "Rd": "Road", "Disp": "Dispersed ", "Rd.": "Road", "Rd": "Road", "Mt": "Mountain ", "Mtn.": "Mountain ", "Mtn": "Mountain", "Lk": "Lake", "Pk": "Park", "Resvr": "Reservoir", "Rsvr": "Reservoir", "Spg": "Spring", "Sp": "Spring", "Br": "Bridge", "Ext": "Extension", "Fk.": "Fork", "N": "North", "N.": "North", "W": "West", "W.": "West", "E": "East", "E.": "East", "S": "South", "S.": "South", "So": "South", "Cyn": "Canyon", "Can": "Canyon", "St": "Street", "Ave": "Avenue", "NW": "North West", "Pl": "Place", "Blvd": "Boulevard", "Dr": "Drive", "Ln": "Lane", "Cir": "Circle", "Trl": "Trail", "Ct": "Court", "Way": "Way", "Pkwy": "Parkway", "Ter": "Terrace", "Loop": "Loop", "SW": "South West", "SE": "South East", "Hwy": "Highway"}
+
+    def load_aoi(self,
+                filespec: str,
+                ) -> MultiPolygon:
+        """
+        Import a GeoJson AOI file into a geometry.
+
+        Args:
+            filespec (str): The GeoJson file to import
+
+        Returns:
+            (MultiPolygon): The AOI geometry
+        """
+        file = open(filespec, "r")
+        boundary = geojson.load(file)
+        polys = list()
+        for feature in boundary["features"]:
+            polys.append(feature["geometry"])
+        self.aoi = MultiPolygon(polys)
+
+        return self.aoi
+
+    def create_tables(self,
+                    ):
+        # Create the tables
+        # sql = "CREATE EXTENSION postgis;"
+        # result = self.curs.execute(sql)
+        sql = f"DROP TABLE IF EXISTS public.nodes CASCADE; CREATE TABLE public.nodes (osm_id bigint, geom geometry, tags jsonb);"
+        result = self.curs.execute(sql)
+        sql = f"DROP TABLE IF EXISTS public.ways_line CASCADE; CREATE TABLE public.ways_line (osm_id bigint, geom geometry, tags jsonb);"
+        result = self.curs.execute(sql)
+        sql = f"DROP TABLE IF EXISTS public.poly CASCADE; CREATE TABLE public.ways_poly (osm_id bigint, geom geometry, tags jsonb);"
+        result = self.curs.execute(sql)
+
+    def importDataset(self,
+                     filespec: str,
+                     ) -> bool:
+        """
+        Import a GeoJson file into a postgres database for conflation.
+
+        Args:
+            filespec (str): The GeoJson file to import
+
+        Returns:
+            (bool): If the import was successful
+        """
+        file = open(filespec, "r")
+        data = geojson.load(file)
+
+        for entry in data["features"]:
+            keys = "geom, "
+            geometry = shape(entry["geometry"])
+            ewkt = geometry.wkt
+            if geometry.geom_type == "Polygon":
+                table = "ways_poly"
+            if geometry.geom_type == "Point":
+                table = "nodes"
+            tags = f"\'{{"
+            for key, value in entry["properties"].items():
+                print(f"FIXME: {key} = {value} {type(value)}")
+                if type(value) == dict:
+                    # breakpoint()
+                    continue
+                tags += f"\"{key}\": \"{value}\", "
+            tags = tags[:-2]
+            tags += "}\'::jsonb)"
+            sql = f"INSERT INTO {table} (geom, tags) VALUES(ST_GeomFromEWKT(\'SRID=4326;{ewkt}\'), {tags}"
+            print(sql)
+            result = self.curs.execute(sql)
+
+        return False
 
     def addSourceFilter(
         self,
@@ -74,8 +151,9 @@ class ConflateBuildings(object):
         self,
         dburi: str,
     ):
-        """Conflate buildings where all the data is in the same postgres database
-        using the Underpass raw data schema.
+        """
+        Conflate buildings where all the data is in the same postgres database
+        using the osm-rawdata schema.
 
         Args:
             dburi (str): The URI for the existing OSM data
@@ -94,24 +172,24 @@ class ConflateBuildings(object):
         sql = (
             "DROP TABLE IF EXISTS dups_view CASCADE; DROP TABLE IF EXISTS osm_view CASCADE;DROP TABLE IF EXISTS ways_view CASCADE;"
         )
-        result = self.db.queryDB(sql)
+        # result = self.db.queryDB(sql)
 
         if self.boundary:
             self.db.clipDB(self.boundary)
 
         log.debug("Clipping OSM database")
-        ewkt = shape(self.boundary)
-        uri = uriParser(dburi)
-        log.debug(f"Extracting OSM subset from \"{uri['dbname']}\"")
-        sql = f"CREATE TABLE osm_view AS SELECT osm_id,tags,geom FROM dblink('dbname={uri['dbname']}', 'SELECT osm_id,tags,geom FROM ways_poly') AS t1(osm_id int, tags jsonb, geom geometry) WHERE ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{ewkt}'), geom) AND tags->>'building' IS NOT NULL"
-        # print(sql)
-        result = self.db.queryDB(sql)
+        # ewkt = shape(self.boundary)
+        # uri = uriParser(dburi)
+        # log.debug(f"Extracting OSM subset from \"{uri['dbname']}\"")
+        # sql = f"CREATE TABLE osm_view AS SELECT osm_id,tags,geom FROM dblink('dbname={uri['dbname']}', 'SELECT osm_id,tags,geom FROM ways_poly') AS t1(osm_id int, tags jsonb, geom geometry) WHERE ST_CONTAINS(ST_GeomFromEWKT('SRID=4326;{ewkt}'), geom) AND tags->>'building' IS NOT NULL"
+        # # print(sql)
+        # result = self.db.queryDB(sql)
 
         sql = "CREATE TABLE dups_view AS SELECT ST_Area(ST_INTERSECTION(g1.geom::geography, g2.geom::geography)) AS area,g1.osm_id AS id1,g1.geom as geom1,g1.tags AS tags1,g2.osm_id AS id2,g2.geom as geom2, g2.tags AS tags2 FROM ways_view AS g1, osm_view AS g2 WHERE ST_INTERSECTS(g1.geom, g2.geom) AND g2.tags->>'building' IS NOT NULL"
         print(sql)
-        result = self.db.queryDB(sql)
+        result = self.osmdb.execute_query(sql)
 
-    def cleanDuplicates(self):
+    def cleanDuplicates(self) -> bool:
         """Delete the entries from the duplicate building view.
 
         Returns:
@@ -123,11 +201,12 @@ class ConflateBuildings(object):
         result = self.db.queryDB(sql)
         return True
 
-    def getNew(self):
-        """Get only the new buildings
+    def getNew(self) -> FeatureCollection:
+        """
+        Get only the new buildings
 
         Returns:
-            (FeatureCollection): The entries from the datbase table
+            (FeatureCollection): The entries from the database table
         """
         sql = "SELECT osm_id,geom,tags FROM ways_view"
         result = self.db.queryDB(sql)
@@ -182,6 +261,69 @@ class ConflateBuildings(object):
         log.debug(f"{len(features)} duplicate features found")
         return FeatureCollection(features)
 
+    def merge_address(self,
+                       addresses: str,
+                       footfile: str,
+                           ):
+        """
+        Conflate two geoJson files.
+
+        Args:
+            addressses (str): Colorado address data
+            footfile (str): building footprints
+        """
+        addrs = gpd.read_file(addresses)
+        foot = gpd.read_file(footfile)
+
+        spin = PixelSpinner('Processing...')
+
+        tags = ["SAUID", "PlaceID","Longitude","Latitude","AddrNum","NumSuf""St_PreMod","PreDir","PreType","St_PreSep","StreetName","PostType","PostDir","St_PosMod","Building","Floor","Unit","AddrFull","PlaceName"]
+        buildings = list()
+        for feature in foot.iterfeatures():
+            # spin.next()
+            if feature["geometry"] is None:
+                continue
+            node = shape(feature["geometry"])
+            address = addrs.iloc[addrs.sindex.query(node, predicate="intersects")]
+            if len(address["geometry"]) == 0:
+                continue
+            row = address.values[0].view().tolist()
+            address = dict(zip(tags, row))
+            number = address["AddrNum"]
+            fullstreet = str()
+            if type(address["PreType"]) != float:
+                fullstreet += self.convert[address["PreType"]] + " "
+            if type(address["PostType"]) != float:
+                fullstreet += address["PostType"].capitalize() + " "
+            if type(address["PostDir"]) != float:
+                fullstreet += self.convert[address["PostDir"].capitalize()]
+                # print(fullstreet.title())
+            props = {"addr:housenumber": number, "addr:street": fullstreet}
+            buildings.append(Feature(properties = props, geometry = shape(feature["geometry"])))
+
+        fc = FeatureCollection(buildings)
+        file = open("foo.geojson", "w")
+        geojson.dump(fc, file, indent=4)
+
+    def conflate_files(self,
+                       osmfile: str,
+                       footfile: str,
+                           ):
+        """
+        Conflate two geoJson files.
+
+        Args:
+            osmfile (str): OSM building data extract
+            footfile (str): Building footprints
+        """
+        osm = gpd.read_file(osmfile)
+        foot = gpd.read_file(footfile)
+        foot['savedindex']= foot.index #Save the index values as a new column
+        #Find the polygons that intersect. Keep savedindex as a series
+        intersecting = osm.sjoin(foot, how='inner')['savedindex']
+        #Filter away these, "savedindex is not in intersecting"
+        foot = foot[~foot.savedindex.isin(intersecting)]
+        foot.to_file(r'/tmp/new-buildings.geojson')
 
 def main():
     """This main function lets this class be run standalone by a bash script"""
@@ -194,10 +336,17 @@ def main():
         """,
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
-    parser.add_argument("-d", "--dburi", required=True, help="Source Database URI")
-    parser.add_argument("-o", "--osmuri", required=True, help="OSM Database URI")
-    parser.add_argument("-b", "--boundary", required=True, help="Boundary polygon to limit the data size")
+    parser.add_argument("-f", "--footprints", help="Building footpints data Source")
+    parser.add_argument("-o", "--osmdata",  help="OpenStreetMap data Source")
+    parser.add_argument("-a", "--addresses",  help="Address data Source")
+    parser.add_argument("-b", "--boundary", help="Boundary polygon to limit the data size")
+    # parser.add_argument("-g", "--geo", help="import GeoJson into database for conflation")
     # parser.add_argument("-o", "--outfile", help="Post conflation output file")
+
+    # Need at least one operation
+    if len(argv) == 1:
+        parser.print_help()
+        quit()
 
     args = parser.parse_args()
 
@@ -210,28 +359,36 @@ def main():
         ch.setFormatter(formatter)
         log.addHandler(ch)
 
-    file = open(args.boundary, "r")
-    boundary = geojson.load(file)
-    if "features" in boundary:
-        poly = boundary["features"][0]["geometry"]
-    else:
-        poly = boundary["geometry"]
-    cdb = ConflateBuildings(args.dburi, poly)
-    cdb.overlapDB(args.osmuri)
-    features = cdb.getDuplicates()
+    # SELECT * fROM ways_poly WHERE tags->>'capture_dates_range' IS NOT NULL;
+
+    # if args.osmdata[:3] == "PG:":
+    #     pass
+
+    cdb = ConflateBuildings()
+    if args.boundary:
+        aoiwkt = cdb.load_aoi(args.boundary)
+
+    if args.addresses:
+        cdb.merge_address(args.addresses, args.footprints)
+
+    if args.osmdata:
+        cdb.conflate_files(args.osmdata, args.footprints)
+
+        # cdb.create_tables()
+    # cdb.overlapDB(args.osmuri)
+    # features = cdb.getDuplicates()
 
     # FIXME: These are only for debugging
-    file = open("foo.geojson", "w")
-    geojson.dump(features, file)
-    log.info("Wrote foo.geojson for duplicates")
+    # file = open("foo.geojson", "w")
+    # geojson.dump(features, file)
+    # log.info("Wrote foo.geojson for duplicates")
 
-    cdb.cleanDuplicates()
-    features = cdb.getNew()
-    file = open("bar.geojson", "w")
-    geojson.dump(features, file)
+    # cdb.cleanDuplicates()
+    # features = cdb.getNew()
+    # file = open("bar.geojson", "w")
+    # geojson.dump(features, file)
 
-    log.info("Wrote bar.geojson for new buildings")
-
+    # log.info("Wrote bar.geojson for new buildings")
 
 if __name__ == "__main__":
     """This is just a hook so this file can be run standlone during development."""

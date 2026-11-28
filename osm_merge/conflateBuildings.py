@@ -33,6 +33,10 @@ from shapely.geometry import Polygon, shape, Point
 import geopandas as gpd
 from progress.spinner import PixelSpinner
 import math
+from osm_merge.yamlfile import YamlFile
+
+import osm_merge as om
+rootdir = om.__path__[0]
 
 # Instantiate logger
 log = logging.getLogger(__name__)
@@ -61,13 +65,32 @@ class ConflateBuildings(DBExtract):
         # if blduri:
         #     self.blddb = DBExtract(blduri)
 
+        self.abbrevs = dict()
         self.boundary = None
         self.filter = list()
         if uri:
             super().__init__("conflate")
         # self.create_tables()
             self.aoi = None
-        self.convert = {"Fdr": "FR", "Cr": "Creek", "Cr.": "Creek", "Ck.": "Creek", "Crk": "Creek", "Cg": "Campground", "C G": "Campground", "C.G": "Campground", "Th": "Trailhead", "Tr": "Trail", "T.H.": "Trailhead", "Rd": "Road", "Disp": "Dispersed ", "Rd.": "Road", "Rd": "Road", "Mt": "Mountain ", "Mtn.": "Mountain ", "Mtn": "Mountain", "Lk": "Lake", "Pk": "Park", "Resvr": "Reservoir", "Rsvr": "Reservoir", "Spg": "Spring", "Sp": "Spring", "Br": "Bridge", "Ext": "Extension", "Fk.": "Fork", "N": "North", "N.": "North", "W": "West", "W.": "West", "E": "East", "E.": "East", "S": "South", "S.": "South", "So": "South", "Cyn": "Canyon", "Can": "Canyon", "St": "Street", "Ave": "Avenue", "NW": "North West", "Pl": "Place", "Blvd": "Boulevard", "Dr": "Drive", "Ln": "Lane", "Cir": "Circle", "Trl": "Trail", "Ct": "Court", "Way": "Way", "Pkwy": "Parkway", "Ter": "Terrace", "Loop": "Loop", "SW": "South West", "SE": "South East", "Hwy": "Highway"}
+        self.yaml = None
+        tmp = self.load_config()
+        config = tmp.getEntries()
+        self.abbrevs = config["tags"]
+
+    def load_config (self,
+                yamlspec: str = f"{rootdir}/abbreviations.yaml",
+                ) -> dict:
+        """
+        Import a GeoJson AOI file into a geometry.
+
+        Args:
+            yamlspec (str): The YAML file to import
+
+        Returns:
+            (dict): the tags
+            """
+
+        return YamlFile(yamlspec)
 
     def load_aoi(self,
                 filespec: str,
@@ -264,46 +287,49 @@ class ConflateBuildings(DBExtract):
     def merge_address(self,
                        addresses: str,
                        footfile: str,
-                           ):
+                       yaml: list,
+                        ):
         """
         Conflate two geoJson files.
 
         Args:
             addressses (str): Colorado address data
             footfile (str): building footprints
+            config (dict) Conversion data for address parsing
         """
         addrs = gpd.read_file(addresses)
         foot = gpd.read_file(footfile)
 
         spin = PixelSpinner('Processing...')
 
-        tags = ["SAUID", "PlaceID","Longitude","Latitude","AddrNum","NumSuf""St_PreMod","PreDir","PreType","St_PreSep","StreetName","PostType","PostDir","St_PosMod","Building","Floor","Unit","AddrFull","PlaceName"]
+        tags = self.list_to_dict(yaml[0])
+        convert = self.list_to_dict(yaml[1])
+        addr_tag = convert["addr:fullname"]
         buildings = list()
         for feature in foot.iterfeatures():
-            # spin.next()
+            spin.next()
             if feature["geometry"] is None:
                 continue
             node = shape(feature["geometry"])
             address = addrs.iloc[addrs.sindex.query(node, predicate="intersects")]
             if len(address["geometry"]) == 0:
+                # log.debug(f"{feature} already in OSM")
                 continue
+            # log.debug(f"{address} not in OSM")
             row = address.values[0].view().tolist()
-            address = dict(zip(tags, row))
-            number = address["AddrNum"]
-            fullstreet = str()
-            if type(address["PreType"]) != float:
-                fullstreet += self.convert[address["PreType"]] + " "
-            if type(address["PostType"]) != float:
-                fullstreet += address["PostType"].capitalize() + " "
-            if type(address["PostDir"]) != float:
-                fullstreet += self.convert[address["PostDir"].capitalize()]
-                # print(fullstreet.title())
-            props = {"addr:housenumber": number, "addr:street": fullstreet}
+            address = dict(zip(tags["tags"], row))
+            fullname = address[addr_tag]
+            pos = fullname.find(' ')
+            number = fullname[:pos]
+            street = fullname[pos:].strip()
+            props = {"addr:housenumber": number, "addr:street": self.expand_name(street), "building": "yes"}
             buildings.append(Feature(properties = props, geometry = shape(feature["geometry"])))
 
         fc = FeatureCollection(buildings)
-        file = open("foo.geojson", "w")
+        outfile = "merged_buildings.geojson"    
+        file = open(outfile, "w")
         geojson.dump(fc, file, indent=4)
+        log.info(f"Wrote {outfile}")
 
     def conflate_files(self,
                        osmfile: str,
@@ -323,7 +349,42 @@ class ConflateBuildings(DBExtract):
         intersecting = osm.sjoin(foot, how='inner')['savedindex']
         #Filter away these, "savedindex is not in intersecting"
         foot = foot[~foot.savedindex.isin(intersecting)]
-        foot.to_file(r'/tmp/new-buildings.geojson')
+        foot.to_file(r'new-buildings.geojson')
+
+    def expand_name (self,
+                    fullname : str,
+                    ) -> str:
+        """
+        Expand all the abbreviations.
+        """
+        fixed = str()
+        for word in fullname.split(' '):
+            try:
+                fixed += f" {self.abbrevs[word.capitalize()]} "
+            except:
+                fixed += f" {word.capitalize()} "
+
+        return fixed.replace("  ", " ").strip()
+
+    def list_to_dict (self,
+                      data: dict,
+                      ) -> dict:
+        """
+        Convert the list of dicts to one big dict, used for parsing YAML files.
+        """
+        new = dict()
+        for tag, value in data.items():
+            if type(value) == dict:
+                breakpoint()
+            if tag == "tags":
+                new[tag] = value
+            elif tag == "convert":
+                for entry in value:
+                    if type(entry) == dict:
+                        [[k, v]] = entry.items()
+                        new[k] = v
+
+        return new
 
 def main():
     """This main function lets this class be run standalone by a bash script"""
@@ -332,13 +393,14 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="This program conflates external data with existing features from OSM.",
         epilog="""
-    This program conflates external datasets with OSM data using a postgresql database.
+./conflateBuildings.py  -v -a /play/SourceData/Tasks/Colorado/Buildings/addr-JeffersonCounty.geojson  -f /tmp/new-buildings.geojson --help
         """,
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
     parser.add_argument("-f", "--footprints", help="Building footpints data Source")
     parser.add_argument("-o", "--osmdata",  help="OpenStreetMap data Source")
     parser.add_argument("-a", "--addresses",  help="Address data Source")
+    parser.add_argument("-y", "--yaml",  help="YAML config file for address datasets")
     parser.add_argument("-b", "--boundary", help="Boundary polygon to limit the data size")
     # parser.add_argument("-g", "--geo", help="import GeoJson into database for conflation")
     # parser.add_argument("-o", "--outfile", help="Post conflation output file")
@@ -365,11 +427,15 @@ def main():
     #     pass
 
     cdb = ConflateBuildings()
+    if args.yaml:
+        config = cdb.load_config (args.yaml)
+        # print(config.yaml)
+
     if args.boundary:
         aoiwkt = cdb.load_aoi(args.boundary)
 
     if args.addresses:
-        cdb.merge_address(args.addresses, args.footprints)
+        cdb.merge_address(args.addresses, args.footprints, config.yaml)
 
     if args.osmdata:
         cdb.conflate_files(args.osmdata, args.footprints)

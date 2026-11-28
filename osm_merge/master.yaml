@@ -1,0 +1,28 @@
+- tags:
+    - SAUID
+    - PlaceID
+    - Longitude
+    - Latitude
+    - AddrNum
+    - NumSuf
+    - St_PreMod
+    - PreDir
+    - PreType
+    - St_PreSep
+    - StreetName
+    - PostType
+    - PostDir
+    - St_PosMod
+    - Building
+    - Floor
+    - Unit
+    - AddrFull
+    - PlaceName
+
+- convert:
+    - addr:housenumber: AddrNum
+    - addr:street: StreetName
+    - addr:fullname: AddrFull
+    - direction: PreType
+    - street: PostType
+    - type: PostDir

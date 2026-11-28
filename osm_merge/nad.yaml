@@ -1,0 +1,68 @@
+- tags:
+    - AddNum_Pre
+    - Add_Number
+    - AddNum_Suf
+    - AddNo_Full
+    - St_PreMod
+    - St_PreDir
+    - St_PreTyp
+    - St_PreSep
+    - St_Name
+    - St_PosTyp
+    - St_PosDir
+    - St_PosMod
+    - StNam_Full
+    - Building
+    - Floor
+    - Unit
+    - Room
+    - Seat
+    - Addtl_Loc
+    - SubAddress
+    - LandmkName
+    - County
+    - Inc_Muni
+    - Post_City
+    - Census_Plc
+    - Uninc_Comm
+    - Nbrhd_Comm
+    - NatAmArea
+    - NatAmSub
+    - Urbnztn_PR
+    - PlaceOther
+    - PlaceNmTyp
+    - State
+    - Zip_Code
+    - Plus_4
+    - UUID
+    - AddAuth
+    - AddrRefSys
+    - Longitude
+    - Latitude
+    - NatGrid
+    - Elevation
+    - Placement
+    - AddrPoint
+    - Related_ID
+    - RelateType
+    - ParcelSrc
+    - Parcel_ID
+    - AddrClass
+    - Lifecycle
+    - Effective
+    - Expire
+    - DateUpdate
+    - AnomStatus
+    - LocatnDesc
+    - Addr_Type
+    - DeliverTyp
+    - NAD_Source
+    - DataSet_ID
+
+- convert:
+    - add:housenumber: Add_Number
+    - addr:housenumber: Add_Number
+    - addr:fullname: StNam_Full
+    - direction: None
+    - street: St_Name
+    - type: St_PosTyp

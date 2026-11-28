@@ -1,0 +1,59 @@
+- tags:
+    - localguid
+    - discrpagid
+    - nguid
+    - country
+    - state
+    - county
+    - inc_muni
+    - uninc_comm
+    - nbrhd_comm
+    - addnum_pre
+    - addnum_suf
+    - faddrnum
+    - st_premod
+    - st_predir
+    - st_pretyp
+    - st_presep
+    - st_name
+    - st_postyp
+    - st_posdir
+    - st_posmod
+    - stfullname
+    - stfulladdr
+    - lst_predir
+    - lst_name
+    - lst_typ
+    - lst_posdir
+    - lstfullname
+    - lstfulladdr
+    - esn
+    - msagcomm
+    - post_comm
+    - post_code
+    - postcodeex
+    - building
+    - floor
+    - unit
+    - room
+    - seat
+    - addtl_loc
+    - landmkname
+    - milepost
+    - addrstatus
+    - place_type
+    - placement
+    - usngcoord
+    - elevation
+    - notes
+    - parcelid
+    - globalid
+    - created_user
+    - last_edited_user
+    - expire
+    - effective
+
+- convert:
+    - fulladdr: lstfulladdr
+    - addr:housenumber: add_number
+    - addr:fullname: lstfullname

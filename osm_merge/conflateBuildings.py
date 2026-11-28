@@ -78,7 +78,7 @@ class ConflateBuildings(DBExtract):
         self.abbrevs = config["tags"]
 
     def load_config (self,
-                yamlspec: str = f"{rootdir}/abbreviations.yaml",
+                yamlspec: str = "abbreviations.yaml",
                 ) -> dict:
         """
         Import a GeoJson AOI file into a geometry.
@@ -90,7 +90,7 @@ class ConflateBuildings(DBExtract):
             (dict): the tags
             """
 
-        return YamlFile(yamlspec)
+        return YamlFile(f"{rootdir}/{yamlspec}")
 
     def load_aoi(self,
                 filespec: str,
@@ -322,6 +322,8 @@ class ConflateBuildings(DBExtract):
             pos = fullname.find(' ')
             number = fullname[:pos]
             street = fullname[pos:].strip()
+            pt = Point(address["Latitude"], address["Longitude"])
+            bld = shape(feature["geometry"])
             props = {"addr:housenumber": number, "addr:street": self.expand_name(street), "building": "yes"}
             buildings.append(Feature(properties = props, geometry = shape(feature["geometry"])))
 
